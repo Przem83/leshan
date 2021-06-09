@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <artifactId>leshan</artifactId>
+        <groupId>org.eclipse.leshan</groupId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>tcp-demo-common</artifactId>
+    <packaging>bundle</packaging>
+    <name>leshan - tcp demo</name>
+    <description>TCP Demo</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.californium</groupId>
+            <artifactId>cf-cli-tcp-netty</artifactId>
+            <version>${californium.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.leshan</groupId>
+            <artifactId>leshan-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.leshan</groupId>
+            <artifactId>leshan-core-cf</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>6</source>
+                    <target>6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2013-2015 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Bosch Software Innovations - added Redis URL support with authentication
@@ -60,6 +60,7 @@ import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeDecoder;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
 import org.eclipse.leshan.core.util.SecurityUtil;
+import org.eclipse.leshan.demo.TCPEndpointFactory;
 import org.eclipse.leshan.server.californium.LeshanServer;
 import org.eclipse.leshan.server.californium.LeshanServerBuilder;
 import org.eclipse.leshan.server.demo.servlet.ClientServlet;
@@ -413,6 +414,7 @@ public class LeshanServerDemo {
         // Prepare LWM2M server
         LeshanServerBuilder builder = new LeshanServerBuilder();
         builder.setEncoder(new DefaultLwM2mNodeEncoder());
+        builder.setEndpointFactory(new TCPEndpointFactory());
         LwM2mNodeDecoder decoder = new DefaultLwM2mNodeDecoder();
         builder.setDecoder(decoder);
 
@@ -576,7 +578,7 @@ public class LeshanServerDemo {
         Server server = new Server(jettyAddr);
         /*
          * TODO this should be added again when old demo will be removed.
-         * 
+         *
          * WebAppContext root = new WebAppContext(); root.setContextPath("/");
          * root.setResourceBase(LeshanServerDemo.class.getClassLoader().getResource("webapp").toExternalForm());
          * root.setParentLoaderPriority(true); server.setHandler(root);

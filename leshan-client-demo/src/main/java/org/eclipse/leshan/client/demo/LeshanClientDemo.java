@@ -72,7 +72,7 @@ import org.eclipse.leshan.client.resource.ObjectsInitializer;
 import org.eclipse.leshan.client.resource.listener.ObjectsListenerAdapter;
 import org.eclipse.leshan.core.CertificateUsage;
 import org.eclipse.leshan.core.LwM2m;
-import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
+import org.eclipse.leshan.demo.TCPEndpointFactory;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.ObjectModel;
@@ -714,7 +714,7 @@ public class LeshanClientDemo {
         engineFactory.setResumeOnConnect(!forceFullhandshake);
 
         // configure EndpointFactory
-        DefaultEndpointFactory endpointFactory = new DefaultEndpointFactory("LWM2M CLIENT", true) {
+        TCPEndpointFactory endpointFactory = new TCPEndpointFactory("LWM2M CLIENT", true) {
             @Override
             protected Connector createSecuredConnector(DtlsConnectorConfig dtlsConfig) {
 
