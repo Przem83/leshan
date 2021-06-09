@@ -53,6 +53,7 @@ Contributors:
         <module>leshan-server-demo</module>
         <module>leshan-client-demo</module>
         <module>leshan-bsserver-demo</module>
+        <module>tcp-demo-common</module>
     </modules>
 
     <scm>
