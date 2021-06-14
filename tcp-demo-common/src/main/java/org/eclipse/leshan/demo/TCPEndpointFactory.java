@@ -23,12 +23,15 @@ import org.eclipse.californium.elements.EndpointContextMatcher;
 import org.eclipse.californium.elements.PrincipalEndpointContextMatcher;
 import org.eclipse.californium.elements.tcp.netty.TcpClientConnector;
 import org.eclipse.californium.elements.tcp.netty.TcpServerConnector;
-import org.eclipse.californium.scandium.DTLSConnector;
+import org.eclipse.californium.elements.tcp.netty.TlsClientConnector;
+import org.eclipse.californium.elements.tcp.netty.TlsServerConnector;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
 import org.eclipse.leshan.core.californium.EndpointFactory;
 import org.eclipse.leshan.core.californium.Lwm2mEndpointContextMatcher;
 
+import javax.net.ssl.SSLContext;
 import java.net.InetSocketAddress;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 
 /**
@@ -188,7 +191,7 @@ public class TCPEndpointFactory implements EndpointFactory {
     }
 
     /**
-     * By default create a {@link DTLSConnector}.
+     * By default create a {@link TlsClientConnector} or {@link TlsServerConnector}.
      * <p>
      * This method is intended to be overridden.
      * 
@@ -196,6 +199,16 @@ public class TCPEndpointFactory implements EndpointFactory {
      * @return the {@link Connector} used for unsecured {@link CoapEndpoint}
      */
     protected Connector createSecuredConnector(DtlsConnectorConfig dtlsConfig) {
-        return new DTLSConnector(dtlsConfig);
+        try {
+            SSLContext sslContext = SSLContext.getDefault();
+
+            if (isClient) {
+                return new TlsClientConnector(sslContext, 1, 1000, 1000);
+            } else {
+                return new TlsServerConnector(sslContext, dtlsConfig.getAddress(), 1, 1000);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

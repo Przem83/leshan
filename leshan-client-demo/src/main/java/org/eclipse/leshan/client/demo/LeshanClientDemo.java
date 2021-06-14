@@ -48,19 +48,8 @@ import org.apache.commons.cli.Option.Builder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.eclipse.californium.core.network.config.NetworkConfig;
-import org.eclipse.californium.elements.Connector;
 import org.eclipse.californium.elements.util.SslContextUtil;
-import org.eclipse.californium.scandium.DTLSConnector;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
-import org.eclipse.californium.scandium.dtls.ClientHandshaker;
-import org.eclipse.californium.scandium.dtls.DTLSSession;
-import org.eclipse.californium.scandium.dtls.HandshakeException;
-import org.eclipse.californium.scandium.dtls.Handshaker;
-import org.eclipse.californium.scandium.dtls.ResumingClientHandshaker;
-import org.eclipse.californium.scandium.dtls.ResumingServerHandshaker;
-import org.eclipse.californium.scandium.dtls.ServerHandshaker;
-import org.eclipse.californium.scandium.dtls.SessionAdapter;
-import org.eclipse.californium.scandium.dtls.SessionId;
 import org.eclipse.californium.scandium.dtls.SingleNodeConnectionIdGenerator;
 import org.eclipse.californium.scandium.dtls.cipher.CipherSuite;
 import org.eclipse.leshan.client.californium.LeshanClient;
@@ -713,81 +702,7 @@ public class LeshanClientDemo {
         engineFactory.setReconnectOnUpdate(reconnectOnUpdate);
         engineFactory.setResumeOnConnect(!forceFullhandshake);
 
-        // configure EndpointFactory
-        TCPEndpointFactory endpointFactory = new TCPEndpointFactory("LWM2M CLIENT", true) {
-            @Override
-            protected Connector createSecuredConnector(DtlsConnectorConfig dtlsConfig) {
-
-                return new DTLSConnector(dtlsConfig) {
-                    @Override
-                    protected void onInitializeHandshaker(Handshaker handshaker) {
-                        handshaker.addSessionListener(new SessionAdapter() {
-
-                            private SessionId sessionIdentifier = null;
-
-                            @Override
-                            public void handshakeStarted(Handshaker handshaker) throws HandshakeException {
-                                if (handshaker instanceof ResumingServerHandshaker) {
-                                    LOG.info("DTLS abbreviated Handshake initiated by server : STARTED ...");
-                                } else if (handshaker instanceof ServerHandshaker) {
-                                    LOG.info("DTLS Full Handshake initiated by server : STARTED ...");
-                                } else if (handshaker instanceof ResumingClientHandshaker) {
-                                    sessionIdentifier = handshaker.getSession().getSessionIdentifier();
-                                    LOG.info("DTLS abbreviated Handshake initiated by client : STARTED ...");
-                                } else if (handshaker instanceof ClientHandshaker) {
-                                    LOG.info("DTLS Full Handshake initiated by client : STARTED ...");
-                                }
-                            }
-
-                            @Override
-                            public void sessionEstablished(Handshaker handshaker, DTLSSession establishedSession)
-                                    throws HandshakeException {
-                                if (handshaker instanceof ResumingServerHandshaker) {
-                                    LOG.info("DTLS abbreviated Handshake initiated by server : SUCCEED");
-                                } else if (handshaker instanceof ServerHandshaker) {
-                                    LOG.info("DTLS Full Handshake initiated by server : SUCCEED");
-                                } else if (handshaker instanceof ResumingClientHandshaker) {
-                                    if (sessionIdentifier != null && sessionIdentifier
-                                            .equals(handshaker.getSession().getSessionIdentifier())) {
-                                        LOG.info("DTLS abbreviated Handshake initiated by client : SUCCEED");
-                                    } else {
-                                        LOG.info(
-                                                "DTLS abbreviated turns into Full Handshake initiated by client : SUCCEED");
-                                    }
-                                } else if (handshaker instanceof ClientHandshaker) {
-                                    LOG.info("DTLS Full Handshake initiated by client : SUCCEED");
-                                }
-                            }
-
-                            @Override
-                            public void handshakeFailed(Handshaker handshaker, Throwable error) {
-                                // get cause
-                                String cause;
-                                if (error != null) {
-                                    if (error.getMessage() != null) {
-                                        cause = error.getMessage();
-                                    } else {
-                                        cause = error.getClass().getName();
-                                    }
-                                } else {
-                                    cause = "unknown cause";
-                                }
-
-                                if (handshaker instanceof ResumingServerHandshaker) {
-                                    LOG.info("DTLS abbreviated Handshake initiated by server : FAILED ({})", cause);
-                                } else if (handshaker instanceof ServerHandshaker) {
-                                    LOG.info("DTLS Full Handshake initiated by server : FAILED ({})", cause);
-                                } else if (handshaker instanceof ResumingClientHandshaker) {
-                                    LOG.info("DTLS abbreviated Handshake initiated by client : FAILED ({})", cause);
-                                } else if (handshaker instanceof ClientHandshaker) {
-                                    LOG.info("DTLS Full Handshake initiated by client : FAILED ({})", cause);
-                                }
-                            }
-                        });
-                    }
-                };
-            }
-        };
+        TCPEndpointFactory endpointFactory = new TCPEndpointFactory("LWM2M CLIENT", true);
 
         // Create client
         LeshanClientBuilder builder = new LeshanClientBuilder(endpoint);
