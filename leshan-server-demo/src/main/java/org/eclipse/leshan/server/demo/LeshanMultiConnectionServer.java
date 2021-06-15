@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A Lightweight M2M server.
@@ -83,8 +84,7 @@ public class LeshanMultiConnectionServer {
     // CoAP/Californium attributes
     private final CoapAPI coapApi;
     private final CoapServer coapServer;
-    private final CoapEndpoint unsecuredEndpoint;
-    private final CoapEndpoint securedEndpoint;
+    private final List<Endpoint> endpoints;
 
     // LWM2M attributes
     private final RegistrationServiceImpl registrationService;
@@ -111,8 +111,7 @@ public class LeshanMultiConnectionServer {
      * <p>
      * {@link LeshanServerBuilder} is the priviledged way to create a {@link LeshanMultiConnectionServer}.
      *
-     * @param unsecuredEndpoint CoAP endpoint used for <code>coap://</code> communication.
-     * @param securedEndpoint CoAP endpoint used for <code>coaps://</code> communication.
+     * @param endpoints CoAP endpoint used for <code>coaps://</code> communication.
      * @param registrationStore the {@link Registration} store.
      * @param securityStore the {@link SecurityInfo} store.
      * @param authorizer define which devices is allow to register on this server.
@@ -128,7 +127,7 @@ public class LeshanMultiConnectionServer {
      *
      * @since 1.1
      */
-    public LeshanMultiConnectionServer(CoapEndpoint unsecuredEndpoint, CoapEndpoint securedEndpoint,
+    public LeshanMultiConnectionServer(List<Endpoint> endpoints,
                                        CaliforniumRegistrationStore registrationStore, SecurityStore securityStore, Authorizer authorizer,
                                        LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
                                        NetworkConfig coapConfig, boolean noQueueMode, ClientAwakeTimeProvider awakeTimeProvider,
@@ -145,16 +144,9 @@ public class LeshanMultiConnectionServer {
         // Create CoAP server
         coapServer = createCoapServer(coapConfig);
 
-        // unsecured endpoint
-        this.unsecuredEndpoint = unsecuredEndpoint;
-        if (unsecuredEndpoint != null) {
-            coapServer.addEndpoint(unsecuredEndpoint);
-        }
-
-        // secure endpoint
-        this.securedEndpoint = securedEndpoint;
-        if (securedEndpoint != null) {
-            coapServer.addEndpoint(securedEndpoint);
+        this.endpoints = endpoints;
+        for( Endpoint endpoint: endpoints) {
+            coapServer.addEndpoint(endpoint);
         }
 
         // init services and stores
@@ -163,8 +155,7 @@ public class LeshanMultiConnectionServer {
         this.securityStore = securityStore;
         this.modelProvider = modelProvider;
         this.updateRegistrationOnNotification = updateRegistrationOnNotification;
-        observationService = createObservationService(registrationStore, modelProvider, decoder, unsecuredEndpoint,
-                securedEndpoint);
+        observationService = createObservationService(registrationStore, modelProvider, decoder, endpoints);
         if (noQueueMode) {
             presenceService = null;
         } else {
@@ -181,11 +172,11 @@ public class LeshanMultiConnectionServer {
         coapServer.add(createSendResource(sendService, modelProvider, decoder, registrationStore));
 
         // create request sender
-        requestSender = createRequestSender(securedEndpoint, unsecuredEndpoint, registrationService, observationService,
+        requestSender = createRequestSender(endpoints, registrationService, observationService,
                 this.modelProvider, encoder, decoder, presenceService);
 
         // connection cleaner
-        createConnectionCleaner(securityStore, securedEndpoint);
+        createConnectionCleaner(securityStore, endpoints);
 
         coapApi = new CoapAPI();
     }
@@ -204,21 +195,16 @@ public class LeshanMultiConnectionServer {
     }
 
     protected ObservationMultiConnectionServiceImpl createObservationService(CaliforniumRegistrationStore registrationStore,
-            LwM2mModelProvider modelProvider, LwM2mNodeDecoder decoder, CoapEndpoint unsecuredEndpoint,
-            CoapEndpoint securedEndpoint) {
+            LwM2mModelProvider modelProvider, LwM2mNodeDecoder decoder, List<Endpoint> endpoints) {
 
         ObservationMultiConnectionServiceImpl observationService = new ObservationMultiConnectionServiceImpl(registrationStore, modelProvider,
                 decoder, updateRegistrationOnNotification);
 
-        if (unsecuredEndpoint != null) {
-            unsecuredEndpoint.addNotificationListener(observationService);
-            observationService.addEndpoint(unsecuredEndpoint);
+        for (Endpoint endpoint: endpoints) {
+            endpoint.addNotificationListener(observationService);
+            observationService.addEndpoint(endpoint);
         }
 
-        if (securedEndpoint != null) {
-            securedEndpoint.addNotificationListener(observationService);
-            observationService.addEndpoint(securedEndpoint);
-        }
         return observationService;
     }
 
@@ -247,19 +233,19 @@ public class LeshanMultiConnectionServer {
         return new SendResource(sendHandler, modelProvider, decoder, registrationStore);
     }
 
-    protected LwM2mRequestSender createRequestSender(Endpoint securedEndpoint, Endpoint unsecuredEndpoint,
-            RegistrationServiceImpl registrationService, ObservationMultiConnectionServiceImpl observationService,
-            LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
-            PresenceServiceImpl presenceService) {
+    protected LwM2mRequestSender createRequestSender(List<Endpoint> endpoints,
+                                                     RegistrationServiceImpl registrationService, ObservationMultiConnectionServiceImpl observationService,
+                                                     LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
+                                                     PresenceServiceImpl presenceService) {
 
         // if no queue mode, create a "simple" sender
         final LwM2mRequestSender requestSender;
         if (presenceService == null)
-            requestSender = new CaliforniumLwM2mMultiConnectionRequestSender(securedEndpoint, unsecuredEndpoint, observationService,
+            requestSender = new CaliforniumLwM2mMultiConnectionRequestSender(endpoints, observationService,
                     modelProvider, encoder, decoder, connectionUriAssociation);
         else
             requestSender = new CaliforniumQueueModeRequestSender(presenceService, new CaliforniumLwM2mMultiConnectionRequestSender(
-                    securedEndpoint, unsecuredEndpoint, observationService, modelProvider, encoder, decoder, connectionUriAssociation));
+                    endpoints, observationService, modelProvider, encoder, decoder, connectionUriAssociation));
 
         // Cancel observations on client unregistering
         registrationService.addListener(new RegistrationListener() {
@@ -287,21 +273,27 @@ public class LeshanMultiConnectionServer {
         return requestSender;
     }
 
-    protected void createConnectionCleaner(SecurityStore securityStore, CoapEndpoint securedEndpoint) {
-        if (securedEndpoint != null && securedEndpoint.getConnector() instanceof DTLSConnector
-                && securityStore instanceof EditableSecurityStore) {
+    protected void createConnectionCleaner(SecurityStore securityStore, List<Endpoint> endpoints) {
+        for (Endpoint endpoint: endpoints) {
+            if (endpoint instanceof CoapEndpoint) {
+                CoapEndpoint securedEndpoint = (CoapEndpoint) endpoint;
 
-            final ConnectionCleaner connectionCleaner = new ConnectionCleaner(
-                    (DTLSConnector) securedEndpoint.getConnector());
+                if (securedEndpoint.getConnector() instanceof DTLSConnector
+                        && securityStore instanceof EditableSecurityStore) {
 
-            ((EditableSecurityStore) securityStore).setListener(new SecurityStoreListener() {
-                @Override
-                public void securityInfoRemoved(boolean infosAreCompromised, SecurityInfo... infos) {
-                    if (infosAreCompromised) {
-                        connectionCleaner.cleanConnectionFor(infos);
-                    }
+                    final ConnectionCleaner connectionCleaner = new ConnectionCleaner(
+                            (DTLSConnector) securedEndpoint.getConnector());
+
+                    ((EditableSecurityStore) securityStore).setListener(new SecurityStoreListener() {
+                        @Override
+                        public void securityInfoRemoved(boolean infosAreCompromised, SecurityInfo... infos) {
+                            if (infosAreCompromised) {
+                                connectionCleaner.cleanConnectionFor(infos);
+                            }
+                        }
+                    });
                 }
-            });
+            }
         }
     }
 
@@ -324,11 +316,11 @@ public class LeshanMultiConnectionServer {
         // Start server
         coapServer.start();
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("LWM2M server started at {} {}",
-                    getUnsecuredAddress() == null ? "" : "coap://" + getUnsecuredAddress(),
-                    getSecuredAddress() == null ? "" : "coaps://" + getSecuredAddress());
-        }
+//        if (LOG.isInfoEnabled()) {
+//            LOG.info("LWM2M server started at {} {}",
+//                    getUnsecuredAddress() == null ? "" : "coap://" + getUnsecuredAddress(),
+//                    getSecuredAddress() == null ? "" : "coaps://" + getSecuredAddress());
+//        }
     }
 
     /**
@@ -617,26 +609,26 @@ public class LeshanMultiConnectionServer {
         requestSender.send(destination, request, lowerLayerConfig, timeoutInMs, responseCallback, errorCallback);
     }
 
-    /**
-     * @return the {@link InetSocketAddress} used for <code>coap://</code>
-     */
-    public InetSocketAddress getUnsecuredAddress() {
-        if (unsecuredEndpoint != null) {
-            return unsecuredEndpoint.getAddress();
-        } else {
-            return null;
-        }
-    }
-
+//    /**
+//     * @return the {@link InetSocketAddress} used for <code>coap://</code>
+//     */
+//    public InetSocketAddress getUnsecuredAddress() {
+//        if (unsecuredEndpoint != null) {
+//            return unsecuredEndpoint.getAddress();
+//        } else {
+//            return null;
+//        }
+//    }
+//
     /**
      * @return the {@link InetSocketAddress} used for <code>coaps://</code>
      */
     public InetSocketAddress getSecuredAddress() {
-        if (securedEndpoint != null) {
-            return securedEndpoint.getAddress();
-        } else {
-            return null;
+        for( Endpoint endpoint: endpoints ) {
+            return endpoint.getAddress();
         }
+        
+        return null;
     }
 
     /**
@@ -655,19 +647,19 @@ public class LeshanMultiConnectionServer {
             return coapServer;
         }
 
-        /**
-         * @return the {@link CoapEndpoint} used for secured CoAP communication (coaps://)
-         */
-        public CoapEndpoint getSecuredEndpoint() {
-            return securedEndpoint;
-        }
-
-        /**
-         * @return the {@link CoapEndpoint} used for unsecured CoAP communication (coap://)
-         */
-        public CoapEndpoint getUnsecuredEndpoint() {
-            return unsecuredEndpoint;
-        }
+//        /**
+//         * @return the {@link CoapEndpoint} used for secured CoAP communication (coaps://)
+//         */
+//        public CoapEndpoint getSecuredEndpoint() {
+//            return securedEndpoint;
+//        }
+//
+//        /**
+//         * @return the {@link CoapEndpoint} used for unsecured CoAP communication (coap://)
+//         */
+//        public CoapEndpoint getUnsecuredEndpoint() {
+//            return unsecuredEndpoint;
+//        }
 
         /**
          * Send a CoAP {@link Request} synchronously to a LWM2M client using a default 2min timeout. Will block until a

@@ -41,6 +41,8 @@ import org.eclipse.leshan.server.registration.Registration;
 import org.eclipse.leshan.server.request.LowerLayerConfig;
 import org.eclipse.leshan.server.request.LwM2mRequestSender;
 
+import java.util.List;
+
 /**
  * An implementation of {@link LwM2mRequestSender} and {@link CoapRequestSender} based on Californium.
  */
@@ -51,15 +53,14 @@ public class CaliforniumLwM2mMultiConnectionRequestSender implements LwM2mReques
     private final MultiConnectionRequestSender sender;
 
     /**
-     * @param secureEndpoint The endpoint used to send coaps request.
-     * @param nonSecureEndpoint The endpoint used to send coap request.
+     * @param endpoints The endpoint used to send coaps request.
      * @param observationService The service used to store observation.
      * @param modelProvider the {@link LwM2mModelProvider} used retrieve the {@link LwM2mModel} used to encode/decode
      *        {@link LwM2mNode}.
      * @param encoder The {@link LwM2mNodeEncoder} used to encode {@link LwM2mNode}.
      * @param decoder The {@link LwM2mNodeDecoder} used to encode {@link LwM2mNode}.
      */
-    public CaliforniumLwM2mMultiConnectionRequestSender(Endpoint secureEndpoint, Endpoint nonSecureEndpoint,
+    public CaliforniumLwM2mMultiConnectionRequestSender(List<Endpoint> endpoints,
                                                         ObservationMultiConnectionServiceImpl observationService, LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder,
                                                         LwM2mNodeDecoder decoder,
                                                         ConnectionUriAssociation connectionUriAssociation) {
@@ -67,7 +68,7 @@ public class CaliforniumLwM2mMultiConnectionRequestSender implements LwM2mReques
         Validate.notNull(modelProvider);
         this.observationService = observationService;
         this.modelProvider = modelProvider;
-        this.sender = new MultiConnectionRequestSender(secureEndpoint, nonSecureEndpoint, encoder, decoder, connectionUriAssociation);
+        this.sender = new MultiConnectionRequestSender(endpoints, encoder, decoder, connectionUriAssociation);
     }
 
     /**

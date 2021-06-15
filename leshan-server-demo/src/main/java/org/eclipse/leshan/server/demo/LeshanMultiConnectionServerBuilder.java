@@ -18,7 +18,7 @@
  *******************************************************************************/
 package org.eclipse.leshan.server.demo;
 
-import org.eclipse.californium.core.network.CoapEndpoint;
+import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.core.network.config.NetworkConfig.Keys;
 import org.eclipse.californium.elements.DtlsEndpointContext;
@@ -59,7 +59,9 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class helping you to build and configure a Californium based Leshan Lightweight M2M server. Usage: create it, call
@@ -91,7 +93,7 @@ public class LeshanMultiConnectionServerBuilder {
     private NetworkConfig coapConfig;
     private Builder dtlsConfigBuilder;
 
-    private EndpointFactory endpointFactory;
+    private List<EndpointFactory> endpointFactoryList;
 
     private boolean noSecuredEndpoint;
     private boolean noUnsecuredEndpoint;
@@ -298,11 +300,11 @@ public class LeshanMultiConnectionServerBuilder {
      * An {@link UDPConnector} is expected for unsecured endpoint and a {@link DTLSConnector} is expected for secured
      * endpoint.
      * 
-     * @param endpointFactory An {@link EndpointFactory}, you can extends {@link DefaultEndpointFactory}.
+     * @param endpointFactoryList An {@link EndpointFactory}, you can extends {@link DefaultEndpointFactory}.
      * @return the builder for fluent Bootstrap Server creation.
      */
-    public LeshanMultiConnectionServerBuilder setEndpointFactory(EndpointFactory endpointFactory) {
-        this.endpointFactory = endpointFactory;
+    public LeshanMultiConnectionServerBuilder setEndpointFactoryList(List<EndpointFactory> endpointFactoryList) {
+        this.endpointFactoryList = endpointFactoryList;
         return this;
     }
 
@@ -427,9 +429,9 @@ public class LeshanMultiConnectionServerBuilder {
         }
         if (registrationIdProvider == null)
             registrationIdProvider = new RandomStringRegistrationIdProvider();
-        if (endpointFactory == null) {
-            endpointFactory = new DefaultEndpointFactory("LWM2M Server", false);
-        }
+//        if (endpointFactoryList == null) {
+//            endpointFactoryList = Arrays.asList(new DefaultEndpointFactory("LWM2M Server", false));
+//        }
 
         // handle dtlsConfig
         DtlsConnectorConfig dtlsConfig = null;
@@ -559,23 +561,26 @@ public class LeshanMultiConnectionServerBuilder {
             }
         }
 
-        // create endpoints
-        CoapEndpoint unsecuredEndpoint = null;
+        List<Endpoint> endpoints = new ArrayList<>();
+
         if (!noUnsecuredEndpoint) {
-            unsecuredEndpoint = endpointFactory.createUnsecuredEndpoint(localAddress, coapConfig, registrationStore);
+            for( EndpointFactory endpointFactory : endpointFactoryList ) {
+                endpoints.add(endpointFactory.createUnsecuredEndpoint(localAddress, coapConfig, registrationStore));
+            }
         }
 
-        CoapEndpoint securedEndpoint = null;
         if (!noSecuredEndpoint && dtlsConfig != null) {
-            securedEndpoint = endpointFactory.createSecuredEndpoint(dtlsConfig, coapConfig, registrationStore);
+            for( EndpointFactory endpointFactory : endpointFactoryList ) {
+                endpoints.add(endpointFactory.createSecuredEndpoint(dtlsConfig, coapConfig, registrationStore));
+            }
         }
 
-        if (securedEndpoint == null && unsecuredEndpoint == null) {
+        if (endpoints.size() == 0) {
             throw new IllegalStateException(
                     "All CoAP enpoints are deactivated, at least one endpoint should be activated");
         }
 
-        return createServer(unsecuredEndpoint, securedEndpoint, registrationStore, securityStore, authorizer,
+        return createServer(endpoints, registrationStore, securityStore, authorizer,
                 modelProvider, encoder, decoder, coapConfig, noQueueMode, awakeTimeProvider, registrationIdProvider);
     }
 
@@ -593,8 +598,7 @@ public class LeshanMultiConnectionServerBuilder {
      * You can extend <code>LeshanServerBuilder</code> and override this method to create a new builder which will be
      * able to build an extended <code>LeshanServer</code>.
      * 
-     * @param unsecuredEndpoint CoAP endpoint used for <code>coap://</code> communication.
-     * @param securedEndpoint CoAP endpoint used for <code>coaps://</code> communication.
+     * @param endpoints CoAP endpoint used for <code>coap://</code> communication.
      * @param registrationStore the {@link Registration} store.
      * @param securityStore the {@link SecurityInfo} store.
      * @param authorizer define which devices is allow to register on this server.
@@ -609,12 +613,12 @@ public class LeshanMultiConnectionServerBuilder {
      * 
      * @return the LWM2M server
      */
-    protected LeshanMultiConnectionServer createServer(CoapEndpoint unsecuredEndpoint, CoapEndpoint securedEndpoint,
-            CaliforniumRegistrationStore registrationStore, SecurityStore securityStore, Authorizer authorizer,
-            LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
-            NetworkConfig coapConfig, boolean noQueueMode, ClientAwakeTimeProvider awakeTimeProvider,
-            RegistrationIdProvider registrationIdProvider) {
-        return new LeshanMultiConnectionServer(unsecuredEndpoint, securedEndpoint, registrationStore, securityStore, authorizer,
+    protected LeshanMultiConnectionServer createServer(List<Endpoint> endpoints,
+                                                       CaliforniumRegistrationStore registrationStore, SecurityStore securityStore, Authorizer authorizer,
+                                                       LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
+                                                       NetworkConfig coapConfig, boolean noQueueMode, ClientAwakeTimeProvider awakeTimeProvider,
+                                                       RegistrationIdProvider registrationIdProvider) {
+        return new LeshanMultiConnectionServer(endpoints, registrationStore, securityStore, authorizer,
                 modelProvider, encoder, decoder, coapConfig, noQueueMode, awakeTimeProvider, registrationIdProvider,
                 updateRegistrationOnNotification);
     }
