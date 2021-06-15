@@ -29,7 +29,7 @@ import org.eclipse.jetty.servlets.EventSourceServlet;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.response.ObserveResponse;
-import org.eclipse.leshan.server.californium.LeshanServer;
+import org.eclipse.leshan.server.demo.LeshanMultiConnectionServer;
 import org.eclipse.leshan.server.demo.servlet.json.LwM2mNodeSerializer;
 import org.eclipse.leshan.server.demo.servlet.json.RegistrationSerializer;
 import org.eclipse.leshan.server.demo.servlet.log.CoapMessage;
@@ -155,7 +155,7 @@ public class EventServlet extends EventSourceServlet {
         }
     };
 
-    public EventServlet(LeshanServer server, int securePort) {
+    public EventServlet(LeshanMultiConnectionServer server, int securePort) {
         server.getRegistrationService().addListener(this.registrationListener);
         server.getObservationService().addListener(this.observationListener);
         server.getPresenceService().addListener(this.presenceListener);

@@ -61,7 +61,6 @@ import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
 import org.eclipse.leshan.core.util.SecurityUtil;
 import org.eclipse.leshan.demo.TCPEndpointFactory;
-import org.eclipse.leshan.server.californium.LeshanServer;
 import org.eclipse.leshan.server.californium.LeshanServerBuilder;
 import org.eclipse.leshan.server.demo.servlet.ClientServlet;
 import org.eclipse.leshan.server.demo.servlet.EventServlet;
@@ -412,7 +411,7 @@ public class LeshanServerDemo {
             String keyStoreAliasPass, Boolean publishDNSSdServices, boolean supportDeprecatedCiphers, Integer cid)
             throws Exception {
         // Prepare LWM2M server
-        LeshanServerBuilder builder = new LeshanServerBuilder();
+        LeshanMultiConnectionServerBuilder builder = new LeshanMultiConnectionServerBuilder();
         builder.setEncoder(new DefaultLwM2mNodeEncoder());
         builder.setEndpointFactory(new TCPEndpointFactory());
         LwM2mNodeDecoder decoder = new DefaultLwM2mNodeDecoder();
@@ -566,7 +565,7 @@ public class LeshanServerDemo {
         builder.setEncoder(new DefaultLwM2mNodeEncoder(new MagicLwM2mValueConverter()));
 
         // Create and start LWM2M server
-        LeshanServer lwServer = builder.build();
+        LeshanMultiConnectionServer lwServer = builder.build();
 
         // Now prepare Jetty
         InetSocketAddress jettyAddr;
