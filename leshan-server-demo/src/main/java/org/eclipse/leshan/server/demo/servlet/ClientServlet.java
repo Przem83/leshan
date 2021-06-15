@@ -63,7 +63,7 @@ import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteAttributesResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
-import org.eclipse.leshan.server.californium.LeshanServer;
+import org.eclipse.leshan.server.demo.LeshanMultiConnectionServer;
 import org.eclipse.leshan.server.demo.servlet.json.LwM2mNodeDeserializer;
 import org.eclipse.leshan.server.demo.servlet.json.LwM2mNodeSerializer;
 import org.eclipse.leshan.server.demo.servlet.json.RegistrationSerializer;
@@ -92,7 +92,7 @@ public class ClientServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private final LeshanServer server;
+    private final LeshanMultiConnectionServer server;
 
     private final Gson gson;
 
@@ -100,7 +100,7 @@ public class ClientServlet extends HttpServlet {
 
     private final MagicLwM2mValueConverter converter;
 
-    public ClientServlet(LeshanServer server) {
+    public ClientServlet(LeshanMultiConnectionServer server) {
         this.server = server;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
