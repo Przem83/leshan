@@ -54,6 +54,7 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.leshan.core.LwM2m;
+import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeDecoder;
@@ -413,7 +414,10 @@ public class LeshanServerDemo {
         // Prepare LWM2M server
         LeshanMultiConnectionServerBuilder builder = new LeshanMultiConnectionServerBuilder();
         builder.setEncoder(new DefaultLwM2mNodeEncoder());
-        builder.setEndpointFactory(new TCPEndpointFactory());
+        builder.setEndpointFactoryList(Arrays.asList(
+                new TCPEndpointFactory(),
+                new DefaultEndpointFactory()
+        ));
         LwM2mNodeDecoder decoder = new DefaultLwM2mNodeDecoder();
         builder.setDecoder(decoder);
 

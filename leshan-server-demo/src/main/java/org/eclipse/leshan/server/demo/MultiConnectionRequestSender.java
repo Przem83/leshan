@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -60,8 +61,7 @@ public class MultiConnectionRequestSender implements Destroyable {
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1,
             new NamedThreadFactory("Leshan Async Request timeout"));
 
-    private final Endpoint nonSecureEndpoint;
-    private final Endpoint secureEndpoint;
+    private final List<Endpoint> endpoints;
     private final LwM2mNodeDecoder decoder;
     private final LwM2mNodeEncoder encoder;
 
@@ -72,15 +72,13 @@ public class MultiConnectionRequestSender implements Destroyable {
     protected ConnectionUriAssociation connectionUriAssociation;
 
     /**
-     * @param secureEndpoint The endpoint used to send coaps request.
-     * @param nonSecureEndpoint The endpoint used to send coap request.
+     * @param endpoints The endpoint used to send coaps request.
      * @param encoder The {@link LwM2mNodeEncoder} used to encode {@link LwM2mNode}.
      * @param decoder The {@link LwM2mNodeDecoder} used to encode {@link LwM2mNode}.
      */
-    public MultiConnectionRequestSender(Endpoint secureEndpoint, Endpoint nonSecureEndpoint, LwM2mNodeEncoder encoder,
+    public MultiConnectionRequestSender(List<Endpoint> endpoints, LwM2mNodeEncoder encoder,
                                         LwM2mNodeDecoder decoder, ConnectionUriAssociation connectionUriAssociation) {
-        this.secureEndpoint = secureEndpoint;
-        this.nonSecureEndpoint = nonSecureEndpoint;
+        this.endpoints = endpoints;
         this.encoder = encoder;
         this.decoder = decoder;
         this.connectionUriAssociation = connectionUriAssociation;
@@ -143,27 +141,19 @@ public class MultiConnectionRequestSender implements Destroyable {
         // Store pending request to be able to cancel it later
         addOngoingRequest(sessionId, coapRequest);
 
-
-//        destination.getPeerAddress().getPort() == secureEndpoint.getAddress().getPort()
-
-
-
-//        EndpointContext destination = raw.getEndpointContext();
-//        InetSocketAddress destinationAddress = destination.getPeerAddress();
-//        EndpointContext connectionContext = new UdpEndpointContext(destinationAddress);
-//        EndpointContextMatcher endpointMatcher = UDPConnector.this.endpointContextMatcher;
-//        if (endpointMatcher != null && !endpointMatcher.isToBeSent(destination, connectionContext)) {
-
-        URI uri = connectionUriAssociation.getConnectionUri(destination);
-
-        // Send CoAP request asynchronously
-        if (uri.equals(secureEndpoint.getUri()))
-            secureEndpoint.sendRequest(coapRequest);
-        else if (uri.equals(nonSecureEndpoint.getUri()))
-            nonSecureEndpoint.sendRequest(coapRequest);
+        sendRequest(destination, coapRequest);
 
         // Wait for response, then return it
         return syncMessageObserver.waitForResponse();
+    }
+
+    private void sendRequest(Identity destination, Request request) {
+        URI uri = connectionUriAssociation.getConnectionUri(destination);
+
+        for( Endpoint endpoint: endpoints) {
+            if (uri.equals(endpoint.getUri()))
+                endpoint.sendRequest(request);
+        }
     }
 
     /**
@@ -233,11 +223,7 @@ public class MultiConnectionRequestSender implements Destroyable {
         // Store pending request to be able to cancel it later
         addOngoingRequest(sessionId, coapRequest);
 
-        // Send CoAP request asynchronously
-        if (destination.isSecure())
-            secureEndpoint.sendRequest(coapRequest);
-        else
-            nonSecureEndpoint.sendRequest(coapRequest);
+        sendRequest(destination, coapRequest);
     }
 
     /**
@@ -283,11 +269,7 @@ public class MultiConnectionRequestSender implements Destroyable {
         // Store pending request to be able to cancel it later
         addOngoingRequest(sessionId, coapRequest);
 
-        // Send CoAP request asynchronously
-        if (destination.isSecure())
-            secureEndpoint.sendRequest(coapRequest);
-        else
-            nonSecureEndpoint.sendRequest(coapRequest);
+        sendRequest(destination, coapRequest);
 
         // Wait for response, then return it
         return syncMessageObserver.waitForCoapResponse();
@@ -345,11 +327,7 @@ public class MultiConnectionRequestSender implements Destroyable {
         // Store pending request to be able to cancel it later
         addOngoingRequest(sessionId, coapRequest);
 
-        // Send CoAP request asynchronously
-        if (destination.isSecure())
-            secureEndpoint.sendRequest(coapRequest);
-        else
-            nonSecureEndpoint.sendRequest(coapRequest);
+        sendRequest(destination, coapRequest);
     }
 
     /**

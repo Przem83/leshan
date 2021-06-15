@@ -61,6 +61,8 @@ import org.eclipse.leshan.client.resource.ObjectsInitializer;
 import org.eclipse.leshan.client.resource.listener.ObjectsListenerAdapter;
 import org.eclipse.leshan.core.CertificateUsage;
 import org.eclipse.leshan.core.LwM2m;
+import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
+import org.eclipse.leshan.core.californium.EndpointFactory;
 import org.eclipse.leshan.demo.TCPEndpointFactory;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectLoader;
@@ -702,7 +704,8 @@ public class LeshanClientDemo {
         engineFactory.setReconnectOnUpdate(reconnectOnUpdate);
         engineFactory.setResumeOnConnect(!forceFullhandshake);
 
-        TCPEndpointFactory endpointFactory = new TCPEndpointFactory("LWM2M CLIENT", true);
+//        TCPEndpointFactory endpointFactory = new TCPEndpointFactory("LWM2M CLIENT", true);
+        EndpointFactory endpointFactory = new DefaultEndpointFactory("LWM2M CLIENT", true);
 
         // Create client
         LeshanClientBuilder builder = new LeshanClientBuilder(endpoint);
