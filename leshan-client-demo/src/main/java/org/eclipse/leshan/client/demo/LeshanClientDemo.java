@@ -70,6 +70,7 @@ import org.eclipse.leshan.client.object.Server;
 import org.eclipse.leshan.client.resource.LwM2mObjectEnabler;
 import org.eclipse.leshan.client.resource.ObjectsInitializer;
 import org.eclipse.leshan.client.resource.listener.ObjectsListenerAdapter;
+import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.CertificateUsage;
 import org.eclipse.leshan.core.LwM2m;
 import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
@@ -77,10 +78,12 @@ import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.StaticModel;
+import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeDecoder;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeEncoder;
 import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.core.util.SecurityUtil;
+import org.eclipse.leshan.core.request.SendRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -612,13 +615,14 @@ public class LeshanClientDemo {
 
         // Get models folder
         String modelsFolderPath = cl.getOptionValue("m");
+        Server myserver = new Server(123, lifetime);
 
         try {
             createAndStartClient(endpoint, localAddress, localPort, cl.hasOption("b"), additionalAttributes,
                     bsAdditionalAttributes, lifetime, communicationPeriod, serverURI, pskIdentity, pskKey,
                     clientPrivateKey, clientPublicKey, serverPublicKey, clientCertificate, serverCertificate,
                     trustStore, certificateUsage, latitude, longitude, scaleFactor, cl.hasOption("ocf"),
-                    cl.hasOption("oc"), cl.hasOption("r"), cl.hasOption("f"), modelsFolderPath, ciphers, cid);
+                    cl.hasOption("oc"), cl.hasOption("r"), cl.hasOption("f"), modelsFolderPath, ciphers, cid, myserver);
         } catch (Exception e) {
             System.err.println("Unable to create and start client ...");
             e.printStackTrace();
@@ -633,7 +637,7 @@ public class LeshanClientDemo {
             X509Certificate clientCertificate, X509Certificate serverCertificate, List<Certificate> trustStore,
             CertificateUsage certificateUsage, Float latitude, Float longitude, float scaleFactor,
             boolean supportOldFormat, boolean supportDeprecatedCiphers, boolean reconnectOnUpdate,
-            boolean forceFullhandshake, String modelsFolderPath, List<CipherSuite> ciphers, Integer cid)
+            boolean forceFullhandshake, String modelsFolderPath, List<CipherSuite> ciphers, Integer cid,Server myserver)
             throws Exception {
 
         locationInstance = new MyLocation(latitude, longitude, scaleFactor);
@@ -667,18 +671,18 @@ public class LeshanClientDemo {
         } else {
             if (pskIdentity != null) {
                 initializer.setInstancesForObject(SECURITY, psk(serverURI, 123, pskIdentity, pskKey));
-                initializer.setInstancesForObject(SERVER, new Server(123, lifetime));
+                initializer.setInstancesForObject(SERVER, myserver);
             } else if (clientPublicKey != null) {
                 initializer.setInstancesForObject(SECURITY, rpk(serverURI, 123, clientPublicKey.getEncoded(),
                         clientPrivateKey.getEncoded(), serverPublicKey.getEncoded()));
-                initializer.setInstancesForObject(SERVER, new Server(123, lifetime));
+                initializer.setInstancesForObject(SERVER, myserver);
             } else if (clientCertificate != null) {
                 initializer.setInstancesForObject(SECURITY, x509(serverURI, 123, clientCertificate.getEncoded(),
                         clientPrivateKey.getEncoded(), serverCertificate.getEncoded(), certificateUsage.code));
-                initializer.setInstancesForObject(SERVER, new Server(123, lifetime));
+                initializer.setInstancesForObject(SERVER, myserver);
             } else {
                 initializer.setInstancesForObject(SECURITY, noSec(serverURI, 123));
-                initializer.setInstancesForObject(SERVER, new Server(123, lifetime));
+                initializer.setInstancesForObject(SERVER, myserver);
             }
         }
         initializer.setInstancesForObject(DEVICE, new MyDevice());
@@ -871,6 +875,7 @@ public class LeshanClientDemo {
         commandsHelp.append(System.lineSeparator());
         commandsHelp.append("  - d : to move to West.");
         commandsHelp.append(System.lineSeparator());
+        commandsHelp.append("  - n : Send data");
         LOG.info(commandsHelp.toString());
 
         // Start the client
@@ -886,7 +891,7 @@ public class LeshanClientDemo {
 
         // Change the location through the Console
         try (Scanner scanner = new Scanner(System.in)) {
-            List<Character> wasdCommands = Arrays.asList('w', 'a', 's', 'd');
+            List<Character> wasdCommands = Arrays.asList('w', 'a', 's', 'd', 'n');
             while (scanner.hasNext()) {
                 String command = scanner.next();
                 if (command.startsWith("create")) {
@@ -925,8 +930,17 @@ public class LeshanClientDemo {
                     }
                 } else if (command.startsWith("update")) {
                     client.triggerRegistrationUpdate();
-                } else if (command.length() == 1 && wasdCommands.contains(command.charAt(0))) {
+                } else if (command.length() == 1 && wasdCommands.contains(command.charAt(0)) && command.charAt(0)!='n') {
+
                     locationInstance.moveLocation(command);
+                }
+                  else if (command.length() == 1 && wasdCommands.contains(command.charAt(0)) && command.charAt(0)=='n') {
+
+                      ServerIdentity server = client.getRegisteredServers().values().iterator().next();
+                    if (!myserver.isMuted()) {
+                        client.sendData(server, ContentFormat.SENML_JSON, Arrays.asList("/6/0/0", "/6/0/1"), 1000);
+                    }
+
                 } else {
                     LOG.info("Unknown command '{}'", command);
                 }

@@ -42,7 +42,7 @@ public class Server extends BaseInstanceEnabler {
 
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
-    private final static List<Integer> supportedResources = Arrays.asList(0, 1, 2, 3, 6, 7, 8, 22);
+    private final static List<Integer> supportedResources = Arrays.asList(0, 1, 2, 3, 6, 7, 8, 22, 23);
 
     private int shortServerId;
     private long lifetime;
@@ -51,22 +51,24 @@ public class Server extends BaseInstanceEnabler {
     private EnumSet<BindingMode> binding;
     private BindingMode preferredTransport;
     private boolean notifyWhenDisable;
+    private boolean muteSend;
 
     public Server() {
         // should only be used at bootstrap time
     }
 
     public Server(int shortServerId, long lifetime, EnumSet<BindingMode> binding, boolean notifyWhenDisable,
-            BindingMode preferredTransport) {
+            BindingMode preferredTransport, boolean muteSend) {
         this.shortServerId = shortServerId;
         this.lifetime = lifetime;
         this.binding = binding;
         this.notifyWhenDisable = notifyWhenDisable;
         this.preferredTransport = preferredTransport;
+        this.muteSend = muteSend;
     }
 
     public Server(int shortServerId, long lifetime) {
-        this(shortServerId, lifetime, EnumSet.of(BindingMode.U), false, BindingMode.U);
+        this(shortServerId, lifetime, EnumSet.of(BindingMode.U), false, BindingMode.U,false);
     }
 
     @Override
@@ -101,6 +103,9 @@ public class Server extends BaseInstanceEnabler {
             if (preferredTransport == null)
                 return ReadResponse.notFound();
             return ReadResponse.success(resourceid, preferredTransport.toString());
+
+        case 23: // muteSend
+                return ReadResponse.success(resourceid, muteSend);
 
         default:
             return super.read(identity, resourceid);
@@ -189,7 +194,19 @@ public class Server extends BaseInstanceEnabler {
             } catch (IllegalArgumentException e) {
                 return WriteResponse.badRequest("invalid value");
             }
-
+            case 23: // muteSend
+                if (value.getType() != Type.BOOLEAN) {
+                    return WriteResponse.badRequest("invalid type");
+                }
+                try {
+                    boolean previousmuteSend = muteSend;
+                    muteSend =  (boolean) value.getValue();
+                    if (!Objects.equals(previousmuteSend, muteSend))
+                        fireResourcesChange(resourceid);
+                    return WriteResponse.success();
+                } catch (IllegalArgumentException e) {
+                    return WriteResponse.badRequest("invalid value");
+                }
         default:
             return super.write(identity, replace, resourceid, value);
         }
@@ -219,7 +236,10 @@ public class Server extends BaseInstanceEnabler {
             super.reset(resourceid);
         }
     }
+    public boolean isMuted() {
+        return muteSend;
 
+    }
     @Override
     public List<Integer> getAvailableResourceIds(ObjectModel model) {
         return supportedResources;

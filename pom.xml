@@ -48,66 +48,67 @@ Contributors:
         <module>leshan-client-core</module>
         <module>leshan-client-cf</module>
 
-        <module>leshan-integration-tests</module> 
 
-        <module>leshan-server-demo</module>
-        <module>leshan-client-demo</module>
-        <module>leshan-bsserver-demo</module>
-    </modules>
+                <module>leshan-integration-tests</module>
 
-    <scm>
-        <developerConnection>scm:git:ssh://git@github.com/eclipse/leshan.git</developerConnection>
-        <url>https://github.com/eclipse/leshan.git</url>
-        <tag>HEAD</tag>
-    </scm>
+                <module>leshan-server-demo</module>
+                <module>leshan-client-demo</module>
+                <module>leshan-bsserver-demo</module>
+            </modules>
 
-    <developers>
-        <developer>
-            <id>sbernard</id>
-            <name>Simon Bernard</name>
-            <email>sbernard@sierrawireless.com</email>
-            <organization>Sierra Wireless</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>msangoi</id>
-            <name>Manuel Sangoi</name>
-            <email>msangoi@sierrawireless.com</email>
-            <organization>Sierra Wireless - AirVantage</organization>
-            <organizationUrl>http://airvantage.net</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>khudalla</id>
-            <name>Kai Hudalla</name>
-            <email>kai.hudalla@bosch-si.com</email>
-            <organization>Bosch Software Innovations GmbH</organization>
-            <organizationUrl>http://www.bosch-si.com</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>jvermillard</id>
-            <name>Julien Vermillard</name>
-            <email>jvermillard@sierrawireless.com</email>
-            <organization>Sierra Wireless - AirVantage</organization>
-            <organizationUrl>http://airvantage.net</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
+            <scm>
+                <developerConnection>scm:git:ssh://git@github.com/eclipse/leshan.git</developerConnection>
+                <url>https://github.com/eclipse/leshan.git</url>
+                <tag>HEAD</tag>
+            </scm>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <test.exclusion.pattern>**/Redis*.java</test.exclusion.pattern>
+            <developers>
+                <developer>
+                    <id>sbernard</id>
+                    <name>Simon Bernard</name>
+                    <email>sbernard@sierrawireless.com</email>
+                    <organization>Sierra Wireless</organization>
+                    <roles>
+                        <role>developer</role>
+                    </roles>
+                </developer>
+                <developer>
+                    <id>msangoi</id>
+                    <name>Manuel Sangoi</name>
+                    <email>msangoi@sierrawireless.com</email>
+                    <organization>Sierra Wireless - AirVantage</organization>
+                    <organizationUrl>http://airvantage.net</organizationUrl>
+                    <roles>
+                        <role>developer</role>
+                    </roles>
+                </developer>
+                <developer>
+                    <id>khudalla</id>
+                    <name>Kai Hudalla</name>
+                    <email>kai.hudalla@bosch-si.com</email>
+                    <organization>Bosch Software Innovations GmbH</organization>
+                    <organizationUrl>http://www.bosch-si.com</organizationUrl>
+                    <roles>
+                        <role>developer</role>
+                    </roles>
+                </developer>
+                <developer>
+                    <id>jvermillard</id>
+                    <name>Julien Vermillard</name>
+                    <email>jvermillard@sierrawireless.com</email>
+                    <organization>Sierra Wireless - AirVantage</organization>
+                    <organizationUrl>http://airvantage.net</organizationUrl>
+                    <roles>
+                        <role>developer</role>
+                    </roles>
+                </developer>
+            </developers>
 
-        <!-- dependencies version -->
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <test.exclusion.pattern>**/Redis*.java</test.exclusion.pattern>
+
+                <!-- dependencies version -->
         <californium.version>2.6.3</californium.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.api.version>1.7.30</slf4j.api.version>
