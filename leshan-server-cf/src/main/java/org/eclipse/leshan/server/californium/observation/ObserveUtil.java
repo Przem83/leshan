@@ -23,6 +23,7 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.ContentFormat;
+import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
 
@@ -79,6 +80,18 @@ public class ObserveUtil {
         context.put(CTX_ENDPOINT, endpoint);
         context.put(CTX_REGID, registrationId);
         context.put(CTX_LWM2M_PATH, request.getPath().toString());
+        for (Entry<String, String> ctx : request.getContext().entrySet()) {
+            context.put(ctx.getKey(), ctx.getValue());
+        }
+        return context;
+    }
+
+    public static Map<String, String> createCoapObserveCompositeRequestContext(String endpoint, String registrationId,
+                                                                               ObserveCompositeRequest request) {
+        Map<String, String> context = new HashMap<>();
+        context.put(CTX_ENDPOINT, endpoint);
+        context.put(CTX_REGID, registrationId);
+        context.put(CTX_LWM2M_PATH, request.getPaths().get(0).toString());
         for (Entry<String, String> ctx : request.getContext().entrySet()) {
             context.put(ctx.getKey(), ctx.getValue());
         }
