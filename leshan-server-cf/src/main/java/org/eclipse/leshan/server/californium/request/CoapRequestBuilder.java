@@ -28,28 +28,12 @@ import org.eclipse.leshan.core.node.LwM2mObject;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.LwM2mNodeEncoder;
-import org.eclipse.leshan.core.request.BootstrapDeleteRequest;
-import org.eclipse.leshan.core.request.BootstrapDiscoverRequest;
-import org.eclipse.leshan.core.request.BootstrapFinishRequest;
-import org.eclipse.leshan.core.request.BootstrapWriteRequest;
-import org.eclipse.leshan.core.request.CancelObservationRequest;
-import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.CreateRequest;
-import org.eclipse.leshan.core.request.DeleteRequest;
-import org.eclipse.leshan.core.request.DiscoverRequest;
-import org.eclipse.leshan.core.request.DownlinkRequest;
-import org.eclipse.leshan.core.request.DownlinkRequestVisitor;
-import org.eclipse.leshan.core.request.ExecuteRequest;
-import org.eclipse.leshan.core.request.Identity;
-import org.eclipse.leshan.core.request.ObserveRequest;
-import org.eclipse.leshan.core.request.ReadCompositeRequest;
-import org.eclipse.leshan.core.request.ReadRequest;
-import org.eclipse.leshan.core.request.WriteAttributesRequest;
-import org.eclipse.leshan.core.request.WriteCompositeRequest;
-import org.eclipse.leshan.core.request.WriteRequest;
+import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.util.StringUtils;
 import org.eclipse.leshan.server.californium.observation.ObserveUtil;
 import org.eclipse.leshan.server.request.LowerLayerConfig;
+
+import java.util.List;
 
 /**
  * This class is able to create CoAP request from LWM2M {@link DownlinkRequest}.
@@ -192,6 +176,26 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     }
 
     @Override
+    public void visit(ObserveCompositeRequest request) {
+        coapRequest = Request.newFetch();
+
+        coapRequest.getOptions().setContentFormat(request.getRequestContentFormat().getCode());
+
+        coapRequest.setPayload(encoder.encodePaths(request.getPaths(), request.getRequestContentFormat()));
+
+        if (request.getResponseContentFormat() != null) {
+            coapRequest.getOptions().setAccept(request.getResponseContentFormat().getCode());
+        }
+
+        coapRequest.setObserve();
+//        setTarget(coapRequest, request.getPaths());
+        setTarget(coapRequest, LwM2mPath.ROOTPATH);
+
+        coapRequest.setUserContext(ObserveUtil.createCoapObserveCompositeRequestContext(endpoint, registrationId, request));
+        applyLowerLayerConfig(coapRequest);
+    }
+
+    @Override
     public void visit(WriteCompositeRequest request) {
         coapRequest = Request.newIPatch();
         coapRequest.getOptions().setContentFormat(request.getContentFormat().getCode());
@@ -285,6 +289,44 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
         if (path.getResourceInstanceId() != null) {
             coapRequest.getOptions().addUriPath(Integer.toString(path.getResourceInstanceId()));
         }
+    }
+
+    protected void setTarget(Request coapRequest, List<LwM2mPath> paths) {
+        EndpointContext context = EndpointContextUtil.extractContext(destination, allowConnectionInitiation);
+        coapRequest.setDestinationContext(context);
+
+        // root path
+        if (rootPath != null) {
+            for (String rootPathPart : rootPath.split("/")) {
+                if (!StringUtils.isEmpty(rootPathPart)) {
+                    coapRequest.getOptions().addUriPath(rootPathPart);
+                }
+            }
+        }
+
+//        // objectId
+//        if (path.getObjectId() != null) {
+//            coapRequest.getOptions().addUriPath(Integer.toString(path.getObjectId()));
+//        }
+//
+//        // objectInstanceId
+//        if (path.getObjectInstanceId() == null) {
+//            if (path.getResourceId() != null) {
+//                coapRequest.getOptions().addUriPath("0"); // default instanceId
+//            }
+//        } else {
+//            coapRequest.getOptions().addUriPath(Integer.toString(path.getObjectInstanceId()));
+//        }
+//
+//        // resourceId
+//        if (path.getResourceId() != null) {
+//            coapRequest.getOptions().addUriPath(Integer.toString(path.getResourceId()));
+//        }
+//
+//        // resourceInstanceId
+//        if (path.getResourceInstanceId() != null) {
+//            coapRequest.getOptions().addUriPath(Integer.toString(path.getResourceInstanceId()));
+//        }
     }
 
     protected void applyLowerLayerConfig(Request coapRequest) {

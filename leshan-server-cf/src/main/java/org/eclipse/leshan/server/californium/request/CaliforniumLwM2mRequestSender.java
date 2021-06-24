@@ -26,16 +26,14 @@ import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
 import org.eclipse.leshan.core.node.codec.LwM2mNodeEncoder;
 import org.eclipse.leshan.core.request.DownlinkRequest;
+import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.request.exception.RequestCanceledException;
 import org.eclipse.leshan.core.request.exception.RequestRejectedException;
 import org.eclipse.leshan.core.request.exception.SendFailedException;
 import org.eclipse.leshan.core.request.exception.TimeoutException;
 import org.eclipse.leshan.core.request.exception.UnconnectedPeerException;
-import org.eclipse.leshan.core.response.ErrorCallback;
-import org.eclipse.leshan.core.response.LwM2mResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
-import org.eclipse.leshan.core.response.ResponseCallback;
+import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.core.util.Validate;
 import org.eclipse.leshan.core.Destroyable;
 import org.eclipse.leshan.server.californium.observation.ObservationServiceImpl;
@@ -109,6 +107,10 @@ public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender, CoapRe
         // Handle special observe case
         if (response != null && response.getClass() == ObserveResponse.class && response.isSuccess()) {
             observationService.addObservation(destination, ((ObserveResponse) response).getObservation());
+        }
+
+        if (response != null && response.getClass() == ObserveCompositeResponse.class && response.isSuccess()) {
+            observationService.addObservation(destination, ((ObserveCompositeResponse) response).getObservation());
         }
         return response;
     }

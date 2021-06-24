@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.leshan.client.servers.ServerIdentity;
+import org.eclipse.leshan.core.LwM2mId;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
@@ -31,15 +32,9 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
-import org.eclipse.leshan.core.request.ReadCompositeRequest;
-import org.eclipse.leshan.core.request.ReadRequest;
-import org.eclipse.leshan.core.request.WriteCompositeRequest;
-import org.eclipse.leshan.core.request.WriteRequest;
+import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.request.WriteRequest.Mode;
-import org.eclipse.leshan.core.response.ReadCompositeResponse;
-import org.eclipse.leshan.core.response.ReadResponse;
-import org.eclipse.leshan.core.response.WriteCompositeResponse;
-import org.eclipse.leshan.core.response.WriteResponse;
+import org.eclipse.leshan.core.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,6 +186,44 @@ public class RootEnabler implements LwM2mRootEnabler {
         }
         return WriteCompositeResponse.success();
 
+    }
+
+    @Override
+    public synchronized ObserveCompositeResponse observe(ServerIdentity identity, ObserveCompositeRequest request) {
+//        LwM2mPath path = request.getPath();
+//
+//        // observe is not supported for bootstrap
+//        if (identity.isLwm2mBootstrapServer())
+//            return ObserveResponse.methodNotAllowed();
+//
+//        if (!identity.isSystem()) {
+//            // observe or read of the security object is forbidden
+//            if (id == LwM2mId.SECURITY)
+//                return ObserveResponse.notFound();
+//
+//            // check if the resource is readable.
+//            if (path.isResource()) {
+//                ResourceModel resourceModel = objectModel.resources.get(path.getResourceId());
+//                if (resourceModel == null) {
+//                    return ObserveResponse.notFound();
+//                } else if (!resourceModel.operations.isReadable()) {
+//                    return ObserveResponse.methodNotAllowed();
+//                }
+//            }
+//        }
+        return doObserve(identity, request);
+    }
+
+    protected ObserveCompositeResponse doObserve(ServerIdentity identity, ObserveCompositeRequest request) {
+        ReadCompositeResponse readResponse = this.read(identity, new ReadCompositeRequest(
+                request.getPaths(),
+                request.getRequestContentFormat(),
+                request.getResponseContentFormat(),
+                request.getCoapRequest()
+        ));
+        return new ObserveCompositeResponse(
+                readResponse.getCode(), readResponse.getContent(), readResponse.getErrorMessage(), readResponse.getCoapResponse(), null
+        );
     }
 
     @Override
