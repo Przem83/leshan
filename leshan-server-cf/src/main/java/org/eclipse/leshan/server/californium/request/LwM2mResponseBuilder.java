@@ -31,43 +31,9 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.request.BootstrapDeleteRequest;
-import org.eclipse.leshan.core.request.BootstrapDiscoverRequest;
-import org.eclipse.leshan.core.request.BootstrapFinishRequest;
-import org.eclipse.leshan.core.request.BootstrapReadRequest;
-import org.eclipse.leshan.core.request.BootstrapWriteRequest;
-import org.eclipse.leshan.core.request.CancelObservationRequest;
-import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.CreateRequest;
-import org.eclipse.leshan.core.request.DeleteRequest;
-import org.eclipse.leshan.core.request.DiscoverRequest;
-import org.eclipse.leshan.core.request.DownlinkRequestVisitor;
-import org.eclipse.leshan.core.request.ExecuteRequest;
-import org.eclipse.leshan.core.request.LwM2mRequest;
-import org.eclipse.leshan.core.request.ObserveRequest;
-import org.eclipse.leshan.core.request.ReadCompositeRequest;
-import org.eclipse.leshan.core.request.ReadRequest;
-import org.eclipse.leshan.core.request.WriteAttributesRequest;
-import org.eclipse.leshan.core.request.WriteCompositeRequest;
-import org.eclipse.leshan.core.request.WriteRequest;
+import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
-import org.eclipse.leshan.core.response.BootstrapDeleteResponse;
-import org.eclipse.leshan.core.response.BootstrapDiscoverResponse;
-import org.eclipse.leshan.core.response.BootstrapFinishResponse;
-import org.eclipse.leshan.core.response.BootstrapReadResponse;
-import org.eclipse.leshan.core.response.BootstrapWriteResponse;
-import org.eclipse.leshan.core.response.CancelObservationResponse;
-import org.eclipse.leshan.core.response.CreateResponse;
-import org.eclipse.leshan.core.response.DeleteResponse;
-import org.eclipse.leshan.core.response.DiscoverResponse;
-import org.eclipse.leshan.core.response.ExecuteResponse;
-import org.eclipse.leshan.core.response.LwM2mResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
-import org.eclipse.leshan.core.response.ReadCompositeResponse;
-import org.eclipse.leshan.core.response.ReadResponse;
-import org.eclipse.leshan.core.response.WriteAttributesResponse;
-import org.eclipse.leshan.core.response.WriteCompositeResponse;
-import org.eclipse.leshan.core.response.WriteResponse;
+import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.server.californium.observation.ObserveUtil;
 import org.slf4j.Logger;
@@ -277,6 +243,47 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle unexpected response:
             handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
         }
+    }
+
+    @Override
+    public void visit(ObserveCompositeRequest request) {
+
+
+        if (coapResponse.isError()) {
+            // handle error response:
+            lwM2mresponse = new ObserveCompositeResponse(
+                    toLwM2mResponseCode(coapResponse.getCode()),
+                    null,
+                    coapResponse.getPayloadString(),
+                    coapResponse,
+                    null
+            );
+
+        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT
+                // This is for backward compatibility, when the spec say notification used CHANGED code
+                || coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+            // handle success response:
+
+            Map<LwM2mPath, LwM2mNode> content = decodeCompositeCoapResponse(request.getPaths(), coapResponse, request,
+                    clientEndpoint);
+
+            if (coapResponse.getOptions().hasObserve()) {
+                // observe request successful
+                Observation observation = ObserveUtil.createLwM2mObservation(coapRequest);
+                // add the observation to an ObserveResponse instance
+                lwM2mresponse = new ObserveCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
+                        coapResponse, observation);
+            } else {
+                lwM2mresponse = new ObserveCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
+                        coapResponse, null);
+            }
+
+        } else {
+            // handle unexpected response:
+            handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
+        }
+
+
     }
 
     @Override
