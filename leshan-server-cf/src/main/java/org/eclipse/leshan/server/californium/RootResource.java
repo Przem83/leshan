@@ -33,6 +33,7 @@ public class RootResource extends CoapResource {
     public RootResource(CoapServer coapServer) {
         super("");
         setVisible(false);
+        setObservable(true);
         this.coapServer = coapServer;
     }
 
