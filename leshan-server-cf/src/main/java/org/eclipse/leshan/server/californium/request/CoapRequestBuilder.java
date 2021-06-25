@@ -188,7 +188,6 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
         }
 
         coapRequest.setObserve();
-//        setTarget(coapRequest, request.getPaths());
         setTarget(coapRequest, LwM2mPath.ROOTPATH);
 
         coapRequest.setUserContext(ObserveUtil.createCoapObserveCompositeRequestContext(endpoint, registrationId, request));
