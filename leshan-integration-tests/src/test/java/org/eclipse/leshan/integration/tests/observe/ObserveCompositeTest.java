@@ -15,20 +15,21 @@
  *******************************************************************************/
 package org.eclipse.leshan.integration.tests.observe;
 
+import org.eclipse.leshan.client.californium.request.CaliforniumLwM2mRequestSender;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
-import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.ObserveCompositeRequest;
-import org.eclipse.leshan.core.request.ObserveRequest;
-import org.eclipse.leshan.core.request.ReadCompositeRequest;
-import org.eclipse.leshan.core.response.ObserveCompositeResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
-import org.eclipse.leshan.core.response.ReadCompositeResponse;
+import org.eclipse.leshan.core.request.*;
+import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.eclipse.leshan.server.registration.Registration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +37,8 @@ import static org.junit.Assert.assertTrue;
 //@RunWith(Parameterized.class)
 public class ObserveCompositeTest {
     protected IntegrationTestHelper helper = new IntegrationTestHelper();
+
+    Logger log = LoggerFactory.getLogger(ObserveCompositeTest.class);
 
     @Before
     public void start() {
@@ -56,39 +59,32 @@ public class ObserveCompositeTest {
 
     @Test
     public void can_read_resources() throws InterruptedException {
-        Registration currentRegistration = helper.getCurrentRegistration();
-
 
         TestObservationListener listener = new TestObservationListener();
         helper.server.getObservationService().addListener(listener);
 
-        ObserveCompositeResponse observeCompositeResponse = helper.server.send(
-                currentRegistration,
-                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
-        );
+//        ObserveCompositeResponse observeCompositeResponse = helper.server.send(
+//                currentRegistration,
+//                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
+//        );
 
-        assertEquals(ResponseCode.CONTENT, observeCompositeResponse.getCode());
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0, 15));
+
+        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteRequest(3, 0, 15, "Europe/Paris"));
+
+//        Map<String, Object> nodes = new HashMap<>();
+//        nodes.put("/3/0/15", "Europe/Paris");
+//
+//        WriteCompositeResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+//                new WriteCompositeRequest(ContentFormat.SENML_JSON, nodes));
 
         listener.waitForNotification(2000);
-        assertEquals(ResponseCode.CHANGED, observeCompositeResponse.getCode());
-        assertTrue(listener.receivedNotify().get());
-        listener.getResponse().getContent();
-//        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), listener.getResponse().getContent());
+        assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
 
-//        ReadCompositeResponse response = helper.server.send(helper.getCurrentRegistration(),
-//                new ReadCompositeRequest(requestContentFormat, responseContentFormat, "/3/0/0", "/1/0/1"));
-//
-//        // verify result
-//        assertEquals(CONTENT, response.getCode());
-//        assertContentFormat(responseContentFormat, response);
-//
-//        LwM2mSingleResource resource = (LwM2mSingleResource) response.getContent("/3/0/0");
-//        assertEquals(0, resource.getId());
-//        assertEquals(Type.STRING, resource.getType());
-//
-//        resource = (LwM2mSingleResource) response.getContent("/1/0/1");
-//        assertEquals(1, resource.getId());
-//        assertEquals(Type.INTEGER, resource.getType());
+        assertTrue(listener.receivedNotify().get());
+        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), listener.getResponse().getContent());
 
     }
 
