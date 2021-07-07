@@ -58,15 +58,10 @@ public class ObserveCompositeTest {
     }
 
     @Test
-    public void can_read_resources() throws InterruptedException {
+    public void standard_observe() throws InterruptedException {
 
         TestObservationListener listener = new TestObservationListener();
         helper.server.getObservationService().addListener(listener);
-
-//        ObserveCompositeResponse observeCompositeResponse = helper.server.send(
-//                currentRegistration,
-//                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
-//        );
 
         ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
                 new ObserveRequest(3, 0, 15));
@@ -74,12 +69,38 @@ public class ObserveCompositeTest {
         LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
                 new WriteRequest(3, 0, 15, "Europe/Paris"));
 
-//        Map<String, Object> nodes = new HashMap<>();
-//        nodes.put("/3/0/15", "Europe/Paris");
-//
-//        WriteCompositeResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
-//                new WriteCompositeRequest(ContentFormat.SENML_JSON, nodes));
+        listener.waitForNotification(2000);
+        assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
 
+        assertTrue(listener.receivedNotify().get());
+        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), listener.getResponse().getContent());
+
+    }
+
+    @Test
+    public void observe_compose() throws InterruptedException {
+        Registration currentRegistration = helper.getCurrentRegistration();
+
+        TestObservationListener listener = new TestObservationListener();
+        helper.server.getObservationService().addListener(listener);
+
+        ObserveCompositeResponse observeCompositeResponse = helper.server.send(
+                currentRegistration,
+                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
+        );
+
+//        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+//                new ObserveRequest(3, 0, 15));
+
+        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteRequest(3, 0, 15, "Europe/Paris"));
+//
+////        Map<String, Object> nodes = new HashMap<>();
+////        nodes.put("/3/0/15", "Europe/Paris");
+////
+////        WriteCompositeResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+////                new WriteCompositeRequest(ContentFormat.SENML_JSON, nodes));
+//
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
 
