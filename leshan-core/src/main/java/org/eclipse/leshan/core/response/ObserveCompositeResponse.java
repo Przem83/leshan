@@ -79,7 +79,11 @@ public class ObserveCompositeResponse extends ReadCompositeResponse {
 //    }
 //
 //    // Syntactic sugar static constructors :
-//
+
+    public static ObserveCompositeResponse success(Map<LwM2mPath, LwM2mNode> content) {
+        return new ObserveCompositeResponse(ResponseCode.CONTENT, content, null, null, null);
+    }
+
 //    public static ObserveCompositeResponse success(LwM2mNode content) {
 //        return new ObserveCompositeResponse(ResponseCode.CONTENT, content, null, null, null);
 //    }
@@ -92,9 +96,9 @@ public class ObserveCompositeResponse extends ReadCompositeResponse {
 //        return new ObserveCompositeResponse(ResponseCode.BAD_REQUEST, null, null, null, errorMessage);
 //    }
 //
-//    public static ObserveCompositeResponse notFound() {
-//        return new ObserveCompositeResponse(ResponseCode.NOT_FOUND, null, null, null, null);
-//    }
+    public static ObserveCompositeResponse notFound() {
+        return new ObserveCompositeResponse(ResponseCode.NOT_FOUND, null, null, null, null);
+    }
 //
 //    public static ObserveCompositeResponse unauthorized() {
 //        return new ObserveCompositeResponse(ResponseCode.UNAUTHORIZED, null, null, null, null);
@@ -108,7 +112,7 @@ public class ObserveCompositeResponse extends ReadCompositeResponse {
 //        return new ObserveCompositeResponse(ResponseCode.NOT_ACCEPTABLE, null, null, null, null);
 //    }
 //
-//    public static ObserveCompositeResponse internalServerError(String errorMessage) {
-//        return new ObserveCompositeResponse(ResponseCode.INTERNAL_SERVER_ERROR, null, null, null, errorMessage);
-//    }
+    public static ObserveCompositeResponse internalServerError(String errorMessage) {
+        return new ObserveCompositeResponse(ResponseCode.INTERNAL_SERVER_ERROR, null, errorMessage, null, null);
+    }
 }

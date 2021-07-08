@@ -30,6 +30,7 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.californium.core.server.resources.Resource;
 import org.eclipse.leshan.client.californium.CaliforniumEndpointsManager;
 import org.eclipse.leshan.client.californium.LwM2mClientCoapResource;
+import org.eclipse.leshan.client.californium.RootResource;
 import org.eclipse.leshan.client.engine.RegistrationEngine;
 import org.eclipse.leshan.client.resource.LwM2mObjectEnabler;
 import org.eclipse.leshan.client.resource.listener.ObjectListener;
@@ -433,6 +434,12 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
         changed(new ResourceObserveFilter(object.getId() + "/" + instanceId));
         for (int resourceId : resourceIds) {
             changed(new ResourceObserveFilter(object.getId() + "/" + instanceId + "/" + resourceId));
+        }
+
+        Resource parent = getParent();
+        if (parent.getParent() == null && parent instanceof RootResource) {
+            RootResource rootResource = (RootResource) parent;
+            rootResource.changed();
         }
     }
 
