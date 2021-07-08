@@ -89,18 +89,12 @@ public class ObserveCompositeTest {
                 new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
         );
 
-//        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-//                new ObserveRequest(3, 0, 15));
+        Map<String, Object> nodes = new HashMap<>();
+        nodes.put("/3/0/15", "Europe/Paris");
 
-        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new WriteRequest(3, 0, 15, "Europe/Paris"));
-//
-////        Map<String, Object> nodes = new HashMap<>();
-////        nodes.put("/3/0/15", "Europe/Paris");
-////
-////        WriteCompositeResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
-////                new WriteCompositeRequest(ContentFormat.SENML_JSON, nodes));
-//
+        WriteCompositeResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteCompositeRequest(ContentFormat.SENML_JSON, nodes));
+
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
 
