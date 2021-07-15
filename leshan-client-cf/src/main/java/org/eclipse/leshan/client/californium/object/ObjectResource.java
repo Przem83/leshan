@@ -57,7 +57,7 @@ import org.eclipse.leshan.core.request.DeleteRequest;
 import org.eclipse.leshan.core.request.DiscoverRequest;
 import org.eclipse.leshan.core.request.DownlinkRequest;
 import org.eclipse.leshan.core.request.ExecuteRequest;
-import org.eclipse.leshan.core.request.ObserveRequest;
+import org.eclipse.leshan.core.request.SingleObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteAttributesRequest;
 import org.eclipse.leshan.core.request.WriteRequest;
@@ -70,7 +70,7 @@ import org.eclipse.leshan.core.response.CreateResponse;
 import org.eclipse.leshan.core.response.DeleteResponse;
 import org.eclipse.leshan.core.response.DiscoverResponse;
 import org.eclipse.leshan.core.response.ExecuteResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteAttributesResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
@@ -140,8 +140,8 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
 
             // Manage Observe Request
             if (exchange.getRequestOptions().hasObserve()) {
-                ObserveRequest observeRequest = new ObserveRequest(requestedContentFormat, URI, coapRequest);
-                ObserveResponse response = nodeEnabler.observe(identity, observeRequest);
+                SingleObserveRequest observeRequest = new SingleObserveRequest(requestedContentFormat, URI, coapRequest);
+                SingleObserveResponse response = nodeEnabler.observe(identity, observeRequest);
                 if (response.getCode() == org.eclipse.leshan.core.ResponseCode.CONTENT) {
                     LwM2mPath path = new LwM2mPath(URI);
                     LwM2mNode content = response.getContent();

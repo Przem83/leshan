@@ -15,9 +15,11 @@
  *******************************************************************************/
 package org.eclipse.leshan.integration.tests.observe;
 
-import org.eclipse.leshan.client.californium.request.CaliforniumLwM2mRequestSender;
 import org.eclipse.leshan.core.ResponseCode;
+import org.eclipse.leshan.core.node.LwM2mNode;
+import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
@@ -63,8 +65,8 @@ public class ObserveCompositeTest {
         TestObservationListener listener = new TestObservationListener();
         helper.server.getObservationService().addListener(listener);
 
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new ObserveRequest(3, 0, 15));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new SingleObserveRequest(3, 0, 15));
 
         LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
                 new WriteRequest(3, 0, 15, "Europe/Paris"));
@@ -73,7 +75,7 @@ public class ObserveCompositeTest {
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
 
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), listener.getResponse().getContent());
+        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), ((SingleObserveResponse)listener.getResponse()).getContent());
 
     }
 
@@ -84,9 +86,9 @@ public class ObserveCompositeTest {
         TestObservationListener listener = new TestObservationListener();
         helper.server.getObservationService().addListener(listener);
 
-        ObserveCompositeResponse observeCompositeResponse = helper.server.send(
+        CompositeObserveResponse compositeObserveResponse = helper.server.send(
                 currentRegistration,
-                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
         );
 
         Map<String, Object> nodes = new HashMap<>();
@@ -99,7 +101,16 @@ public class ObserveCompositeTest {
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
 
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), listener.getResponse().getContent());
+        Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
+        assertTrue(content.containsKey(new LwM2mPath("/3/0/15")));
+        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), content.get(new LwM2mPath("/3/0/15")));
+
+//        ReadCompositeResponse response = helper.server.send(helper.getCurrentRegistration(),
+//                new ReadCompositeRequest(requestContentFormat, responseContentFormat, "/2000/0/10/1"));
+//
+//        // verify result
+//        assertEquals(CONTENT, response.getCode());
+//        assertContentFormat(responseContentFormat, response);
 
     }
 

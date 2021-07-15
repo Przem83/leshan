@@ -18,6 +18,7 @@ package org.eclipse.leshan.server.demo.servlet;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,8 +28,13 @@ import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.jetty.servlets.EventSource;
 import org.eclipse.jetty.servlets.EventSourceServlet;
 import org.eclipse.leshan.core.node.LwM2mNode;
+import org.eclipse.leshan.core.node.LwM2mPath;
+import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
+import org.eclipse.leshan.core.response.CompositeObserveResponse;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.server.californium.LeshanServer;
 import org.eclipse.leshan.server.demo.servlet.json.LwM2mNodeSerializer;
 import org.eclipse.leshan.server.demo.servlet.json.RegistrationSerializer;
@@ -127,16 +133,33 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void onResponse(Observation observation, Registration registration, ObserveResponse response) {
+        public void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response) {
+            String path = getObservationPaths(observation);
+
+            String stringContent = null;
+            String jsonContent = null;
+
+            if (response instanceof SingleObserveResponse) {
+                LwM2mNode content = ((SingleObserveResponse) response).getContent();
+                stringContent = content.toString();
+                jsonContent = gson.toJson(content);
+            } else if (response instanceof CompositeObserveResponse) {
+                Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) response).getContent();
+                stringContent = content.toString();
+                jsonContent = gson.toJson(content);
+            }
+
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Received notification from [{}] containing value [{}]", observation.getPath(),
-                        response.getContent().toString());
+                LOG.debug("Received notification from [{}] containing value [{}]", path, stringContent);
             }
 
             if (registration != null) {
-                String data = new StringBuilder("{\"ep\":\"").append(registration.getEndpoint()).append("\",\"res\":\"")
-                        .append(observation.getPath().toString()).append("\",\"val\":")
-                        .append(gson.toJson(response.getContent())).append("}").toString();
+                String data = new StringBuilder("{\"ep\":\"")
+                        .append(registration.getEndpoint())
+                        .append("\",\"res\":\"")
+                        .append(path).append("\",\"val\":")
+                        .append(jsonContent)
+                        .append("}").toString();
 
                 sendEvent(EVENT_NOTIFICATION, data, registration.getEndpoint());
             }
@@ -146,7 +169,7 @@ public class EventServlet extends EventSourceServlet {
         public void onError(Observation observation, Registration registration, Exception error) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn(String.format("Unable to handle notification of [%s:%s]", observation.getRegistrationId(),
-                        observation.getPath()), error);
+                        getObservationPaths(observation)), error);
             }
         }
 
@@ -154,6 +177,16 @@ public class EventServlet extends EventSourceServlet {
         public void newObservation(Observation observation, Registration registration) {
         }
     };
+
+    private String getObservationPaths(final Observation observation) {
+        String path = null;
+        if (observation instanceof SingleObservation) {
+            path = ((SingleObservation) observation).getPath().toString();
+        } else if (observation instanceof CompositeObservation) {
+            path = ((CompositeObservation) observation).getPaths().toString();
+        }
+        return path;
+    }
 
     public EventServlet(LeshanServer server, int securePort) {
         server.getRegistrationService().addListener(this.registrationListener);

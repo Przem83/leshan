@@ -31,7 +31,7 @@ import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.request.WriteRequest.Mode;
 import org.eclipse.leshan.core.response.ExecuteResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
 
@@ -201,7 +201,7 @@ public interface LwM2mInstanceEnabler {
      * @return a success response with an {@link LwM2mObjectInstance} as content or a failure response with optional
      *         explanation message.
      */
-    ObserveResponse observe(ServerIdentity identity);
+    SingleObserveResponse observe(ServerIdentity identity);
 
     /**
      * Performs an observe register on one of this LWM2M object instance's resources.
@@ -210,7 +210,7 @@ public interface LwM2mInstanceEnabler {
      *        <code> identity == ServerIdentity.SYSTEM</code>.
      * @param resourceid the ID of the resource to set the value for
      */
-    ObserveResponse observe(ServerIdentity identity, int resourceid);
+    SingleObserveResponse observe(ServerIdentity identity, int resourceid);
 
     /**
      * A callback called when this instance is deleted

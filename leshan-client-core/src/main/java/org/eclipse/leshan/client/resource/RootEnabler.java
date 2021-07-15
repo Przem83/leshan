@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.leshan.client.servers.ServerIdentity;
-import org.eclipse.leshan.core.LwM2mId;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
@@ -189,11 +188,11 @@ public class RootEnabler implements LwM2mRootEnabler {
     }
 
     @Override
-    public synchronized ObserveCompositeResponse observe(ServerIdentity identity, ObserveCompositeRequest request) {
+    public synchronized CompositeObserveResponse observe(ServerIdentity identity, CompositeObserveRequest request) {
         List<LwM2mPath> paths = request.getPaths();
         if (paths.size() == 1 && paths.get(0).isRoot()) {
             // TODO implement read for "/" use case.
-            return ObserveCompositeResponse.internalServerError("Not implemented yet");
+            return CompositeObserveResponse.internalServerError("Not implemented yet");
         }
 
         // Read Nodes
@@ -207,7 +206,7 @@ public class RootEnabler implements LwM2mRootEnabler {
             LwM2mNode node = null;
             if (objectEnabler != null) {
                 ReadResponse response = objectEnabler.observe(identity,
-                        new ObserveRequest(request.getResponseContentFormat(), path, request.getCoapRequest())
+                        new SingleObserveRequest(request.getResponseContentFormat(), path, request.getCoapRequest())
                 );
                 if (response.isSuccess()) {
                     node = response.getContent();
@@ -228,9 +227,9 @@ public class RootEnabler implements LwM2mRootEnabler {
             content.put(path, node);
         }
         if (isEmpty) {
-            return ObserveCompositeResponse.notFound();
+            return CompositeObserveResponse.notFound();
         } else {
-            return ObserveCompositeResponse.success(content);
+            return CompositeObserveResponse.success(content);
         }
     }
 
