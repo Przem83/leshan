@@ -38,9 +38,10 @@ import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mNodeEncoder;
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.ObserveRequest;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -92,14 +93,14 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new ObserveRequest(3, 0, 15));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new SingleObserveRequest(3, 0, 15));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        Observation observation = observeResponse.getObservation();
+        SingleObservation observation = observeResponse.getObservation();
         assertEquals("/3/0/15", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
@@ -125,8 +126,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), listener.getResponse().getContent());
-        assertEquals(timestampedNodes, listener.getResponse().getTimestampedLwM2mNode());
+        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((SingleObserveResponse)listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 
@@ -136,13 +137,13 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new ObserveRequest(3, 0));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        Observation observation = observeResponse.getObservation();
+        SingleObservation observation = observeResponse.getObservation();
         assertEquals("/3/0", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
@@ -168,8 +169,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), listener.getResponse().getContent());
-        assertEquals(timestampedNodes, listener.getResponse().getTimestampedLwM2mNode());
+        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((SingleObserveResponse)listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 
@@ -179,13 +180,13 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new ObserveRequest(3));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        Observation observation = observeResponse.getObservation();
+        SingleObservation observation = observeResponse.getObservation();
         assertEquals("/3", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
@@ -212,8 +213,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), listener.getResponse().getContent());
-        assertEquals(timestampedNodes, listener.getResponse().getTimestampedLwM2mNode());
+        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((SingleObserveResponse)listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 }

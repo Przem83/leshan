@@ -6,7 +6,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.server.observation.ObservationListener;
 import org.eclipse.leshan.server.registration.Registration;
 
@@ -15,11 +16,11 @@ public class TestObservationListener implements ObservationListener {
     private CountDownLatch latch = new CountDownLatch(1);
     private final AtomicBoolean receivedNotify = new AtomicBoolean();
     private AtomicInteger counter = new AtomicInteger(0);
-    private ObserveResponse response;
+    private AbstractLwM2mResponse response;
     private Exception error;
 
     @Override
-    public void onResponse(Observation observation, Registration registration, ObserveResponse response) {
+    public void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response) {
         receivedNotify.set(true);
         this.response = response;
         this.error = null;
@@ -48,7 +49,7 @@ public class TestObservationListener implements ObservationListener {
         return receivedNotify;
     }
 
-    public ObserveResponse getResponse() {
+    public AbstractLwM2mResponse getResponse() {
         return response;
     }
 

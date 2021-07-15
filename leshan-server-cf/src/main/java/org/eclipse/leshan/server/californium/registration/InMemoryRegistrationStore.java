@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Token;
 import org.eclipse.californium.core.observe.ObservationStoreException;
 import org.eclipse.californium.core.observe.ObservationUtil;
@@ -49,7 +50,9 @@ import org.eclipse.californium.elements.EndpointContext;
 import org.eclipse.leshan.core.Destroyable;
 import org.eclipse.leshan.core.Startable;
 import org.eclipse.leshan.core.Stoppable;
+import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.util.NamedThreadFactory;
 import org.eclipse.leshan.server.californium.observation.ObserveUtil;
@@ -248,7 +251,7 @@ public class InMemoryRegistrationStore implements CaliforniumRegistrationStore, 
             lock.writeLock().lock();
             // cancel existing observations for the same path and registration id.
             for (Observation obs : unsafeGetObservations(registrationId)) {
-                if (observation.getPath().equals(obs.getPath()) && !Arrays.equals(observation.getId(), obs.getId())) {
+                if (theSamePaths(observation, obs) && !Arrays.equals(observation.getId(), obs.getId())) {
                     unsafeRemoveObservation(new Token(obs.getId()));
                     removed.add(obs);
                 }
@@ -258,6 +261,16 @@ public class InMemoryRegistrationStore implements CaliforniumRegistrationStore, 
         }
 
         return removed;
+    }
+
+    private boolean theSamePaths(Observation observation, Observation obs) {
+        if (observation instanceof SingleObservation && obs instanceof SingleObservation) {
+            return ((SingleObservation) observation).getPath().equals(((SingleObservation) obs).getPath());
+        }
+        if (observation instanceof CompositeObservation && obs instanceof CompositeObservation) {
+            return ((CompositeObservation) observation).getPaths().equals(((CompositeObservation) obs).getPaths());
+        }
+        return false;
     }
 
     @Override
@@ -446,7 +459,13 @@ public class InMemoryRegistrationStore implements CaliforniumRegistrationStore, 
         if (cfObs == null)
             return null;
 
-        return ObserveUtil.createLwM2mObservation(cfObs.getRequest());
+        if (cfObs.getRequest().getCode() == CoAP.Code.GET) {
+            return ObserveUtil.createLwM2mSingleObservation(cfObs.getRequest());
+        } else if (cfObs.getRequest().getCode() == CoAP.Code.FETCH) {
+            return ObserveUtil.createLwM2mCompositeObservation(cfObs.getRequest());
+        } else {
+            throw new IllegalStateException("Observation request can be GET or FETCH only");
+        }
     }
 
     private String validateObservation(org.eclipse.californium.core.observe.Observation observation)

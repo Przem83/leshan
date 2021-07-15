@@ -34,7 +34,7 @@ import org.eclipse.leshan.core.request.DeleteRequest;
 import org.eclipse.leshan.core.request.DiscoverRequest;
 import org.eclipse.leshan.core.request.DownlinkRequest;
 import org.eclipse.leshan.core.request.ExecuteRequest;
-import org.eclipse.leshan.core.request.ObserveRequest;
+import org.eclipse.leshan.core.request.SingleObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteAttributesRequest;
 import org.eclipse.leshan.core.request.WriteRequest;
@@ -45,7 +45,7 @@ import org.eclipse.leshan.core.response.CreateResponse;
 import org.eclipse.leshan.core.response.DeleteResponse;
 import org.eclipse.leshan.core.response.DiscoverResponse;
 import org.eclipse.leshan.core.response.ExecuteResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteAttributesResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
@@ -95,7 +95,7 @@ public interface LwM2mObjectEnabler {
 
     BootstrapDiscoverResponse discover(ServerIdentity identity, BootstrapDiscoverRequest request);
 
-    ObserveResponse observe(ServerIdentity identity, ObserveRequest request);
+    SingleObserveResponse observe(ServerIdentity identity, SingleObserveRequest request);
 
     void addListener(ObjectListener listener);
 

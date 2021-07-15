@@ -141,7 +141,7 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     }
 
     @Override
-    public void visit(ObserveRequest request) {
+    public void visit(SingleObserveRequest request) {
         coapRequest = Request.newGet();
         if (request.getContentFormat() != null)
             coapRequest.getOptions().setAccept(request.getContentFormat().getCode());
@@ -176,7 +176,7 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     }
 
     @Override
-    public void visit(ObserveCompositeRequest request) {
+    public void visit(CompositeObserveRequest request) {
         coapRequest = Request.newFetch();
 
         coapRequest.getOptions().setContentFormat(request.getRequestContentFormat().getCode());

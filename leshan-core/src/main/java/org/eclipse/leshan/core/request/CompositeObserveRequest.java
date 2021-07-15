@@ -7,15 +7,13 @@
 package org.eclipse.leshan.core.request;
 
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
-import org.eclipse.leshan.core.response.ObserveCompositeResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.CompositeObserveResponse;
 
 import java.util.*;
 
-public class ObserveCompositeRequest extends AbstractLwM2mRequest<ObserveCompositeResponse>
-        implements CompositeDownlinkRequest<ObserveCompositeResponse> {
+public class CompositeObserveRequest extends AbstractLwM2mRequest<CompositeObserveResponse>
+        implements CompositeDownlinkRequest<CompositeObserveResponse> {
 
     private final ContentFormat requestContentFormat;
     private final ContentFormat responseContentFormat;
@@ -24,15 +22,15 @@ public class ObserveCompositeRequest extends AbstractLwM2mRequest<ObserveComposi
 
     private final Map<String, String> context;
 
-    public ObserveCompositeRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, String... paths) {
+    public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, String... paths) {
         this(requestContentFormat, responseContentFormat, newPaths(paths));
     }
 
-    public ObserveCompositeRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths) {
+    public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths) {
         this(requestContentFormat, responseContentFormat, paths, null);
     }
 
-    public ObserveCompositeRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths, Object coapRequest) {
+    public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths, Object coapRequest) {
         super(coapRequest);
 
         this.requestContentFormat = requestContentFormat;

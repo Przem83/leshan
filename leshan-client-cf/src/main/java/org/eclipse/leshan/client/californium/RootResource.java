@@ -122,8 +122,8 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
 
 
         if (exchange.getRequestOptions().hasObserve()) {
-            ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(requestContentFormat, responseContentFormat, paths, coapRequest);
-            ObserveCompositeResponse response = rootEnabler.observe(identity, observeRequest);
+            CompositeObserveRequest observeRequest = new CompositeObserveRequest(requestContentFormat, responseContentFormat, paths, coapRequest);
+            CompositeObserveResponse response = rootEnabler.observe(identity, observeRequest);
 
             if (response.getCode().isError()) {
                 exchange.respond(toCoapResponseCode(response.getCode()), response.getErrorMessage());

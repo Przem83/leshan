@@ -18,6 +18,7 @@ package org.eclipse.leshan.server.observation;
 import java.util.Set;
 
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.server.registration.Registration;
 
 /**

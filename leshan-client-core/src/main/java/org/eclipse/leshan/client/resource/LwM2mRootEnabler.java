@@ -17,12 +17,10 @@ package org.eclipse.leshan.client.resource;
 
 import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.LwM2mModel;
-import org.eclipse.leshan.core.request.ObserveCompositeRequest;
-import org.eclipse.leshan.core.request.ObserveRequest;
+import org.eclipse.leshan.core.request.CompositeObserveRequest;
 import org.eclipse.leshan.core.request.ReadCompositeRequest;
 import org.eclipse.leshan.core.request.WriteCompositeRequest;
-import org.eclipse.leshan.core.response.ObserveCompositeResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.CompositeObserveResponse;
 import org.eclipse.leshan.core.response.ReadCompositeResponse;
 import org.eclipse.leshan.core.response.WriteCompositeResponse;
 
@@ -37,5 +35,5 @@ public interface LwM2mRootEnabler {
 
     LwM2mModel getModel();
 
-    ObserveCompositeResponse observe(ServerIdentity identity, ObserveCompositeRequest request);
+    CompositeObserveResponse observe(ServerIdentity identity, CompositeObserveRequest request);
 }
