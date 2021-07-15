@@ -26,7 +26,7 @@ import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.request.DownlinkRequest;
-import org.eclipse.leshan.core.request.ObserveCompositeRequest;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.request.exception.RequestCanceledException;
 import org.eclipse.leshan.core.request.exception.RequestRejectedException;
@@ -105,12 +105,16 @@ public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender, CoapRe
                 destination.canInitiateConnection());
 
         // Handle special observe case
-        if (response != null && response.getClass() == ObserveResponse.class && response.isSuccess()) {
-            observationService.addObservation(destination, ((ObserveResponse) response).getObservation());
-        }
-
-        if (response != null && response.getClass() == ObserveCompositeResponse.class && response.isSuccess()) {
-            observationService.addObservation(destination, ((ObserveCompositeResponse) response).getObservation());
+        if (response != null && response.isSuccess()) {
+            Observation observation = null;
+            if (response instanceof SingleObserveResponse) {
+                observation = ((SingleObserveResponse) response).getObservation();
+            } else if (response instanceof CompositeObserveResponse) {
+                observation = ((CompositeObserveResponse) response).getCompositeObservation();
+            }
+            if (observation != null) {
+                observationService.addObservation(destination, observation);
+            }
         }
         return response;
     }
@@ -155,9 +159,9 @@ public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender, CoapRe
                 destination.getRootPath(), request, lowerLayerConfig, timeoutInMs, new ResponseCallback<T>() {
                     @Override
                     public void onResponse(T response) {
-                        if (response != null && response.getClass() == ObserveResponse.class && response.isSuccess()) {
+                        if (response != null && response.getClass() == SingleObserveResponse.class && response.isSuccess()) {
                             observationService.addObservation(destination,
-                                    ((ObserveResponse) response).getObservation());
+                                    ((SingleObserveResponse) response).getObservation());
                         }
                         responseCallback.onResponse(response);
                     }

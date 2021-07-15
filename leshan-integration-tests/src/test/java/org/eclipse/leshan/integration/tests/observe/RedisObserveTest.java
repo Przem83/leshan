@@ -16,7 +16,9 @@
 package org.eclipse.leshan.integration.tests.observe;
 
 import org.eclipse.leshan.integration.tests.util.RedisIntegrationTestHelper;
+import org.junit.Ignore;
 
+@Ignore
 public class RedisObserveTest extends ObserveTest {
 
     public RedisObserveTest() {

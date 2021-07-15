@@ -41,7 +41,9 @@ import org.eclipse.californium.elements.EndpointContext;
 import org.eclipse.leshan.core.Destroyable;
 import org.eclipse.leshan.core.Startable;
 import org.eclipse.leshan.core.Stoppable;
+import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.util.NamedThreadFactory;
 import org.eclipse.leshan.core.util.Validate;
@@ -504,8 +506,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
 
                 // cancel existing observations for the same path and registration id.
                 for (Observation obs : getObservations(j, registrationId)) {
-                    if (observation.getPath().equals(obs.getPath())
-                            && !Arrays.equals(observation.getId(), obs.getId())) {
+                    if (theSamePaths(observation, obs) && !Arrays.equals(observation.getId(), obs.getId())) {
                         removed.add(obs);
                         unsafeRemoveObservation(j, registrationId, obs.getId());
                     }
@@ -516,6 +517,16 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
             }
         }
         return removed;
+    }
+
+    private boolean theSamePaths(Observation observation, Observation obs) {
+        if (observation instanceof SingleObservation && obs instanceof SingleObservation) {
+            return ((SingleObservation) observation).getPath().equals(((SingleObservation) obs).getPath());
+        }
+        if (observation instanceof CompositeObservation && obs instanceof CompositeObservation) {
+            return ((CompositeObservation) observation).getPaths().equals(((CompositeObservation) obs).getPaths());
+        }
+        return false;
     }
 
     @Override
@@ -548,7 +559,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
     }
 
     @Override
-    public Observation getObservation(String registrationId, byte[] observationId) {
+    public SingleObservation getObservation(String registrationId, byte[] observationId) {
         return build(get(new Token(observationId)));
     }
 
@@ -747,11 +758,11 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
         return ObservationSerDes.deserialize(data);
     }
 
-    private Observation build(org.eclipse.californium.core.observe.Observation cfObs) {
+    private SingleObservation build(org.eclipse.californium.core.observe.Observation cfObs) {
         if (cfObs == null)
             return null;
 
-        return ObserveUtil.createLwM2mObservation(cfObs.getRequest());
+        return ObserveUtil.createLwM2mSingleObservation(cfObs.getRequest());
     }
 
     /* *************** Expiration handling **************** */

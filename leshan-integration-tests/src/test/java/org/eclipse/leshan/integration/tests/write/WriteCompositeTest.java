@@ -33,13 +33,13 @@ import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
-import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.ObserveRequest;
+import org.eclipse.leshan.core.request.SingleObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteCompositeRequest;
 import org.eclipse.leshan.core.response.LwM2mResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteCompositeResponse;
 import org.eclipse.leshan.integration.tests.observe.TestObservationListener;
@@ -172,13 +172,13 @@ public class WriteCompositeTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device instance
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new ObserveRequest(3, 0));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        Observation observation = observeResponse.getObservation();
+        SingleObservation observation = observeResponse.getObservation();
         assertEquals("/3/0", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
 
@@ -194,11 +194,11 @@ public class WriteCompositeTest {
         listener.waitForNotification(1000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(listener.getResponse().getContent() instanceof LwM2mObjectInstance);
+        assertTrue(((SingleObserveResponse)listener.getResponse()).getContent() instanceof LwM2mObjectInstance);
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
-        LwM2mObjectInstance instance = (LwM2mObjectInstance) listener.getResponse().getContent();
+        LwM2mObjectInstance instance = (LwM2mObjectInstance) ((SingleObserveResponse)listener.getResponse()).getContent();
         assertEquals("+11", instance.getResource(14).getValue());
         assertEquals("Moon", instance.getResource(15).getValue());
 
