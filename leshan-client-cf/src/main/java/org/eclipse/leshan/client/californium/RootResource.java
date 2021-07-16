@@ -141,7 +141,11 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
                     ObservingEndpoint endpoint = new ObservingEndpoint(exchange.advanced().getEndpoint().getAddress());
                     ObserveRelation observeRelation = new ObserveRelation(endpoint, resource, exchange.advanced());
 
+
+//                    resource.removeObserveRelation(observeRelation);
+                    // TODO: Only works once!
                     resource.addObserveRelation(observeRelation);
+                    break;
                 }
 
                 return;
