@@ -326,15 +326,6 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
 
                 Map<LwM2mPath, LwM2mNode> nodes = decoder.decodeNodes(coapResponse.getPayload(), contentFormat, compositeObservation.getPaths(), model);
 
-//                Map<LwM2mPath, List<TimestampedLwM2mNode>> timestampedValues = new HashMap<>();
-//
-//                for (LwM2mPath path: compositeObservation.getPaths()) {
-//                    List<TimestampedLwM2mNode> timestampedNodes = decoder.decodeTimestampedData(coapResponse.getPayload(),
-//                            contentFormat, path, model);
-//
-//                    timestampedValues.put(path, timestampedNodes);
-//                }
-
                 return new CompositeObserveResponse(
                         responseCode, nodes, null, null, coapResponse, compositeObservation
                 );
