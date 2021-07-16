@@ -25,6 +25,7 @@ import org.eclipse.californium.core.observe.ObservationStore;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.californium.EndpointContextUtil;
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
@@ -323,17 +324,19 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
 
                 CompositeObservation compositeObservation = (CompositeObservation) observation;
 
-                Map<LwM2mPath, List<TimestampedLwM2mNode>> timestampedValues = new HashMap<>();
+                Map<LwM2mPath, LwM2mNode> nodes = decoder.decodeNodes(coapResponse.getPayload(), contentFormat, compositeObservation.getPaths(), model);
 
-                for (LwM2mPath path: compositeObservation.getPaths()) {
-                    List<TimestampedLwM2mNode> timestampedNodes = decoder.decodeTimestampedData(coapResponse.getPayload(),
-                            contentFormat, path, model);
-
-                    timestampedValues.put(path, timestampedNodes);
-                }
+//                Map<LwM2mPath, List<TimestampedLwM2mNode>> timestampedValues = new HashMap<>();
+//
+//                for (LwM2mPath path: compositeObservation.getPaths()) {
+//                    List<TimestampedLwM2mNode> timestampedNodes = decoder.decodeTimestampedData(coapResponse.getPayload(),
+//                            contentFormat, path, model);
+//
+//                    timestampedValues.put(path, timestampedNodes);
+//                }
 
                 return new CompositeObserveResponse(
-                        responseCode, null, timestampedValues, null, coapResponse, compositeObservation
+                        responseCode, nodes, null, null, coapResponse, compositeObservation
                 );
             }
 
