@@ -15,11 +15,14 @@
  *******************************************************************************/
 package org.eclipse.leshan.integration.tests.observe;
 
+import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.observation.CompositeObservation;
+import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
@@ -32,11 +35,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.*;
 
-//@RunWith(Parameterized.class)
 public class ObserveCompositeTest {
     protected IntegrationTestHelper helper = new IntegrationTestHelper();
 
@@ -60,27 +65,10 @@ public class ObserveCompositeTest {
     }
 
     @Test
-    public void standard_observe() throws InterruptedException {
+    public void can_composite_observe_on_single_resource() throws InterruptedException {
+        String examplePath = "/3/0/15";
+        String exampleValue = "Europe/Paris";
 
-        TestObservationListener listener = new TestObservationListener();
-        helper.server.getObservationService().addListener(listener);
-
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0, 15));
-
-        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new WriteRequest(3, 0, 15, "Europe/Paris"));
-
-        listener.waitForNotification(2000);
-        assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
-
-        assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), ((SingleObserveResponse)listener.getResponse()).getContent());
-
-    }
-
-    @Test
-    public void observe_compose() throws InterruptedException {
         Registration currentRegistration = helper.getCurrentRegistration();
 
         TestObservationListener listener = new TestObservationListener();
@@ -88,30 +76,156 @@ public class ObserveCompositeTest {
 
         CompositeObserveResponse compositeObserveResponse = helper.server.send(
                 currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON,"/3/0/15")
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
         );
 
+        assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
+        assertNotNull(compositeObserveResponse.getCoapResponse());
+        assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
+
+        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        assertNotNull(observation);
+        assertEquals(1, observation.getPaths().size());
+        assertEquals(examplePath, observation.getPaths().get(0).toString());
+        assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
+        Set<Observation> observations = helper.server.getObservationService()
+                .getObservations(helper.getCurrentRegistration());
+        assertEquals("We should have only on observation", 1, observations.size());
+        assertTrue("New observation is not there", observations.contains(observation));
+
         Map<String, Object> nodes = new HashMap<>();
-        nodes.put("/3/0/15", "Europe/Paris");
+        nodes.put(examplePath, exampleValue);
 
-        WriteCompositeResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new WriteCompositeRequest(ContentFormat.SENML_JSON, nodes));
-
+        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteRequest(3, 0, 15, "Europe/Paris"));
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
 
         assertTrue(listener.receivedNotify().get());
         Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
-        assertTrue(content.containsKey(new LwM2mPath("/3/0/15")));
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), content.get(new LwM2mPath("/3/0/15")));
+        assertTrue(content.containsKey(new LwM2mPath(examplePath)));
+        assertEquals(LwM2mSingleResource.newStringResource(15, exampleValue), content.get(new LwM2mPath(examplePath)));
 
-//        ReadCompositeResponse response = helper.server.send(helper.getCurrentRegistration(),
-//                new ReadCompositeRequest(requestContentFormat, responseContentFormat, "/2000/0/10/1"));
-//
-//        // verify result
-//        assertEquals(CONTENT, response.getCode());
-//        assertContentFormat(responseContentFormat, response);
+        assertNotNull(listener.getResponse().getCoapResponse());
+        assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
+    }
 
+
+
+    @Test
+    public void can_composite_observe_on_multiple_resources() throws InterruptedException {
+        String examplePath1 = "/3/0/15";
+        String examplePath2 = "/3/0/14";
+        String exampleValue = "Europe/Paris";
+
+        Registration currentRegistration = helper.getCurrentRegistration();
+
+        TestObservationListener listener = new TestObservationListener();
+        helper.server.getObservationService().addListener(listener);
+
+        CompositeObserveResponse compositeObserveResponse = helper.server.send(
+                currentRegistration,
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1, examplePath2)
+        );
+
+        assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
+        assertNotNull(compositeObserveResponse.getCoapResponse());
+        assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
+
+        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        assertNotNull(observation);
+        assertEquals(2, observation.getPaths().size());
+        assertEquals(examplePath1, observation.getPaths().get(0).toString());
+        assertEquals(examplePath2, observation.getPaths().get(1).toString());
+
+        assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
+        Set<Observation> observations = helper.server.getObservationService()
+                .getObservations(helper.getCurrentRegistration());
+        assertEquals("We should have only on observation", 1, observations.size());
+        assertTrue("New observation is not there", observations.contains(observation));
+
+        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteRequest(3, 0, 15, "Europe/Paris"));
+        listener.waitForNotification(2000);
+        assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
+
+
+        assertTrue(listener.receivedNotify().get());
+        Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
+        assertTrue(content.containsKey(new LwM2mPath(examplePath1)));
+        assertTrue(content.containsKey(new LwM2mPath(examplePath2)));
+        assertEquals(
+                LwM2mSingleResource.newStringResource(15, exampleValue),
+                content.get(new LwM2mPath(examplePath1))
+        );
+        assertEquals(
+                LwM2mSingleResource.newStringResource(14, "+02"),
+                content.get(new LwM2mPath(examplePath2))
+        );
+
+        assertNotNull(listener.getResponse().getCoapResponse());
+        assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
+    }
+
+
+    @Test
+    public void can_composite_observe_on_multiple_resources_with_write_composite() throws InterruptedException {
+        String examplePath1 = "/3/0/15";
+        String examplePath2 = "/3/0/14";
+        String exampleValue1 = "Europe/Paris";
+        String exampleValue2 = "+11";
+
+        Registration currentRegistration = helper.getCurrentRegistration();
+
+        TestObservationListener listener = new TestObservationListener();
+        helper.server.getObservationService().addListener(listener);
+
+        CompositeObserveResponse compositeObserveResponse = helper.server.send(
+                currentRegistration,
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1, examplePath2)
+        );
+
+        assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
+        assertNotNull(compositeObserveResponse.getCoapResponse());
+        assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
+
+        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        assertNotNull(observation);
+        assertEquals(2, observation.getPaths().size());
+        assertEquals(examplePath1, observation.getPaths().get(0).toString());
+        assertEquals(examplePath2, observation.getPaths().get(1).toString());
+
+        assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
+        Set<Observation> observations = helper.server.getObservationService()
+                .getObservations(helper.getCurrentRegistration());
+        assertEquals("We should have only on observation", 1, observations.size());
+        assertTrue("New observation is not there", observations.contains(observation));
+
+        Map<String, Object> nodes = new HashMap<>();
+        nodes.put(examplePath1, exampleValue1);
+        nodes.put(examplePath2, exampleValue2);
+
+        WriteCompositeResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteCompositeRequest(ContentFormat.SENML_JSON, nodes));
+        listener.waitForNotification(2000);
+        assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
+
+
+        assertTrue(listener.receivedNotify().get());
+        Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
+        assertTrue(content.containsKey(new LwM2mPath(examplePath1)));
+        assertTrue(content.containsKey(new LwM2mPath(examplePath2)));
+        assertEquals(
+                LwM2mSingleResource.newStringResource(15, exampleValue1),
+                content.get(new LwM2mPath(examplePath1))
+        );
+        assertEquals(
+                LwM2mSingleResource.newStringResource(14, exampleValue2),
+                content.get(new LwM2mPath(examplePath2))
+        );
+
+        assertNotNull(listener.getResponse().getCoapResponse());
+        assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
     }
 
 }
