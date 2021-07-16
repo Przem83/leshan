@@ -42,6 +42,7 @@ import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.core.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -141,11 +142,7 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
                     ObservingEndpoint endpoint = new ObservingEndpoint(exchange.advanced().getEndpoint().getAddress());
                     ObserveRelation observeRelation = new ObserveRelation(endpoint, resource, exchange.advanced());
 
-
-//                    resource.removeObserveRelation(observeRelation);
-                    // TODO: Only works once!
                     resource.addObserveRelation(observeRelation);
-                    break;
                 }
 
                 return;
