@@ -135,9 +135,7 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
                         responseContentFormat.getCode());
 
                 for (LwM2mPath path: paths) {
-                    Resource resource = getChild(String.valueOf(path.getObjectId()))
-                            .getChild(String.valueOf(path.getObjectInstanceId()))
-                            .getChild(String.valueOf(path.getResourceId()));
+                    Resource resource = getResource(path);
 
                     ObservingEndpoint endpoint = new ObservingEndpoint(exchange.advanced().getEndpoint().getAddress());
                     ObserveRelation observeRelation = new ObserveRelation(endpoint, resource, exchange.advanced());
@@ -162,6 +160,20 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
             }
             return;
         }
+    }
+
+    private Resource getResource(LwM2mPath path) {
+        Resource resource = this;
+        for (String pathItem: path.toString().split("/") ) {
+            if (pathItem.isEmpty()) {
+                continue;
+            }
+            if (getChild(pathItem) == null) {
+                break;
+            }
+            resource = resource.getChild(pathItem);
+        }
+        return resource;
     }
 
     @Override
