@@ -89,8 +89,6 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
 
     protected final Set<String> observeRelationKeys = new HashSet<>();
 
-    protected final Set<String> observeRelationKeys = new HashSet<>();
-
     public ObjectResource(LwM2mObjectEnabler nodeEnabler, RegistrationEngine registrationEngine,
             CaliforniumEndpointsManager endpointsManager, LwM2mEncoder encoder, LwM2mDecoder decoder) {
         super(Integer.toString(nodeEnabler.getId()), registrationEngine, endpointsManager);

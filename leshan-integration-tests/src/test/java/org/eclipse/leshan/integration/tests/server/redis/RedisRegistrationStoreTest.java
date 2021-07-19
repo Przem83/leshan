@@ -1,21 +1,25 @@
-/*******************************************************************************
- * Copyright (c) 2013-2015 Sierra Wireless and others.
- * 
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v2.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
- * The Eclipse Public License is available at
- *    http://www.eclipse.org/legal/epl-v20.html
- * and the Eclipse Distribution License is available at
- *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
- * Contributors:
- *     Sierra Wireless - initial API and implementation
- *******************************************************************************/
-package org.eclipse.leshan.server.californium.registration;
+package org.eclipse.leshan.integration.tests.server.redis;
+
+import org.eclipse.californium.core.coap.CoAP;
+import org.eclipse.californium.core.coap.Request;
+import org.eclipse.californium.core.coap.Token;
+import org.eclipse.californium.core.observe.Observation;
+import org.eclipse.californium.elements.AddressEndpointContext;
+import org.eclipse.leshan.core.Link;
+import org.eclipse.leshan.core.node.LwM2mPath;
+import org.eclipse.leshan.core.observation.CompositeObservation;
+import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.request.*;
+import org.eclipse.leshan.integration.tests.util.RedisIntegrationTestHelper;
+import org.eclipse.leshan.server.californium.observation.ObserveUtil;
+import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
+import org.eclipse.leshan.server.redis.RedisRegistrationStore;
+import org.eclipse.leshan.server.registration.Registration;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -23,26 +27,9 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.californium.core.coap.CoAP;
-import org.eclipse.californium.core.coap.Request;
-import org.eclipse.californium.core.coap.Token;
-import org.eclipse.californium.core.observe.Observation;
-import org.eclipse.leshan.core.Link;
-import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.SingleObservation;
-import org.eclipse.leshan.core.request.*;
-import org.eclipse.leshan.server.californium.observation.ObserveUtil;
-import org.eclipse.leshan.server.registration.Registration;
-import org.eclipse.leshan.server.registration.RegistrationUpdate;
-import org.eclipse.leshan.server.registration.UpdatedRegistration;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.junit.Assert.*;
 
-public class InMemoryRegistrationStoreTest {
+public class RedisRegistrationStoreTest {
 
     final private String ep = "urn:endpoint";
     final private int port = 23452;
@@ -56,73 +43,13 @@ public class InMemoryRegistrationStoreTest {
     InetAddress address;
     Registration registration;
 
+    RedisIntegrationTestHelper helper;
+
     @Before
     public void setUp() throws UnknownHostException {
+        helper = new RedisIntegrationTestHelper();
         address = InetAddress.getLocalHost();
-        store = new InMemoryRegistrationStore();
-    }
-
-    @Test
-    public void update_registration_keeps_properties_unchanged() {
-        givenASimpleRegistration(lifetime);
-        store.addRegistration(registration);
-
-        RegistrationUpdate update = new RegistrationUpdate(registrationId, Identity.unsecure(address, port), null, null,
-                null, null, null);
-        UpdatedRegistration updatedRegistration = store.updateRegistration(update);
-        assertEquals(lifetime, updatedRegistration.getUpdatedRegistration().getLifeTimeInSec());
-        Assert.assertSame(binding, updatedRegistration.getUpdatedRegistration().getBindingMode());
-        assertEquals(sms, updatedRegistration.getUpdatedRegistration().getSmsNumber());
-
-        assertEquals(registration, updatedRegistration.getPreviousRegistration());
-
-        Registration reg = store.getRegistrationByEndpoint(ep);
-        assertEquals(lifetime, reg.getLifeTimeInSec());
-        Assert.assertSame(binding, reg.getBindingMode());
-        assertEquals(sms, reg.getSmsNumber());
-    }
-
-    @Test
-    public void client_registration_sets_time_to_live() {
-        givenASimpleRegistration(lifetime);
-        store.addRegistration(registration);
-        Assert.assertTrue(registration.isAlive());
-    }
-
-    @Test
-    public void update_registration_to_extend_time_to_live() {
-        givenASimpleRegistration(0L);
-        store.addRegistration(registration);
-        Assert.assertFalse(registration.isAlive());
-
-        RegistrationUpdate update = new RegistrationUpdate(registrationId, Identity.unsecure(address, port), lifetime,
-                null, null, null, null);
-        UpdatedRegistration updatedRegistration = store.updateRegistration(update);
-        Assert.assertTrue(updatedRegistration.getUpdatedRegistration().isAlive());
-
-        Registration reg = store.getRegistrationByEndpoint(ep);
-        Assert.assertTrue(reg.isAlive());
-    }
-
-    @Test
-    public void put_coap_observation_with_valid_request() {
-        // given
-        String examplePath = "/1/2/3";
-        Token exampleToken = Token.EMPTY;
-
-        givenASimpleRegistration(lifetime);
-        store.addRegistration(registration);
-
-        Observation observationToStore = prepareCoapObservation(examplePath, exampleToken);
-
-        // when
-        store.put(exampleToken, observationToStore);
-
-        // then
-        Observation observationFetched = store.get(exampleToken);
-
-        assertNotNull(observationFetched);
-        assertEquals(observationToStore.toString(), observationFetched.toString());
+        store = new RedisRegistrationStore(helper.createJedisPool());
     }
 
     @Test
@@ -169,6 +96,14 @@ public class InMemoryRegistrationStoreTest {
         assertEquals(examplePaths, compositeObservation.getPaths());
     }
 
+    private void givenASimpleRegistration(Long lifetime) {
+
+        Registration.Builder builder = new Registration.Builder(registrationId, ep, Identity.unsecure(address, port));
+
+        registration = builder.lifeTimeInSec(lifetime).smsNumber(sms).bindingMode(binding).objectLinks(objectLinks)
+                .build();
+    }
+
     private Observation prepareCoapObservation(String path, Token token) {
         SingleObserveRequest observeRequest = new SingleObserveRequest(null, path);
 
@@ -181,6 +116,9 @@ public class InMemoryRegistrationStoreTest {
         coapRequest.setToken(token);
         coapRequest.setObserve();
         coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
+        coapRequest.setMID(1);
+
+        coapRequest.setDestinationContext(new AddressEndpointContext(new InetSocketAddress(address, port)));
 
         return new Observation(coapRequest, null);
     }
@@ -197,15 +135,11 @@ public class InMemoryRegistrationStoreTest {
         coapRequest.setToken(token);
         coapRequest.setObserve();
         coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
+        coapRequest.setMID(1);
+
+        coapRequest.setDestinationContext(new AddressEndpointContext(new InetSocketAddress(address, port)));
 
         return new Observation(coapRequest, null);
     }
 
-    private void givenASimpleRegistration(Long lifetime) {
-
-        Registration.Builder builder = new Registration.Builder(registrationId, ep, Identity.unsecure(address, port));
-
-        registration = builder.lifeTimeInSec(lifetime).smsNumber(sms).bindingMode(binding).objectLinks(objectLinks)
-                .build();
-    }
 }

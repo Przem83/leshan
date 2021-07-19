@@ -35,6 +35,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Token;
 import org.eclipse.californium.core.observe.ObservationStoreException;
 import org.eclipse.californium.elements.EndpointContext;
@@ -559,7 +560,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
     }
 
     @Override
-    public SingleObservation getObservation(String registrationId, byte[] observationId) {
+    public Observation getObservation(String registrationId, byte[] observationId) {
         return build(get(new Token(observationId)));
     }
 
@@ -758,11 +759,17 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
         return ObservationSerDes.deserialize(data);
     }
 
-    private SingleObservation build(org.eclipse.californium.core.observe.Observation cfObs) {
+    private Observation build(org.eclipse.californium.core.observe.Observation cfObs) {
         if (cfObs == null)
             return null;
 
-        return ObserveUtil.createLwM2mSingleObservation(cfObs.getRequest());
+        if (cfObs.getRequest().getCode() == CoAP.Code.GET) {
+            return ObserveUtil.createLwM2mSingleObservation(cfObs.getRequest());
+        } else if (cfObs.getRequest().getCode() == CoAP.Code.FETCH) {
+            return ObserveUtil.createLwM2mCompositeObservation(cfObs.getRequest());
+        } else {
+            throw new IllegalStateException("Observation request can be GET or FETCH only");
+        }
     }
 
     /* *************** Expiration handling **************** */
