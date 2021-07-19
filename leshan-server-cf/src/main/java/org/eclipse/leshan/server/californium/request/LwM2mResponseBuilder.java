@@ -29,11 +29,9 @@ import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.CodecException;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
+import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.SingleObservation;
-import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
-import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.response.*;
@@ -186,26 +184,23 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
     }
 
     @Override
-    public void visit(ObserveRequest request) {
+    public void visit(SingleObserveRequest request) {
         if (coapResponse.isError()) {
             // handle error response:
-            lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), null, null, null,
+            lwM2mresponse = new SingleObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), null, null, null,
                     coapResponse.getPayloadString(), coapResponse);
         } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT
                 // This is for backward compatibility, when the spec say notification used CHANGED code
                 || coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
             // handle success response:
             LwM2mNode content = decodeCoapResponse(request.getPath(), coapResponse, request, clientEndpoint);
+            SingleObservation observation = null;
             if (coapResponse.getOptions().hasObserve()) {
                 // observe request successful
-                Observation observation = ObserveUtil.createLwM2mObservation(coapRequest);
-                // add the observation to an ObserveResponse instance
-                lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
-                        observation, null, coapResponse);
-            } else {
-                lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null, null,
-                        null, coapResponse);
+                observation = ObserveUtil.createLwM2mSingleObservation(coapRequest);
             }
+            // add the observation to an ObserveResponse instance
+            lwM2mresponse = new SingleObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null, observation, null, coapResponse);
         } else {
             // handle unexpected response:
             handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
@@ -249,12 +244,10 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
     }
 
     @Override
-    public void visit(ObserveCompositeRequest request) {
-
-
+    public void visit(CompositeObserveRequest request) {
         if (coapResponse.isError()) {
             // handle error response:
-            lwM2mresponse = new ObserveCompositeResponse(
+            lwM2mresponse = new CompositeObserveResponse(
                     toLwM2mResponseCode(coapResponse.getCode()),
                     null,
                     coapResponse.getPayloadString(),
@@ -270,23 +263,18 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             Map<LwM2mPath, LwM2mNode> content = decodeCompositeCoapResponse(request.getPaths(), coapResponse, request,
                     clientEndpoint);
 
+            CompositeObservation observation = null;
             if (coapResponse.getOptions().hasObserve()) {
                 // observe request successful
-                Observation observation = ObserveUtil.createLwM2mObservation(coapRequest);
-                // add the observation to an ObserveResponse instance
-                lwM2mresponse = new ObserveCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
-                        coapResponse, observation);
-            } else {
-                lwM2mresponse = new ObserveCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
-                        coapResponse, null);
+                observation = ObserveUtil.createLwM2mCompositeObservation(coapRequest);
             }
-
+            // add the observation to an ObserveResponse instance
+            lwM2mresponse = new CompositeObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
+                    coapResponse, observation);
         } else {
             // handle unexpected response:
             handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
         }
-
-
     }
 
     @Override
