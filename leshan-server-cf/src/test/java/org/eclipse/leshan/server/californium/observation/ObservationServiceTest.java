@@ -20,7 +20,6 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.californium.EndpointContextUtil;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeDecoder;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
 import org.eclipse.leshan.core.observation.Observation;
@@ -201,7 +200,7 @@ public class ObservationServiceTest {
 
     private void createDefaultObservationService() {
         observationService = new ObservationServiceImpl(store, new StandardModelProvider(),
-                new DefaultLwM2mNodeDecoder());
+                new DefaultLwM2mDecoder());
     }
 
     private Observation givenAnObservation(String registrationId, LwM2mPath target) {

@@ -6,7 +6,7 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
+import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.request.ContentFormat;
 
 import java.util.Collections;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DummyDecoder implements LwM2mNodeDecoder {
+public class DummyDecoder implements LwM2mDecoder {
     @Override
     public LwM2mNode decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model)
             throws CodecException {
