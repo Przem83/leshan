@@ -16,9 +16,7 @@
 package org.eclipse.leshan.integration.tests;
 
 import org.eclipse.leshan.integration.tests.util.RedisIntegrationTestHelper;
-import org.junit.Ignore;
 
-@Ignore
 public class RedisRegistrationTest extends RegistrationTest {
 
     public RedisRegistrationTest() {

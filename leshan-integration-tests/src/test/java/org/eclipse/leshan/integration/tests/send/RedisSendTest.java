@@ -19,9 +19,7 @@ import org.eclipse.leshan.client.resource.ObjectsInitializer;
 import org.eclipse.leshan.core.model.StaticModel;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.integration.tests.util.RedisIntegrationTestHelper;
-import org.junit.Ignore;
 
-@Ignore
 public class RedisSendTest extends SendTest {
     public RedisSendTest(ContentFormat format) {
         super(format);
