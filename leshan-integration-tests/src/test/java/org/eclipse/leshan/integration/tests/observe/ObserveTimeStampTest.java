@@ -105,7 +105,7 @@ public class ObserveTimeStampTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
@@ -148,7 +148,7 @@ public class ObserveTimeStampTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
@@ -191,7 +191,7 @@ public class ObserveTimeStampTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // *** HACK send time-stamped notification as Leshan client does not support it *** //

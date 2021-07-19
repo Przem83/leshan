@@ -90,7 +90,7 @@ public class ObserveTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // write device timezone
@@ -124,7 +124,7 @@ public class ObserveTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // write device timezone
@@ -173,7 +173,7 @@ public class ObserveTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // write device timezone
@@ -197,7 +197,7 @@ public class ObserveTest {
         // active cancellation does not remove observation from store : it should be done manually using
         // ObservationService().cancelObservation(observation)
         observations = helper.server.getObservationService().getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("Observation should still be there", observations.contains(observation));
 
         // write device timezone
@@ -228,7 +228,7 @@ public class ObserveTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // write device timezone
@@ -266,7 +266,7 @@ public class ObserveTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // write device timezone
@@ -305,7 +305,7 @@ public class ObserveTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertTrue("We should have only on observation", observations.size() == 1);
+        assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
 
         // *** HACK send a notification with unsupported content format *** //

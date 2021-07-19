@@ -26,8 +26,10 @@ import org.eclipse.leshan.core.Link;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.server.registration.Registration;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class RegistrationSerDesTest {
 
     @Test

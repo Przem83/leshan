@@ -29,8 +29,10 @@ import java.security.spec.KeySpec;
 import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.server.redis.serialization.SecurityInfoSerDes;
 import org.eclipse.leshan.server.security.SecurityInfo;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class SecurityInfoSerDesTest {
 
     @Test

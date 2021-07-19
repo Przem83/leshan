@@ -90,7 +90,7 @@ public class ObserveCompositeTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertEquals("We should have only on observation", 1, observations.size());
+        assertEquals("We should have only one observation", 1, observations.size());
         assertTrue("New observation is not there", observations.contains(observation));
 
         Map<String, Object> nodes = new HashMap<>();
@@ -141,7 +141,7 @@ public class ObserveCompositeTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertEquals("We should have only on observation", 1, observations.size());
+        assertEquals("We should have only one observation", 1, observations.size());
         assertTrue("New observation is not there", observations.contains(observation));
 
         LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
@@ -198,7 +198,7 @@ public class ObserveCompositeTest {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
         Set<Observation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
-        assertEquals("We should have only on observation", 1, observations.size());
+        assertEquals("We should have only one observation", 1, observations.size());
         assertTrue("New observation is not there", observations.contains(observation));
 
         Map<String, Object> nodes = new HashMap<>();
@@ -228,4 +228,94 @@ public class ObserveCompositeTest {
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
     }
 
+
+    @Test
+    public void can_observe_instance() throws InterruptedException {
+        String examplePath = "/3/0";
+        String exampleValue = "Europe/Paris";
+
+        Registration currentRegistration = helper.getCurrentRegistration();
+
+        TestObservationListener listener = new TestObservationListener();
+        helper.server.getObservationService().addListener(listener);
+
+        CompositeObserveResponse compositeObserveResponse = helper.server.send(
+                currentRegistration,
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
+        );
+
+        assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
+        assertNotNull(compositeObserveResponse.getCoapResponse());
+        assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
+
+        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        assertNotNull(observation);
+        assertEquals(1, observation.getPaths().size());
+        assertEquals(examplePath, observation.getPaths().get(0).toString());
+        assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
+        Set<Observation> observations = helper.server.getObservationService()
+                .getObservations(helper.getCurrentRegistration());
+        assertEquals("We should have only one observation", 1, observations.size());
+        assertTrue("New observation is not there", observations.contains(observation));
+
+        Map<String, Object> nodes = new HashMap<>();
+        nodes.put(examplePath, exampleValue);
+
+        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteRequest(3, 0, 15, "Europe/Paris"));
+        listener.waitForNotification(2000);
+        assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
+
+        assertTrue(listener.receivedNotify().get());
+        Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
+        assertTrue(content.containsKey(new LwM2mPath(examplePath)));
+
+        ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(ContentFormat.SENML_JSON, 3, 0));
+        assertEquals(readResp.getContent(), content.get(new LwM2mPath(examplePath)));
+    }
+
+    @Test
+    public void can_observe_object() throws InterruptedException {
+        String examplePath = "/3";
+        String exampleValue = "Europe/Paris";
+
+        Registration currentRegistration = helper.getCurrentRegistration();
+
+        TestObservationListener listener = new TestObservationListener();
+        helper.server.getObservationService().addListener(listener);
+
+        CompositeObserveResponse compositeObserveResponse = helper.server.send(
+                currentRegistration,
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
+        );
+
+        assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
+        assertNotNull(compositeObserveResponse.getCoapResponse());
+        assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
+
+        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        assertNotNull(observation);
+        assertEquals(1, observation.getPaths().size());
+        assertEquals(examplePath, observation.getPaths().get(0).toString());
+        assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
+        Set<Observation> observations = helper.server.getObservationService()
+                .getObservations(helper.getCurrentRegistration());
+        assertEquals("We should have only one observation", 1, observations.size());
+        assertTrue("New observation is not there", observations.contains(observation));
+
+        Map<String, Object> nodes = new HashMap<>();
+        nodes.put(examplePath, exampleValue);
+
+        LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new WriteRequest(3, 0, 15, "Europe/Paris"));
+        listener.waitForNotification(2000);
+        assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
+
+        assertTrue(listener.receivedNotify().get());
+        Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
+        assertTrue(content.containsKey(new LwM2mPath(examplePath)));
+
+        ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(ContentFormat.SENML_JSON, 3));
+        assertEquals(readResp.getContent(), content.get(new LwM2mPath(examplePath)));
+    }
 }
