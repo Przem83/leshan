@@ -21,11 +21,11 @@ import org.eclipse.leshan.core.node.*;
 import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.ReadRequest;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.request.WriteCompositeRequest;
 import org.eclipse.leshan.core.response.LwM2mResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.response.WriteCompositeResponse;
 import org.eclipse.leshan.integration.tests.observe.TestObservationListener;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
@@ -167,8 +167,8 @@ public class WriteCompositeTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device instance
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -190,12 +190,12 @@ public class WriteCompositeTest {
         listener.waitForNotification(1000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(((SingleObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObjectInstance);
+        assertTrue(((ObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObjectInstance);
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
         LwM2mObjectInstance instance =
-                (LwM2mObjectInstance) ((SingleObserveResponse) listener.getResponse()).getContent();
+                (LwM2mObjectInstance) ((ObserveResponse) listener.getResponse()).getContent();
         assertEquals("+11", instance.getResource(14).getValue());
         assertEquals("Moon", instance.getResource(15).getValue());
 

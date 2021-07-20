@@ -33,13 +33,13 @@ public interface DownlinkRequestVisitor {
 
     void visit(DeleteRequest request);
 
-    void visit(SingleObserveRequest request);
+    void visit(ObserveRequest request);
 
     void visit(CancelObservationRequest request);
 
     void visit(ReadCompositeRequest request);
 
-    void visit(CompositeObserveRequest request);
+    void visit(ObserveCompositeRequest request);
 
     void visit(WriteCompositeRequest writeCompositeRequest);
 

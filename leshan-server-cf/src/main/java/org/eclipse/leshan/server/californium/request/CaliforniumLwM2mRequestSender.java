@@ -107,8 +107,8 @@ public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender, CoapRe
         // Handle special observe case
         if (response != null && response.isSuccess()) {
             Observation observation = null;
-            if (response instanceof SingleObserveResponse) {
-                observation = ((SingleObserveResponse) response).getObservation();
+            if (response instanceof ObserveResponse) {
+                observation = ((ObserveResponse) response).getObservation();
             } else if (response instanceof CompositeObserveResponse) {
                 observation = ((CompositeObserveResponse) response).getObservation();
             }
@@ -159,9 +159,9 @@ public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender, CoapRe
                 destination.getRootPath(), request, lowerLayerConfig, timeoutInMs, new ResponseCallback<T>() {
                     @Override
                     public void onResponse(T response) {
-                        if (response != null && response.getClass() == SingleObserveResponse.class && response.isSuccess()) {
+                        if (response != null && response.getClass() == ObserveResponse.class && response.isSuccess()) {
                             observationService.addObservation(destination,
-                                    ((SingleObserveResponse) response).getObservation());
+                                    ((ObserveResponse) response).getObservation());
                         }
                         responseCallback.onResponse(response);
                     }

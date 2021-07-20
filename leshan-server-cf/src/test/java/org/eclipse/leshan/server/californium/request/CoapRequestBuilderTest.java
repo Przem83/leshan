@@ -42,7 +42,7 @@ import org.eclipse.leshan.core.request.DeleteRequest;
 import org.eclipse.leshan.core.request.DiscoverRequest;
 import org.eclipse.leshan.core.request.ExecuteRequest;
 import org.eclipse.leshan.core.request.Identity;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteAttributesRequest;
 import org.eclipse.leshan.core.request.WriteRequest;
@@ -323,7 +323,7 @@ public class CoapRequestBuilderTest {
         // test
         CoapRequestBuilder builder = new CoapRequestBuilder(reg.getIdentity(), reg.getRootPath(), reg.getId(),
                 reg.getEndpoint(), model, encoder, false, null);
-        SingleObserveRequest request = new SingleObserveRequest(12, 0);
+        ObserveRequest request = new ObserveRequest(12, 0);
         builder.visit(request);
 
         // verify

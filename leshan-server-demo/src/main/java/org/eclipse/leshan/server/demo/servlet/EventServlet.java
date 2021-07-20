@@ -34,7 +34,7 @@ import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
 import org.eclipse.leshan.core.response.CompositeObserveResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.server.californium.LeshanServer;
 import org.eclipse.leshan.server.demo.servlet.json.LwM2mNodeSerializer;
 import org.eclipse.leshan.server.demo.servlet.json.RegistrationSerializer;
@@ -139,8 +139,8 @@ public class EventServlet extends EventSourceServlet {
             String stringContent = null;
             String jsonContent = null;
 
-            if (response instanceof SingleObserveResponse) {
-                LwM2mNode content = ((SingleObserveResponse) response).getContent();
+            if (response instanceof ObserveResponse) {
+                LwM2mNode content = ((ObserveResponse) response).getContent();
                 stringContent = content.toString();
                 jsonContent = gson.toJson(content);
             } else if (response instanceof CompositeObserveResponse) {

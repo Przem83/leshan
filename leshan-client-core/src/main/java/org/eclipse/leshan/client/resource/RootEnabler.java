@@ -188,7 +188,7 @@ public class RootEnabler implements LwM2mRootEnabler {
     }
 
     @Override
-    public synchronized CompositeObserveResponse observe(ServerIdentity identity, CompositeObserveRequest request) {
+    public synchronized CompositeObserveResponse observe(ServerIdentity identity, ObserveCompositeRequest request) {
         List<LwM2mPath> paths = request.getPaths();
 
         // Read Nodes
@@ -202,7 +202,7 @@ public class RootEnabler implements LwM2mRootEnabler {
             LwM2mNode node = null;
             if (objectEnabler != null) {
                 ReadResponse response = objectEnabler.observe(identity,
-                        new SingleObserveRequest(request.getResponseContentFormat(), path, request.getCoapRequest())
+                        new ObserveRequest(request.getResponseContentFormat(), path, request.getCoapRequest())
                 );
                 if (response.isSuccess()) {
                     node = response.getContent();

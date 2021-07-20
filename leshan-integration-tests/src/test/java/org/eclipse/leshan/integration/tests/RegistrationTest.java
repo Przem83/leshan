@@ -42,10 +42,10 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.exception.SendFailedException;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.integration.tests.util.Callback;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
@@ -212,7 +212,7 @@ public class RegistrationTest {
         helper.assertClientRegisterered();
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3, 0));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new ObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -236,7 +236,7 @@ public class RegistrationTest {
 
         // try to send a new observation
         try {
-            observeResponse = helper.server.send(currentRegistration, new SingleObserveRequest(3, 0), 50);
+            observeResponse = helper.server.send(currentRegistration, new ObserveRequest(3, 0), 50);
         } catch (SendFailedException e) {
             return;
         }

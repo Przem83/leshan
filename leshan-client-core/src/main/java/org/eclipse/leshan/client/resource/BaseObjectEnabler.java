@@ -48,7 +48,7 @@ import org.eclipse.leshan.core.request.DeleteRequest;
 import org.eclipse.leshan.core.request.DiscoverRequest;
 import org.eclipse.leshan.core.request.DownlinkRequest;
 import org.eclipse.leshan.core.request.ExecuteRequest;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteAttributesRequest;
 import org.eclipse.leshan.core.request.WriteRequest;
@@ -60,7 +60,7 @@ import org.eclipse.leshan.core.response.CreateResponse;
 import org.eclipse.leshan.core.response.DeleteResponse;
 import org.eclipse.leshan.core.response.DiscoverResponse;
 import org.eclipse.leshan.core.response.ExecuteResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteAttributesResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
@@ -445,34 +445,34 @@ public abstract class BaseObjectEnabler implements LwM2mObjectEnabler {
     }
 
     @Override
-    public synchronized SingleObserveResponse observe(ServerIdentity identity, SingleObserveRequest request) {
+    public synchronized ObserveResponse observe(ServerIdentity identity, ObserveRequest request) {
         LwM2mPath path = request.getPath();
 
         // observe is not supported for bootstrap
         if (identity.isLwm2mBootstrapServer())
-            return SingleObserveResponse.methodNotAllowed();
+            return ObserveResponse.methodNotAllowed();
 
         if (!identity.isSystem()) {
             // observe or read of the security object is forbidden
             if (id == LwM2mId.SECURITY)
-                return SingleObserveResponse.notFound();
+                return ObserveResponse.notFound();
 
             // check if the resource is readable.
             if (path.isResource()) {
                 ResourceModel resourceModel = objectModel.resources.get(path.getResourceId());
                 if (resourceModel == null) {
-                    return SingleObserveResponse.notFound();
+                    return ObserveResponse.notFound();
                 } else if (!resourceModel.operations.isReadable()) {
-                    return SingleObserveResponse.methodNotAllowed();
+                    return ObserveResponse.methodNotAllowed();
                 }
             }
         }
         return doObserve(identity, request);
     }
 
-    protected SingleObserveResponse doObserve(ServerIdentity identity, SingleObserveRequest request) {
+    protected ObserveResponse doObserve(ServerIdentity identity, ObserveRequest request) {
         ReadResponse readResponse = this.read(identity, new ReadRequest(request.getPath().toString()));
-        return new SingleObserveResponse(readResponse.getCode(), readResponse.getContent(), null, null,
+        return new ObserveResponse(readResponse.getCode(), readResponse.getContent(), null, null,
                 readResponse.getErrorMessage());
     }
 

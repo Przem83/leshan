@@ -26,8 +26,8 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.CompositeObserveRequest;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveCompositeRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
 
 /**
@@ -113,7 +113,7 @@ public class ObserveUtil {
      * Create a CoAP observe request context with specific keys needed for internal Leshan working.
      */
     public static Map<String, String> createCoapObserveRequestContext(String endpoint, String registrationId,
-            SingleObserveRequest request) {
+            ObserveRequest request) {
         Map<String, String> context = new HashMap<>();
         context.put(CTX_ENDPOINT, endpoint);
         context.put(CTX_REGID, registrationId);
@@ -125,7 +125,7 @@ public class ObserveUtil {
     }
 
     public static Map<String, String> createCoapObserveCompositeRequestContext(String endpoint, String registrationId,
-                                                                               CompositeObserveRequest request) {
+                                                                               ObserveCompositeRequest request) {
         Map<String, String> context = new HashMap<>();
         context.put(CTX_ENDPOINT, endpoint);
         context.put(CTX_REGID, registrationId);

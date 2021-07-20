@@ -170,7 +170,7 @@ public class InMemoryRegistrationStoreTest {
     }
 
     private Observation prepareCoapObservation(String path, Token token) {
-        SingleObserveRequest observeRequest = new SingleObserveRequest(null, path);
+        ObserveRequest observeRequest = new ObserveRequest(null, path);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveRequestContext(
                 ep, registrationId, observeRequest
@@ -186,7 +186,7 @@ public class InMemoryRegistrationStoreTest {
     }
 
     private Observation prepareCoapObservation(List<LwM2mPath> paths, Token token) {
-        CompositeObserveRequest observeRequest = new CompositeObserveRequest(null, null, paths);
+        ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(null, null, paths);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
                 ep, registrationId, observeRequest

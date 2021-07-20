@@ -60,7 +60,7 @@ public class ObserveCompositeTest {
 
         CompositeObserveResponse compositeObserveResponse = helper.server.send(
                 currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
+                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
         );
 
         assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
@@ -106,7 +106,7 @@ public class ObserveCompositeTest {
         helper.server.getObservationService().addListener(listener);
 
         CompositeObserveResponse compositeObserveResponse = helper.server.send(currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1,
+                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1,
                         examplePath2));
 
         assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
@@ -161,7 +161,7 @@ public class ObserveCompositeTest {
         helper.server.getObservationService().addListener(listener);
 
         CompositeObserveResponse compositeObserveResponse = helper.server.send(currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1,
+                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1,
                         examplePath2));
 
         assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
@@ -220,7 +220,7 @@ public class ObserveCompositeTest {
 
         CompositeObserveResponse compositeObserveResponse = helper.server.send(
                 currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
+                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
         );
 
         assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
@@ -266,7 +266,7 @@ public class ObserveCompositeTest {
 
         CompositeObserveResponse compositeObserveResponse = helper.server.send(
                 currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
+                new ObserveCompositeRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath)
         );
 
         assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());

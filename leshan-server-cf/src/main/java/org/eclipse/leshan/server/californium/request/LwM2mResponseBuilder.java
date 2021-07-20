@@ -184,10 +184,10 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
     }
 
     @Override
-    public void visit(SingleObserveRequest request) {
+    public void visit(ObserveRequest request) {
         if (coapResponse.isError()) {
             // handle error response:
-            lwM2mresponse = new SingleObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), null, null, null,
+            lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), null, null, null,
                     coapResponse.getPayloadString(), coapResponse);
         } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT
                 // This is for backward compatibility, when the spec say notification used CHANGED code
@@ -200,7 +200,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
                 observation = ObserveUtil.createLwM2mSingleObservation(coapRequest);
             }
             // add the observation to an ObserveResponse instance
-            lwM2mresponse = new SingleObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null, observation, null, coapResponse);
+            lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null, observation, null, coapResponse);
         } else {
             // handle unexpected response:
             handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
@@ -244,7 +244,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
     }
 
     @Override
-    public void visit(CompositeObserveRequest request) {
+    public void visit(ObserveCompositeRequest request) {
         if (coapResponse.isError()) {
             // handle error response:
             lwM2mresponse = new CompositeObserveResponse(

@@ -17,7 +17,6 @@ package org.eclipse.leshan.server.observation;
 
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.server.registration.Registration;
 
 /**
