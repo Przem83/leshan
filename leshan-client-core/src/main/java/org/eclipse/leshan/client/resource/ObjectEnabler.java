@@ -46,7 +46,7 @@ import org.eclipse.leshan.core.request.CreateRequest;
 import org.eclipse.leshan.core.request.DeleteRequest;
 import org.eclipse.leshan.core.request.DownlinkRequest;
 import org.eclipse.leshan.core.request.ExecuteRequest;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteRequest;
 import org.eclipse.leshan.core.request.WriteRequest.Mode;
@@ -56,7 +56,7 @@ import org.eclipse.leshan.core.response.BootstrapWriteResponse;
 import org.eclipse.leshan.core.response.CreateResponse;
 import org.eclipse.leshan.core.response.DeleteResponse;
 import org.eclipse.leshan.core.response.ExecuteResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteResponse;
 
@@ -235,7 +235,7 @@ public class ObjectEnabler extends BaseObjectEnabler implements Destroyable, Sta
     }
 
     @Override
-    protected SingleObserveResponse doObserve(final ServerIdentity identity, final SingleObserveRequest request) {
+    protected ObserveResponse doObserve(final ServerIdentity identity, final ObserveRequest request) {
         final LwM2mPath path = request.getPath();
 
         // Manage Object case
@@ -247,13 +247,13 @@ public class ObjectEnabler extends BaseObjectEnabler implements Destroyable, Sta
                     lwM2mObjectInstances.add((LwM2mObjectInstance) response.getContent());
                 }
             }
-            return SingleObserveResponse.success(new LwM2mObject(getId(), lwM2mObjectInstances));
+            return ObserveResponse.success(new LwM2mObject(getId(), lwM2mObjectInstances));
         }
 
         // Manage Instance case
         final LwM2mInstanceEnabler instance = instances.get(path.getObjectInstanceId());
         if (instance == null)
-            return SingleObserveResponse.notFound();
+            return ObserveResponse.notFound();
 
         if (path.getResourceId() == null) {
             return instance.observe(identity);

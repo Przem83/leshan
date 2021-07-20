@@ -24,12 +24,12 @@ import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.observation.SingleObservation;
-import org.eclipse.leshan.core.request.CompositeObserveRequest;
+import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.Identity;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
 import org.eclipse.leshan.core.response.CompositeObserveResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.server.californium.CaliforniumTestSupport;
 import org.eclipse.leshan.server.californium.DummyDecoder;
 import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
@@ -166,7 +166,7 @@ public class ObservationServiceTest {
         // then
         assertNotNull(listener.observeResponse);
         assertNotNull(listener.observation);
-        assertTrue(listener.observeResponse instanceof SingleObserveResponse);
+        assertTrue(listener.observeResponse instanceof ObserveResponse);
         assertTrue(listener.observation instanceof SingleObservation);
     }
 
@@ -219,7 +219,7 @@ public class ObservationServiceTest {
         coapRequest
                 .setDestinationContext(EndpointContextUtil.extractContext(support.registration.getIdentity(), false));
         Map<String, String> context = ObserveUtil.createCoapObserveRequestContext(registration.getEndpoint(),
-                registrationId, new SingleObserveRequest(target.toString()));
+                registrationId, new ObserveRequest(target.toString()));
         coapRequest.setUserContext(context);
 
         store.put(coapRequest.getToken(), new org.eclipse.californium.core.observe.Observation(coapRequest, null));
@@ -249,7 +249,7 @@ public class ObservationServiceTest {
         Map<String, String> context = ObserveUtil.createCoapObserveCompositeRequestContext(
                 registration.getEndpoint(),
                 registrationId,
-                new CompositeObserveRequest(null, null, target.toString())
+                new ObserveCompositeRequest(null, null, target.toString())
         );
         coapRequest.setUserContext(context);
 

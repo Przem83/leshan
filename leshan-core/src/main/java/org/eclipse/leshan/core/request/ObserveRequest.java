@@ -18,7 +18,7 @@ package org.eclipse.leshan.core.request;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import java.util.Map;
  * A Lightweight M2M request for observing changes of a specific Resource, Resources within an Object Instance or for
  * all the Object Instances of an Object within the LWM2M Client.
  */
-public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleObserveResponse> {
+public class ObserveRequest extends AbstractSimpleDownlinkRequest<ObserveResponse> {
 
     private final ContentFormat format;
 
@@ -40,7 +40,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * 
      * @param objectId the object ID of the resource
      */
-    public SingleObserveRequest(int objectId) {
+    public ObserveRequest(int objectId) {
         this(null, new LwM2mPath(objectId), null, null);
     }
 
@@ -50,7 +50,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * @param format the desired format for the response (TLV or JSON)
      * @param objectId the object ID of the resource
      */
-    public SingleObserveRequest(ContentFormat format, int objectId) {
+    public ObserveRequest(ContentFormat format, int objectId) {
         this(format, new LwM2mPath(objectId), null, null);
     }
 
@@ -60,7 +60,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * @param objectId the object ID of the resource
      * @param objectInstanceId the object instance ID
      */
-    public SingleObserveRequest(int objectId, int objectInstanceId) {
+    public ObserveRequest(int objectId, int objectInstanceId) {
         this(null, new LwM2mPath(objectId, objectInstanceId), null, null);
     }
 
@@ -71,7 +71,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * @param objectId the object ID of the resource
      * @param objectInstanceId the object instance ID
      */
-    public SingleObserveRequest(ContentFormat format, int objectId, int objectInstanceId) {
+    public ObserveRequest(ContentFormat format, int objectId, int objectInstanceId) {
         this(format, new LwM2mPath(objectId, objectInstanceId), null, null);
     }
 
@@ -82,7 +82,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * @param objectInstanceId the object instance ID
      * @param resourceId the (individual) resource's ID
      */
-    public SingleObserveRequest(int objectId, int objectInstanceId, int resourceId) {
+    public ObserveRequest(int objectId, int objectInstanceId, int resourceId) {
         this(null, new LwM2mPath(objectId, objectInstanceId, resourceId), null, null);
     }
 
@@ -94,7 +94,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * @param objectInstanceId the object instance ID
      * @param resourceId the (individual) resource's ID
      */
-    public SingleObserveRequest(ContentFormat format, int objectId, int objectInstanceId, int resourceId) {
+    public ObserveRequest(ContentFormat format, int objectId, int objectInstanceId, int resourceId) {
         this(format, new LwM2mPath(objectId, objectInstanceId, resourceId), null, null);
     }
 
@@ -104,7 +104,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * @param path the path to the LWM2M node to observe
      * @exception InvalidRequestException if the path is not valid.
      */
-    public SingleObserveRequest(String path) throws InvalidRequestException {
+    public ObserveRequest(String path) throws InvalidRequestException {
         this(null, newPath(path), null, null);
     }
 
@@ -115,7 +115,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * @param path the path to the LWM2M node to observe
      * @exception InvalidRequestException if the path is not valid.
      */
-    public SingleObserveRequest(ContentFormat format, String path) throws InvalidRequestException {
+    public ObserveRequest(ContentFormat format, String path) throws InvalidRequestException {
         this(format, newPath(path), null, null);
     }
 
@@ -128,7 +128,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      * 
      * @exception InvalidRequestException if the path is not valid.
      */
-    public SingleObserveRequest(ContentFormat format, String path, Object coapRequest) throws InvalidRequestException {
+    public ObserveRequest(ContentFormat format, String path, Object coapRequest) throws InvalidRequestException {
         this(format, newPath(path), null, coapRequest);
     }
 
@@ -141,18 +141,18 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
      *        {@link Observation} once established.
      * @exception InvalidRequestException if the path is not valid.
      */
-    public SingleObserveRequest(ContentFormat format, String path, Map<String, String> context)
+    public ObserveRequest(ContentFormat format, String path, Map<String, String> context)
             throws InvalidRequestException {
         this(format, newPath(path), context, null);
     }
 
-    public SingleObserveRequest(ContentFormat format, LwM2mPath path, Object coapRequest)
+    public ObserveRequest(ContentFormat format, LwM2mPath path, Object coapRequest)
             throws InvalidRequestException {
         this(format, path, null, coapRequest);
     }
 
-    private SingleObserveRequest(ContentFormat format, LwM2mPath target, Map<String, String> context,
-                                 Object coapRequest) {
+    private ObserveRequest(ContentFormat format, LwM2mPath target, Map<String, String> context,
+                           Object coapRequest) {
         super(target, coapRequest);
         if (target.isRoot())
             throw new InvalidRequestException("Observe request cannot target root path");
@@ -207,7 +207,7 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SingleObserveRequest other = (SingleObserveRequest) obj;
+        ObserveRequest other = (ObserveRequest) obj;
         if (format != other.format)
             return false;
         return true;

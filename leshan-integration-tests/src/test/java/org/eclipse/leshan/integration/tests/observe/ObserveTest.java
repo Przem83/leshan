@@ -34,7 +34,7 @@ import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.response.CancelObservationResponse;
 import org.eclipse.leshan.core.response.LwM2mResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -74,8 +74,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0, 15));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0, 15));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -98,7 +98,7 @@ public class ObserveTest {
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
         assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
-                ((SingleObserveResponse) listener.getResponse()).getContent());
+                ((ObserveResponse) listener.getResponse()).getContent());
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
     }
@@ -109,8 +109,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0, 15));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0, 15));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -133,7 +133,7 @@ public class ObserveTest {
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
         assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
-                ((SingleObserveResponse) listener.getResponse()).getContent());
+                ((ObserveResponse) listener.getResponse()).getContent());
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
@@ -159,8 +159,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0, 15));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0, 15));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -183,7 +183,7 @@ public class ObserveTest {
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
         assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
-                ((SingleObserveResponse) listener.getResponse()).getContent());
+                ((ObserveResponse) listener.getResponse()).getContent());
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
@@ -216,8 +216,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -239,14 +239,14 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(((SingleObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObjectInstance);
+        assertTrue(((ObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObjectInstance);
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
         // try to read the object instance for comparing
         ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(3, 0));
 
-        assertEquals(readResp.getContent(), ((SingleObserveResponse) listener.getResponse()).getContent());
+        assertEquals(readResp.getContent(), ((ObserveResponse) listener.getResponse()).getContent());
     }
 
     @Test
@@ -255,8 +255,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -278,14 +278,14 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(((SingleObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObject);
+        assertTrue(((ObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObject);
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
         // try to read the object for comparing
         ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(3));
 
-        assertEquals(readResp.getContent(), ((SingleObserveResponse) listener.getResponse()).getContent());
+        assertEquals(readResp.getContent(), ((ObserveResponse) listener.getResponse()).getContent());
     }
 
     @Test
@@ -294,8 +294,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0, 15));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0, 15));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));

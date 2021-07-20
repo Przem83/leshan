@@ -28,18 +28,18 @@ import org.eclipse.leshan.core.request.exception.InvalidResponseException;
  *
  * This can be useful to listen to updates on the specific Observation.
  */
-public class SingleObserveResponse extends ReadResponse {
+public class ObserveResponse extends ReadResponse {
 
     protected final SingleObservation observation;
     protected final List<TimestampedLwM2mNode> timestampedValues;
 
-    public SingleObserveResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
-                                 SingleObservation observation, String errorMessage) {
+    public ObserveResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
+                           SingleObservation observation, String errorMessage) {
         this(code, content, timestampedValues, observation, errorMessage, null);
     }
 
-    public SingleObserveResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
-                                 SingleObservation observation, String errorMessage, Object coapResponse) {
+    public ObserveResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
+                           SingleObservation observation, String errorMessage, Object coapResponse) {
         super(code, getContent(content, timestampedValues), errorMessage, coapResponse);
 
         // CHANGED is out of spec but is supported for backward compatibility. (previous draft version)
@@ -96,35 +96,35 @@ public class SingleObserveResponse extends ReadResponse {
 
     // Syntactic sugar static constructors :
 
-    public static SingleObserveResponse success(LwM2mNode content) {
-        return new SingleObserveResponse(ResponseCode.CONTENT, content, null, null, null);
+    public static ObserveResponse success(LwM2mNode content) {
+        return new ObserveResponse(ResponseCode.CONTENT, content, null, null, null);
     }
 
-    public static SingleObserveResponse success(List<TimestampedLwM2mNode> timestampedValues) {
-        return new SingleObserveResponse(ResponseCode.CONTENT, null, timestampedValues, null, null);
+    public static ObserveResponse success(List<TimestampedLwM2mNode> timestampedValues) {
+        return new ObserveResponse(ResponseCode.CONTENT, null, timestampedValues, null, null);
     }
 
-    public static SingleObserveResponse badRequest(String errorMessage) {
-        return new SingleObserveResponse(ResponseCode.BAD_REQUEST, null, null, null, errorMessage);
+    public static ObserveResponse badRequest(String errorMessage) {
+        return new ObserveResponse(ResponseCode.BAD_REQUEST, null, null, null, errorMessage);
     }
 
-    public static SingleObserveResponse notFound() {
-        return new SingleObserveResponse(ResponseCode.NOT_FOUND, null, null, null, null);
+    public static ObserveResponse notFound() {
+        return new ObserveResponse(ResponseCode.NOT_FOUND, null, null, null, null);
     }
 
-    public static SingleObserveResponse unauthorized() {
-        return new SingleObserveResponse(ResponseCode.UNAUTHORIZED, null, null, null, null);
+    public static ObserveResponse unauthorized() {
+        return new ObserveResponse(ResponseCode.UNAUTHORIZED, null, null, null, null);
     }
 
-    public static SingleObserveResponse methodNotAllowed() {
-        return new SingleObserveResponse(ResponseCode.METHOD_NOT_ALLOWED, null, null, null, null);
+    public static ObserveResponse methodNotAllowed() {
+        return new ObserveResponse(ResponseCode.METHOD_NOT_ALLOWED, null, null, null, null);
     }
 
-    public static SingleObserveResponse notAcceptable() {
-        return new SingleObserveResponse(ResponseCode.NOT_ACCEPTABLE, null, null, null, null);
+    public static ObserveResponse notAcceptable() {
+        return new ObserveResponse(ResponseCode.NOT_ACCEPTABLE, null, null, null, null);
     }
 
-    public static SingleObserveResponse internalServerError(String errorMessage) {
-        return new SingleObserveResponse(ResponseCode.INTERNAL_SERVER_ERROR, null, null, null, errorMessage);
+    public static ObserveResponse internalServerError(String errorMessage) {
+        return new ObserveResponse(ResponseCode.INTERNAL_SERVER_ERROR, null, null, null, errorMessage);
     }
 }

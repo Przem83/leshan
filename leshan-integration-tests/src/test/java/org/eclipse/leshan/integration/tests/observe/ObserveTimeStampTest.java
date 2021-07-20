@@ -24,8 +24,8 @@ import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.request.ObserveRequest;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -85,8 +85,8 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0, 15));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0, 15));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -118,8 +118,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse) listener.getResponse()).getContent());
-        assertEquals(timestampedNodes, ((SingleObserveResponse) listener.getResponse()).getTimestampedValues());
+        assertEquals(mostRecentNode.getNode(), ((ObserveResponse) listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((ObserveResponse) listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 
@@ -129,8 +129,8 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3, 0));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -162,8 +162,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse) listener.getResponse()).getContent());
-        assertEquals(timestampedNodes, ((SingleObserveResponse) listener.getResponse()).getTimestampedValues());
+        assertEquals(mostRecentNode.getNode(), ((ObserveResponse) listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((ObserveResponse) listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 
@@ -173,8 +173,8 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new SingleObserveRequest(3));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new ObserveRequest(3));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -207,8 +207,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse) listener.getResponse()).getContent());
-        assertEquals(timestampedNodes, ((SingleObserveResponse) listener.getResponse()).getTimestampedValues());
+        assertEquals(mostRecentNode.getNode(), ((ObserveResponse) listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((ObserveResponse) listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 }

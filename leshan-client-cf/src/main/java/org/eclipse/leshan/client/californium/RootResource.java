@@ -22,8 +22,6 @@ import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.Endpoint;
-import org.eclipse.californium.core.observe.ObserveRelation;
-import org.eclipse.californium.core.observe.ObservingEndpoint;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.californium.core.server.resources.Resource;
 import org.eclipse.leshan.client.bootstrap.BootstrapHandler;
@@ -121,7 +119,7 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
         List<LwM2mPath> paths = decoder.decodePaths(coapRequest.getPayload(), requestContentFormat);
 
         if (exchange.getRequestOptions().hasObserve()) {
-            CompositeObserveRequest observeRequest = new CompositeObserveRequest(requestContentFormat,
+            ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(requestContentFormat,
                     responseContentFormat, paths, coapRequest);
             CompositeObserveResponse response = rootEnabler.observe(identity, observeRequest);
 
@@ -131,16 +129,6 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
             } else {
                 exchange.respond(toCoapResponseCode(response.getCode()), encoder.encodeNodes(response.getContent(),
                         responseContentFormat, rootEnabler.getModel()), responseContentFormat.getCode());
-
-                for (LwM2mPath path: paths) {
-                    Resource resource = getResourceFromPath(path);
-
-                    ObservingEndpoint endpoint = new ObservingEndpoint(exchange.advanced().getEndpoint().getAddress());
-                    ObserveRelation observeRelation = new ObserveRelation(endpoint, resource, exchange.advanced());
-
-                    resource.addObserveRelation(observeRelation);
-                }
-
                 return;
             }
         } else {

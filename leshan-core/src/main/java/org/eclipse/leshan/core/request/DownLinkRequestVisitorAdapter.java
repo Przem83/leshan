@@ -50,7 +50,7 @@ abstract public class DownLinkRequestVisitorAdapter implements DownlinkRequestVi
     }
 
     @Override
-    public void visit(SingleObserveRequest request) {
+    public void visit(ObserveRequest request) {
     }
 
     @Override
@@ -86,7 +86,7 @@ abstract public class DownLinkRequestVisitorAdapter implements DownlinkRequestVi
     }
 
     @Override
-    public void visit(CompositeObserveRequest request) {
+    public void visit(ObserveCompositeRequest request) {
 
     }
 }

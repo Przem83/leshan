@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import static org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class SingleObserveResponseTest {
+public class ObserveResponseTest {
 
     @Parameters(name = "{0}")
     public static Collection<?> responseCodes() {
@@ -30,7 +30,7 @@ public class SingleObserveResponseTest {
 
     private final ResponseCode responseCode;
 
-    public SingleObserveResponseTest(ResponseCode responseCode) {
+    public ObserveResponseTest(ResponseCode responseCode) {
         this.responseCode = responseCode;
     }
 
@@ -39,7 +39,7 @@ public class SingleObserveResponseTest {
         assertThrows(InvalidResponseException.class, new ThrowingRunnable() {
             @Override
             public void run() throws Throwable {
-                new SingleObserveResponse(responseCode, null, null, null, null);
+                new ObserveResponse(responseCode, null, null, null, null);
             }
         });
     }
@@ -49,7 +49,7 @@ public class SingleObserveResponseTest {
         assertThrows(InvalidResponseException.class, new ThrowingRunnable() {
             @Override
             public void run() throws Throwable {
-                new SingleObserveResponse(responseCode, null, Collections.<TimestampedLwM2mNode>emptyList(), null, null);
+                new ObserveResponse(responseCode, null, Collections.<TimestampedLwM2mNode>emptyList(), null, null);
             }
         });
     }
@@ -60,7 +60,7 @@ public class SingleObserveResponseTest {
         LwM2mSingleResource exampleResource = newResource(15, "example");
 
         // when
-        SingleObserveResponse response = new SingleObserveResponse(
+        ObserveResponse response = new ObserveResponse(
                 responseCode, exampleResource, null, null, null
         );
 
@@ -78,7 +78,7 @@ public class SingleObserveResponseTest {
         );
 
         // when
-        SingleObserveResponse response = new SingleObserveResponse(
+        ObserveResponse response = new ObserveResponse(
                 responseCode, null, timestampedValues, null, null
         );
 
@@ -95,7 +95,7 @@ public class SingleObserveResponseTest {
         );
 
         // when
-        SingleObserveResponse response = new SingleObserveResponse(
+        ObserveResponse response = new ObserveResponse(
                 responseCode, null, timestampedValues, null, null
         );
 

@@ -106,7 +106,7 @@ public class RedisRegistrationStoreTest {
     }
 
     private Observation prepareCoapObservationOnSingle(String path, Token token) {
-        SingleObserveRequest observeRequest = new SingleObserveRequest(null, path);
+        ObserveRequest observeRequest = new ObserveRequest(null, path);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveRequestContext(
                 ep, registrationId, observeRequest
@@ -116,7 +116,7 @@ public class RedisRegistrationStoreTest {
     }
 
     private Observation prepareCoapObservationOnComposite(List<LwM2mPath> paths, Token token) {
-        CompositeObserveRequest observeRequest = new CompositeObserveRequest(null, null, paths);
+        ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(null, null, paths);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
                 ep, registrationId, observeRequest

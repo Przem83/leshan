@@ -190,18 +190,18 @@ public class BaseInstanceEnabler implements LwM2mInstanceEnabler {
     }
 
     @Override
-    public SingleObserveResponse observe(ServerIdentity identity) {
+    public ObserveResponse observe(ServerIdentity identity) {
         // Perform a read by default
         ReadResponse readResponse = this.read(identity);
-        return new SingleObserveResponse(readResponse.getCode(), readResponse.getContent(), null, null,
+        return new ObserveResponse(readResponse.getCode(), readResponse.getContent(), null, null,
                 readResponse.getErrorMessage());
     }
 
     @Override
-    public SingleObserveResponse observe(ServerIdentity identity, int resourceId) {
+    public ObserveResponse observe(ServerIdentity identity, int resourceId) {
         // Perform a read by default
         ReadResponse readResponse = this.read(identity, resourceId);
-        return new SingleObserveResponse(readResponse.getCode(), readResponse.getContent(), null, null,
+        return new ObserveResponse(readResponse.getCode(), readResponse.getContent(), null, null,
                 readResponse.getErrorMessage());
     }
 

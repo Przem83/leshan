@@ -6,7 +6,7 @@ import org.eclipse.leshan.core.response.CompositeObserveResponse;
 
 import java.util.*;
 
-public class CompositeObserveRequest extends AbstractLwM2mRequest<CompositeObserveResponse>
+public class ObserveCompositeRequest extends AbstractLwM2mRequest<CompositeObserveResponse>
         implements CompositeDownlinkRequest<CompositeObserveResponse> {
 
     private final ContentFormat requestContentFormat;
@@ -16,15 +16,15 @@ public class CompositeObserveRequest extends AbstractLwM2mRequest<CompositeObser
 
     private final Map<String, String> context;
 
-    public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, String... paths) {
+    public ObserveCompositeRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, String... paths) {
         this(requestContentFormat, responseContentFormat, getLwM2mPathsFromStringList(paths));
     }
 
-    public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths) {
+    public ObserveCompositeRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths) {
         this(requestContentFormat, responseContentFormat, paths, null);
     }
 
-    public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths, Object coapRequest) {
+    public ObserveCompositeRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths, Object coapRequest) {
         super(coapRequest);
 
         this.requestContentFormat = requestContentFormat;

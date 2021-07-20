@@ -22,7 +22,7 @@ import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.observation.SingleObservation;
 
-public class CancelObservationResponse extends SingleObserveResponse {
+public class CancelObservationResponse extends ObserveResponse {
 
     public CancelObservationResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
                                      SingleObservation observation, String errorMessage) {

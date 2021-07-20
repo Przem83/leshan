@@ -38,7 +38,7 @@ import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
 import org.eclipse.leshan.core.response.CompositeObserveResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
 import org.eclipse.leshan.server.model.LwM2mModelProvider;
@@ -316,7 +316,7 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
                 List<TimestampedLwM2mNode> timestampedNodes = decoder.decodeTimestampedData(coapResponse.getPayload(),
                         contentFormat, singleObservation.getPath(), model);
 
-                return new SingleObserveResponse(
+                return new ObserveResponse(
                         responseCode, null, timestampedNodes, singleObservation, null, coapResponse
                 );
             } else if (observation instanceof CompositeObservation) {

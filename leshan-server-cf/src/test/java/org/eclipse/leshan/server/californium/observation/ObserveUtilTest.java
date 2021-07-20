@@ -6,8 +6,8 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.CompositeObserveRequest;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
+import org.eclipse.leshan.core.request.ObserveCompositeRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
@@ -27,7 +27,7 @@ public class ObserveUtilTest {
         String exampleRegistrationId = "registrationId";
         Token exampleToken = Token.EMPTY;
 
-        SingleObserveRequest observeRequest = new SingleObserveRequest(null, examplePath);
+        ObserveRequest observeRequest = new ObserveRequest(null, examplePath);
 
         // when
         Map<String, String> userContext = ObserveUtil.createCoapObserveRequestContext(
@@ -58,7 +58,7 @@ public class ObserveUtilTest {
         String exampleRegistrationId = "registrationId";
         Token exampleToken = Token.EMPTY;
 
-        CompositeObserveRequest observeRequest = new CompositeObserveRequest(null, null, examplePaths);
+        ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(null, null, examplePaths);
 
         // when
         Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
