@@ -15,19 +15,16 @@
  *******************************************************************************/
 package org.eclipse.leshan.core.observation;
 
+import org.eclipse.leshan.core.request.ContentFormat;
+
 import java.util.*;
 
-import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.util.Hex;
-
 /**
- * An observation of a resource provided by a LWM2M Client.
+ * An base class for observation of a resource provided by a LWM2M Client.
  */
-public class Observation {
+public abstract class Observation {
 
     protected final byte[] id;
-//    private final LwM2mPath path;
     protected final ContentFormat contentFormat;
     protected final String registrationId;
     protected final Map<String, String> context;
@@ -40,10 +37,8 @@ public class Observation {
      * @param contentFormat contentFormat used to read the resource (could be null).
      * @param context additional information relative to this observation.
      */
-    public Observation(byte[] id, String registrationId, ContentFormat contentFormat,
-            Map<String, String> context) {
+    public Observation(byte[] id, String registrationId, ContentFormat contentFormat, Map<String, String> context) {
         this.id = id;
-//        this.path = path;
         this.contentFormat = contentFormat;
         this.registrationId = registrationId;
         if (context != null)
@@ -69,15 +64,6 @@ public class Observation {
         return registrationId;
     }
 
-//    /**
-//     * Gets the observed resource path.
-//     *
-//     * @return the resource path
-//     */
-//    public LwM2mPath getPath() {
-//        return path;
-//    }
-
     /**
      * Gets the requested contentFormat (could be null).
      * 
@@ -93,53 +79,6 @@ public class Observation {
     public Map<String, String> getContext() {
         return context;
     }
-
-//    @Override
-//    public String toString() {
-//        return String.format("Observation [id=%s, path=%s, registrationId=%s, contentFormat=%s context=%s]",
-//                Hex.encodeHexString(id), path, registrationId, contentFormat, context);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        final int prime = 31;
-//        int result = 1;
-//        result = prime * result + ((context == null) ? 0 : context.hashCode());
-//        result = prime * result + Arrays.hashCode(id);
-//        result = prime * result + ((path == null) ? 0 : path.hashCode());
-//        result = prime * result + ((registrationId == null) ? 0 : registrationId.hashCode());
-//        return result;
-//    }
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (this == obj)
-//            return true;
-//        if (obj == null)
-//            return false;
-//        if (getClass() != obj.getClass())
-//            return false;
-//        Observation other = (Observation) obj;
-//        if (context == null) {
-//            if (other.context != null)
-//                return false;
-//        } else if (!context.equals(other.context))
-//            return false;
-//        if (!Arrays.equals(id, other.id))
-//            return false;
-//        if (path == null) {
-//            if (other.path != null)
-//                return false;
-//        } else if (!path.equals(other.path))
-//            return false;
-//        if (registrationId == null) {
-//            if (other.registrationId != null)
-//                return false;
-//        } else if (!registrationId.equals(other.registrationId))
-//            return false;
-//        return true;
-//    }
-
 
     @Override
     public boolean equals(Object o) {

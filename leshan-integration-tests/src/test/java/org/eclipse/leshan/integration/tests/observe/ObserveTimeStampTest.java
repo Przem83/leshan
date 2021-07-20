@@ -1,40 +1,24 @@
 /*******************************************************************************
  * Copyright (c) 2020 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *******************************************************************************/
 package org.eclipse.leshan.integration.tests.observe;
 
-import static org.eclipse.leshan.integration.tests.util.TestUtil.assertContentFormat;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mObject;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
-import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
-import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.*;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.observation.Observation;
@@ -50,15 +34,23 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.*;
+
+import static org.eclipse.leshan.integration.tests.util.TestUtil.assertContentFormat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.*;
+
 @RunWith(Parameterized.class)
 public class ObserveTimeStampTest {
 
     @Parameters(name = "{0}")
     public static Collection<?> contentFormats() {
-        return Arrays.asList(new Object[][] { //
-                                { ContentFormat.JSON }, //
-                                { ContentFormat.SENML_JSON }, //
-                                { ContentFormat.SENML_CBOR } });
+        return Arrays.asList(new Object[][]{ //
+                {ContentFormat.JSON}, //
+                {ContentFormat.SENML_JSON}, //
+                {ContentFormat.SENML_CBOR}});
     }
 
     protected IntegrationTestHelper helper = new IntegrationTestHelper();
@@ -126,8 +118,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse)listener.getResponse()).getContent());
-        assertEquals(timestampedNodes, ((SingleObserveResponse)listener.getResponse()).getTimestampedValues());
+        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse) listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((SingleObserveResponse) listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 
@@ -137,7 +129,8 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3, 0));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new SingleObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -169,8 +162,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse)listener.getResponse()).getContent());
-        assertEquals(timestampedNodes, ((SingleObserveResponse)listener.getResponse()).getTimestampedValues());
+        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse) listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((SingleObserveResponse) listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 
@@ -180,7 +173,8 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new SingleObserveRequest(3));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -213,8 +207,8 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse)listener.getResponse()).getContent());
-        assertEquals(timestampedNodes, ((SingleObserveResponse)listener.getResponse()).getTimestampedValues());
+        assertEquals(mostRecentNode.getNode(), ((SingleObserveResponse) listener.getResponse()).getContent());
+        assertEquals(timestampedNodes, ((SingleObserveResponse) listener.getResponse()).getTimestampedValues());
         assertContentFormat(contentFormat, listener.getResponse());
     }
 }

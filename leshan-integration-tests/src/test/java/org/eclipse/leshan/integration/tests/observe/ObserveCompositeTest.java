@@ -1,18 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2021 Sierra Wireless and others.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v2.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *    http://www.eclipse.org/legal/epl-v20.html
- * and the Eclipse Distribution License is available at
- *    http://www.eclipse.org/org/documents/edl-v10.html.
- *
- * Contributors:
- *     Sierra Wireless - initial API and implementation
- *******************************************************************************/
 package org.eclipse.leshan.integration.tests.observe;
 
 import org.eclipse.californium.core.coap.Response;
@@ -22,16 +7,16 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.*;
-import org.eclipse.leshan.core.response.*;
+import org.eclipse.leshan.core.response.CompositeObserveResponse;
+import org.eclipse.leshan.core.response.LwM2mResponse;
+import org.eclipse.leshan.core.response.ReadResponse;
+import org.eclipse.leshan.core.response.WriteCompositeResponse;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.eclipse.leshan.server.registration.Registration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,9 +28,8 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.*;
 
 public class ObserveCompositeTest {
-    protected IntegrationTestHelper helper = new IntegrationTestHelper();
 
-    Logger log = LoggerFactory.getLogger(ObserveCompositeTest.class);
+    protected IntegrationTestHelper helper = new IntegrationTestHelper();
 
     @Before
     public void start() {
@@ -83,7 +67,7 @@ public class ObserveCompositeTest {
         assertNotNull(compositeObserveResponse.getCoapResponse());
         assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
-        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        CompositeObservation observation = compositeObserveResponse.getObservation();
         assertNotNull(observation);
         assertEquals(1, observation.getPaths().size());
         assertEquals(examplePath, observation.getPaths().get(0).toString());
@@ -110,8 +94,6 @@ public class ObserveCompositeTest {
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
     }
 
-
-
     @Test
     public void can_composite_observe_on_multiple_resources() throws InterruptedException {
         String examplePath1 = "/3/0/15";
@@ -123,16 +105,15 @@ public class ObserveCompositeTest {
         TestObservationListener listener = new TestObservationListener();
         helper.server.getObservationService().addListener(listener);
 
-        CompositeObserveResponse compositeObserveResponse = helper.server.send(
-                currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1, examplePath2)
-        );
+        CompositeObserveResponse compositeObserveResponse = helper.server.send(currentRegistration,
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1,
+                        examplePath2));
 
         assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
         assertNotNull(compositeObserveResponse.getCoapResponse());
         assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
-        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        CompositeObservation observation = compositeObserveResponse.getObservation();
         assertNotNull(observation);
         assertEquals(2, observation.getPaths().size());
         assertEquals(examplePath1, observation.getPaths().get(0).toString());
@@ -167,7 +148,6 @@ public class ObserveCompositeTest {
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
     }
 
-
     @Test
     public void can_composite_observe_on_multiple_resources_with_write_composite() throws InterruptedException {
         String examplePath1 = "/3/0/15";
@@ -180,16 +160,15 @@ public class ObserveCompositeTest {
         TestObservationListener listener = new TestObservationListener();
         helper.server.getObservationService().addListener(listener);
 
-        CompositeObserveResponse compositeObserveResponse = helper.server.send(
-                currentRegistration,
-                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1, examplePath2)
-        );
+        CompositeObserveResponse compositeObserveResponse = helper.server.send(currentRegistration,
+                new CompositeObserveRequest(ContentFormat.SENML_JSON, ContentFormat.SENML_JSON, examplePath1,
+                        examplePath2));
 
         assertEquals(ResponseCode.CONTENT, compositeObserveResponse.getCode());
         assertNotNull(compositeObserveResponse.getCoapResponse());
         assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
-        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        CompositeObservation observation = compositeObserveResponse.getObservation();
         assertNotNull(observation);
         assertEquals(2, observation.getPaths().size());
         assertEquals(examplePath1, observation.getPaths().get(0).toString());
@@ -248,7 +227,7 @@ public class ObserveCompositeTest {
         assertNotNull(compositeObserveResponse.getCoapResponse());
         assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
-        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        CompositeObservation observation = compositeObserveResponse.getObservation();
         assertNotNull(observation);
         assertEquals(1, observation.getPaths().size());
         assertEquals(examplePath, observation.getPaths().get(0).toString());
@@ -270,7 +249,8 @@ public class ObserveCompositeTest {
         Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
         assertTrue(content.containsKey(new LwM2mPath(examplePath)));
 
-        ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(ContentFormat.SENML_JSON, 3, 0));
+        ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(),
+                new ReadRequest(ContentFormat.SENML_JSON, 3, 0));
         assertEquals(readResp.getContent(), content.get(new LwM2mPath(examplePath)));
     }
 
@@ -293,7 +273,7 @@ public class ObserveCompositeTest {
         assertNotNull(compositeObserveResponse.getCoapResponse());
         assertThat(compositeObserveResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
-        CompositeObservation observation = compositeObserveResponse.getCompositeObservation();
+        CompositeObservation observation = compositeObserveResponse.getObservation();
         assertNotNull(observation);
         assertEquals(1, observation.getPaths().size());
         assertEquals(examplePath, observation.getPaths().get(0).toString());
@@ -315,7 +295,8 @@ public class ObserveCompositeTest {
         Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) listener.getResponse()).getContent();
         assertTrue(content.containsKey(new LwM2mPath(examplePath)));
 
-        ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(ContentFormat.SENML_JSON, 3));
+        ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(),
+                new ReadRequest(ContentFormat.SENML_JSON, 3));
         assertEquals(readResp.getContent(), content.get(new LwM2mPath(examplePath)));
     }
 }

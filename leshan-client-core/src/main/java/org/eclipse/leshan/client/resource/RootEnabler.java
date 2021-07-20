@@ -190,10 +190,6 @@ public class RootEnabler implements LwM2mRootEnabler {
     @Override
     public synchronized CompositeObserveResponse observe(ServerIdentity identity, CompositeObserveRequest request) {
         List<LwM2mPath> paths = request.getPaths();
-        if (paths.size() == 1 && paths.get(0).isRoot()) {
-            // TODO implement read for "/" use case.
-            return CompositeObserveResponse.internalServerError("Not implemented yet");
-        }
 
         // Read Nodes
         Map<LwM2mPath, LwM2mNode> content = new HashMap<>();
@@ -212,18 +208,15 @@ public class RootEnabler implements LwM2mRootEnabler {
                     node = response.getContent();
                     isEmpty = false;
                 } else {
-                    LOG.debug("Server {} try to read node {} in a Read-Composite Request {} but it failed for {} {}",
+                    LOG.debug("Server {} try to read node {} in a Observe-Composite Request {} but it failed for {} {}",
                             identity, path, paths, response.getCode(), response.getErrorMessage());
                 }
             } else {
                 LOG.debug(
-                        "Server {} try to read node {} in a Read-Composite Request {} but it failed because Object {} is not supported",
+                        "Server {} try to read node {} in a Observe-Composite Request {} but it failed because Object {} is not supported",
                         identity, path, paths, objectId);
             }
-            // LWM2M specification says that "Read-Composite operation is treated as
-            // non-atomic and handled as best effort by the client. That is, if any of the requested resources do not
-            // have a valid value to return, they will not be included in the response".
-            // So If we are not able to read a node (error or not supported we just ignore it) and add NULL to the list.
+
             content.put(path, node);
         }
         if (isEmpty) {

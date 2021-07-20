@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2015 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Achim Kraus (Bosch Software Innovations GmbH) - use ServerIdentity
@@ -42,7 +42,6 @@ import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.core.util.StringUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,21 +120,20 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
         ContentFormat requestContentFormat = ContentFormat.fromCode(exchange.getRequestOptions().getContentFormat());
         List<LwM2mPath> paths = decoder.decodePaths(coapRequest.getPayload(), requestContentFormat);
 
-
         if (exchange.getRequestOptions().hasObserve()) {
-            CompositeObserveRequest observeRequest = new CompositeObserveRequest(requestContentFormat, responseContentFormat, paths, coapRequest);
+            CompositeObserveRequest observeRequest = new CompositeObserveRequest(requestContentFormat,
+                    responseContentFormat, paths, coapRequest);
             CompositeObserveResponse response = rootEnabler.observe(identity, observeRequest);
 
             if (response.getCode().isError()) {
                 exchange.respond(toCoapResponseCode(response.getCode()), response.getErrorMessage());
                 return;
             } else {
-                exchange.respond(toCoapResponseCode(response.getCode()),
-                        encoder.encodeNodes(response.getContent(), responseContentFormat, rootEnabler.getModel()),
-                        responseContentFormat.getCode());
+                exchange.respond(toCoapResponseCode(response.getCode()), encoder.encodeNodes(response.getContent(),
+                        responseContentFormat, rootEnabler.getModel()), responseContentFormat.getCode());
 
                 for (LwM2mPath path: paths) {
-                    Resource resource = getResource(path);
+                    Resource resource = getResourceFromPath(path);
 
                     ObservingEndpoint endpoint = new ObservingEndpoint(exchange.advanced().getEndpoint().getAddress());
                     ObserveRelation observeRelation = new ObserveRelation(endpoint, resource, exchange.advanced());
@@ -162,7 +160,7 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
         }
     }
 
-    private Resource getResource(LwM2mPath path) {
+    private Resource getResourceFromPath(LwM2mPath path) {
         Resource resource = this;
         for (String pathItem: path.toString().split("/") ) {
             if (pathItem.isEmpty()) {
