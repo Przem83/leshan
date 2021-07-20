@@ -82,9 +82,9 @@ public class LwM2mResponseBuilderTest {
         // then
         CompositeObserveResponse response = responseBuilder.getResponse();
         assertNotNull(response);
-        assertNotNull(response.getCompositeObservation());
+        assertNotNull(response.getObservation());
 
-        CompositeObservation observation = response.getCompositeObservation();
+        CompositeObservation observation = response.getObservation();
         assertEquals(examplePaths, observation.getPaths());
     }
 

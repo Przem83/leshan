@@ -61,13 +61,14 @@ public class RedisRegistrationStoreTest {
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        Observation observationToStore = prepareCoapObservation(examplePath, exampleToken);
+        Observation observationToStore = prepareCoapObservationOnSingle(examplePath, exampleToken);
 
         // when
         store.put(exampleToken, observationToStore);
 
         // then
-        org.eclipse.leshan.core.observation.Observation leshanObservation = store.getObservation(registrationId, exampleToken.getBytes());
+        org.eclipse.leshan.core.observation.Observation leshanObservation = store.getObservation(registrationId,
+                exampleToken.getBytes());
         assertNotNull(leshanObservation);
         assertTrue(leshanObservation instanceof SingleObservation);
         SingleObservation singleObservation = (SingleObservation) leshanObservation;
@@ -83,13 +84,14 @@ public class RedisRegistrationStoreTest {
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        Observation observationToStore = prepareCoapObservation(examplePaths, exampleToken);
+        Observation observationToStore = prepareCoapObservationOnComposite(examplePaths, exampleToken);
 
         // when
         store.put(exampleToken, observationToStore);
 
         // then
-        org.eclipse.leshan.core.observation.Observation leshanObservation = store.getObservation(registrationId, exampleToken.getBytes());
+        org.eclipse.leshan.core.observation.Observation leshanObservation = store.getObservation(registrationId,
+                exampleToken.getBytes());
         assertNotNull(leshanObservation);
         assertTrue(leshanObservation instanceof CompositeObservation);
         CompositeObservation compositeObservation = (CompositeObservation) leshanObservation;
@@ -97,20 +99,33 @@ public class RedisRegistrationStoreTest {
     }
 
     private void givenASimpleRegistration(Long lifetime) {
-
         Registration.Builder builder = new Registration.Builder(registrationId, ep, Identity.unsecure(address, port));
 
         registration = builder.lifeTimeInSec(lifetime).smsNumber(sms).bindingMode(binding).objectLinks(objectLinks)
                 .build();
     }
 
-    private Observation prepareCoapObservation(String path, Token token) {
+    private Observation prepareCoapObservationOnSingle(String path, Token token) {
         SingleObserveRequest observeRequest = new SingleObserveRequest(null, path);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveRequestContext(
                 ep, registrationId, observeRequest
         );
 
+        return prepareCoapObservation(token, userContext);
+    }
+
+    private Observation prepareCoapObservationOnComposite(List<LwM2mPath> paths, Token token) {
+        CompositeObserveRequest observeRequest = new CompositeObserveRequest(null, null, paths);
+
+        Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
+                ep, registrationId, observeRequest
+        );
+
+        return prepareCoapObservation(token, userContext);
+    }
+
+    private Observation prepareCoapObservation(Token token, Map<String, String> userContext) {
         Request coapRequest = new Request(CoAP.Code.GET);
         coapRequest.setUserContext(userContext);
         coapRequest.setToken(token);
@@ -122,24 +137,4 @@ public class RedisRegistrationStoreTest {
 
         return new Observation(coapRequest, null);
     }
-
-    private Observation prepareCoapObservation(List<LwM2mPath> paths, Token token) {
-        CompositeObserveRequest observeRequest = new CompositeObserveRequest(null, null, paths);
-
-        Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
-                ep, registrationId, observeRequest
-        );
-
-        Request coapRequest = new Request(CoAP.Code.FETCH);
-        coapRequest.setUserContext(userContext);
-        coapRequest.setToken(token);
-        coapRequest.setObserve();
-        coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
-        coapRequest.setMID(1);
-
-        coapRequest.setDestinationContext(new AddressEndpointContext(new InetSocketAddress(address, port)));
-
-        return new Observation(coapRequest, null);
-    }
-
 }

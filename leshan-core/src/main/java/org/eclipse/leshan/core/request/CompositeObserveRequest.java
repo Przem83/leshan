@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2021 Orange
- *
- * This source code is licensed under the EPL license found in the
- * LICENSE file in the root directory of this source tree.
- */
 package org.eclipse.leshan.core.request;
 
 import org.eclipse.leshan.core.node.LwM2mPath;
@@ -23,7 +17,7 @@ public class CompositeObserveRequest extends AbstractLwM2mRequest<CompositeObser
     private final Map<String, String> context;
 
     public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, String... paths) {
-        this(requestContentFormat, responseContentFormat, newPaths(paths));
+        this(requestContentFormat, responseContentFormat, getLwM2mPathsFromStringList(paths));
     }
 
     public CompositeObserveRequest(ContentFormat requestContentFormat, ContentFormat responseContentFormat, List<LwM2mPath> paths) {
@@ -37,10 +31,7 @@ public class CompositeObserveRequest extends AbstractLwM2mRequest<CompositeObser
         this.responseContentFormat = responseContentFormat;
         this.paths = paths;
 
-//        if (context == null || context.isEmpty())
-            this.context = Collections.emptyMap();
-//        else
-//            this.context = Collections.unmodifiableMap(new HashMap<>(context));
+        this.context = Collections.emptyMap();
     }
 
     @Override
@@ -53,7 +44,7 @@ public class CompositeObserveRequest extends AbstractLwM2mRequest<CompositeObser
         return paths;
     }
 
-    protected static List<LwM2mPath> newPaths(String[] paths) {
+    protected static List<LwM2mPath> getLwM2mPathsFromStringList(String[] paths) {
         try {
             List<LwM2mPath> res = new ArrayList<>(paths.length);
             for (String path : paths) {

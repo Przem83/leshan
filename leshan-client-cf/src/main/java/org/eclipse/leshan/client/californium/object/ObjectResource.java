@@ -441,6 +441,10 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
             changed(new ResourceObserveFilter(object.getId() + "/" + instanceId + "/" + resourceId));
         }
 
+        notifyRootResourceChanged();
+    }
+
+    private void notifyRootResourceChanged() {
         Resource parent = getParent();
         if (parent.getParent() == null && parent instanceof RootResource) {
             RootResource rootResource = (RootResource) parent;

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2013-2015 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Zebra Technologies - initial API and implementation
  *     Achim Kraus (Bosch Software Innovations GmbH) - replace close() with destroy()
@@ -18,13 +18,6 @@
  *******************************************************************************/
 
 package org.eclipse.leshan.integration.tests.observe;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.*;
-
-import java.util.Set;
 
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
@@ -37,19 +30,22 @@ import org.eclipse.leshan.core.node.codec.LwM2mValueChecker;
 import org.eclipse.leshan.core.node.codec.json.LwM2mNodeJsonEncoder;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.observation.SingleObservation;
-import org.eclipse.leshan.core.request.CancelObservationRequest;
-import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.SingleObserveRequest;
-import org.eclipse.leshan.core.request.ReadRequest;
-import org.eclipse.leshan.core.request.WriteRequest;
+import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.response.CancelObservationResponse;
 import org.eclipse.leshan.core.response.LwM2mResponse;
-import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
+import org.eclipse.leshan.core.response.SingleObserveResponse;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.*;
 
 public class ObserveTest {
 
@@ -101,7 +97,8 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
+                ((SingleObserveResponse) listener.getResponse()).getContent());
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
     }
@@ -135,7 +132,8 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
+                ((SingleObserveResponse) listener.getResponse()).getContent());
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
@@ -184,7 +182,8 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
+                ((SingleObserveResponse) listener.getResponse()).getContent());
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
@@ -217,7 +216,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3, 0));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new SingleObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -239,14 +239,14 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(((SingleObserveResponse)listener.getResponse()).getContent() instanceof LwM2mObjectInstance);
+        assertTrue(((SingleObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObjectInstance);
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
         // try to read the object instance for comparing
         ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(3, 0));
 
-        assertEquals(readResp.getContent(), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(readResp.getContent(), ((SingleObserveResponse) listener.getResponse()).getContent());
     }
 
     @Test
@@ -255,7 +255,8 @@ public class ObserveTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new SingleObserveRequest(3));
+        SingleObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
+                new SingleObserveRequest(3));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
@@ -277,14 +278,14 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(((SingleObserveResponse)listener.getResponse()).getContent() instanceof LwM2mObject);
+        assertTrue(((SingleObserveResponse) listener.getResponse()).getContent() instanceof LwM2mObject);
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
         // try to read the object for comparing
         ReadResponse readResp = helper.server.send(helper.getCurrentRegistration(), new ReadRequest(3));
 
-        assertEquals(readResp.getContent(), ((SingleObserveResponse)listener.getResponse()).getContent());
+        assertEquals(readResp.getContent(), ((SingleObserveResponse) listener.getResponse()).getContent());
     }
 
     @Test

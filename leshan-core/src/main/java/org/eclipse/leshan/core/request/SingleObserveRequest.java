@@ -15,14 +15,14 @@
  *******************************************************************************/
 package org.eclipse.leshan.core.request;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.SingleObserveResponse;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A Lightweight M2M request for observing changes of a specific Resource, Resources within an Object Instance or for
@@ -151,7 +151,8 @@ public class SingleObserveRequest extends AbstractSimpleDownlinkRequest<SingleOb
         this(format, path, null, coapRequest);
     }
 
-    private SingleObserveRequest(ContentFormat format, LwM2mPath target, Map<String, String> context, Object coapRequest) {
+    private SingleObserveRequest(ContentFormat format, LwM2mPath target, Map<String, String> context,
+                                 Object coapRequest) {
         super(target, coapRequest);
         if (target.isRoot())
             throw new InvalidRequestException("Observe request cannot target root path");
