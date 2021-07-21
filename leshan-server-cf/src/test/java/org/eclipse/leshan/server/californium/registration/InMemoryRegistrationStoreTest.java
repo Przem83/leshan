@@ -44,13 +44,13 @@ import static org.junit.Assert.*;
 
 public class InMemoryRegistrationStoreTest {
 
-    final private String ep = "urn:endpoint";
-    final private int port = 23452;
-    final private Long lifetime = 10000L;
-    final private String sms = "0171-32423545";
-    final private EnumSet<BindingMode> binding = EnumSet.of(BindingMode.U, BindingMode.Q, BindingMode.S);
-    final private Link[] objectLinks = Link.parse("</3>".getBytes(StandardCharsets.UTF_8));
-    final private String registrationId = "4711";
+    private final String ep = "urn:endpoint";
+    private final int port = 23452;
+    private final Long lifetime = 10000L;
+    private final String sms = "0171-32423545";
+    private final EnumSet<BindingMode> binding = EnumSet.of(BindingMode.U, BindingMode.Q, BindingMode.S);
+    private final Link[] objectLinks = Link.parse("</3>".getBytes(StandardCharsets.UTF_8));
+    private final String registrationId = "4711";
 
     CaliforniumRegistrationStore store;
     InetAddress address;

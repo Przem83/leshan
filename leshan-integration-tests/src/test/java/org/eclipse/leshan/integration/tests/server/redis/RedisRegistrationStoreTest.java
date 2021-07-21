@@ -31,13 +31,14 @@ import static org.junit.Assert.*;
 
 public class RedisRegistrationStoreTest {
 
-    final private String ep = "urn:endpoint";
-    final private int port = 23452;
-    final private Long lifetime = 10000L;
-    final private String sms = "0171-32423545";
-    final private EnumSet<BindingMode> binding = EnumSet.of(BindingMode.U, BindingMode.Q, BindingMode.S);
-    final private Link[] objectLinks = Link.parse("</3>".getBytes(StandardCharsets.UTF_8));
-    final private String registrationId = "4711";
+    private final String ep = "urn:endpoint";
+    private final int port = 23452;
+    private final Long lifetime = 10000L;
+    private final String sms = "0171-32423545";
+    private final EnumSet<BindingMode> binding = EnumSet.of(BindingMode.U, BindingMode.Q, BindingMode.S);
+    private final Link[] objectLinks = Link.parse("</3>".getBytes(StandardCharsets.UTF_8));
+    private final String registrationId = "4711";
+    private final Token exampleToken = Token.EMPTY;
 
     CaliforniumRegistrationStore store;
     InetAddress address;
@@ -56,12 +57,11 @@ public class RedisRegistrationStoreTest {
     public void get_single_observation_from_request() {
         // given
         String examplePath = "/1/2/3";
-        Token exampleToken = Token.EMPTY;
 
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        Observation observationToStore = prepareCoapObservationOnSingle(examplePath, exampleToken);
+        Observation observationToStore = prepareCoapObservationOnSingle(examplePath);
 
         // when
         store.put(exampleToken, observationToStore);
@@ -84,7 +84,7 @@ public class RedisRegistrationStoreTest {
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        Observation observationToStore = prepareCoapObservationOnComposite(examplePaths, exampleToken);
+        Observation observationToStore = prepareCoapObservationOnComposite(examplePaths);
 
         // when
         store.put(exampleToken, observationToStore);
@@ -105,30 +105,29 @@ public class RedisRegistrationStoreTest {
                 .build();
     }
 
-    private Observation prepareCoapObservationOnSingle(String path, Token token) {
+    private Observation prepareCoapObservationOnSingle(String path) {
         ObserveRequest observeRequest = new ObserveRequest(null, path);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveRequestContext(
                 ep, registrationId, observeRequest
         );
 
-        return prepareCoapObservation(token, userContext);
+        return prepareCoapObservation(new Request(CoAP.Code.GET), userContext);
     }
 
-    private Observation prepareCoapObservationOnComposite(List<LwM2mPath> paths, Token token) {
+    private Observation prepareCoapObservationOnComposite(List<LwM2mPath> paths) {
         ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(null, null, paths);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
                 ep, registrationId, observeRequest
         );
 
-        return prepareCoapObservation(token, userContext);
+        return prepareCoapObservation(new Request(CoAP.Code.FETCH), userContext);
     }
 
-    private Observation prepareCoapObservation(Token token, Map<String, String> userContext) {
-        Request coapRequest = new Request(CoAP.Code.GET);
+    private Observation prepareCoapObservation(Request coapRequest, Map<String, String> userContext) {
         coapRequest.setUserContext(userContext);
-        coapRequest.setToken(token);
+        coapRequest.setToken(exampleToken);
         coapRequest.setObserve();
         coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
         coapRequest.setMID(1);
