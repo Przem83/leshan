@@ -18,14 +18,14 @@ package org.eclipse.leshan.integration.tests.write;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.*;
-import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
+import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteCompositeRequest;
 import org.eclipse.leshan.core.response.LwM2mResponse;
-import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.ReadResponse;
 import org.eclipse.leshan.core.response.WriteCompositeResponse;
 import org.eclipse.leshan.integration.tests.observe.TestObservationListener;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
@@ -52,9 +52,9 @@ public class WriteCompositeTest {
 
     @Parameters(name = "{0}")
     public static Collection<?> contentFormats() {
-        return Arrays.asList(new Object[][]{ //
-                {ContentFormat.SENML_JSON}, //
-                {ContentFormat.SENML_CBOR}});
+        return Arrays.asList(new Object[][] { //
+                                { ContentFormat.SENML_JSON }, //
+                                { ContentFormat.SENML_CBOR } });
     }
 
     private ContentFormat contentFormat;
@@ -167,14 +167,13 @@ public class WriteCompositeTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device instance
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new ObserveRequest(3, 0));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new ObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        SingleObservation observation = observeResponse.getObservation();
+        Observation observation = observeResponse.getObservation();
         assertEquals("/3/0", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
 
@@ -194,8 +193,7 @@ public class WriteCompositeTest {
         assertNotNull(listener.getResponse().getCoapResponse());
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
-        LwM2mObjectInstance instance =
-                (LwM2mObjectInstance) ((ObserveResponse) listener.getResponse()).getContent();
+        LwM2mObjectInstance instance = (LwM2mObjectInstance) ((ObserveResponse) listener.getResponse()).getContent();
         assertEquals("+11", instance.getResource(14).getValue());
         assertEquals("Moon", instance.getResource(15).getValue());
 

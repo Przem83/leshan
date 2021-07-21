@@ -20,17 +20,17 @@ import java.util.List;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
-import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.observation.Observation;
 
 public class CancelObservationResponse extends ObserveResponse {
 
     public CancelObservationResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
-                                     SingleObservation observation, String errorMessage) {
+            Observation observation, String errorMessage) {
         super(code, content, timestampedValues, observation, errorMessage);
     }
 
     public CancelObservationResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
-                                     SingleObservation observation, String errorMessage, Object coapResponse) {
+            Observation observation, String errorMessage, Object coapResponse) {
         super(code, content, timestampedValues, observation, errorMessage, coapResponse);
     }
 

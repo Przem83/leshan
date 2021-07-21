@@ -12,13 +12,9 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.request;
-
-import static org.eclipse.leshan.core.californium.ResponseCodeUtil.toLwM2mResponseCode;
-
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Request;
@@ -31,7 +27,7 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.response.*;
@@ -39,6 +35,11 @@ import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.server.californium.observation.ObserveUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.eclipse.leshan.core.californium.ResponseCodeUtil.toLwM2mResponseCode;
 
 /**
  * This class is able to create a {@link LwM2mResponse} from a CoAP {@link Response}.
@@ -73,7 +74,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new ReadResponse(toLwM2mResponseCode(coapResponse.getCode()), null,
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT) {
+        } else if (isResponseCodeContent()) {
             // handle success response:
             LwM2mNode content = decodeCoapResponse(request.getPath(), coapResponse, request, clientEndpoint);
             lwM2mresponse = new ReadResponse(ResponseCode.CONTENT, content, null, coapResponse);
@@ -89,7 +90,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new DiscoverResponse(toLwM2mResponseCode(coapResponse.getCode()), null,
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT) {
+        } else if (isResponseCodeContent()) {
             // handle success response:
             Link[] links;
             if (MediaTypeRegistry.APPLICATION_LINK_FORMAT != coapResponse.getOptions().getContentFormat()) {
@@ -111,7 +112,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new WriteResponse(toLwM2mResponseCode(coapResponse.getCode()),
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+        } else if (isResponseCodeChanged()) {
             // handle success response:
             lwM2mresponse = new WriteResponse(ResponseCode.CHANGED, null, coapResponse);
         } else {
@@ -126,7 +127,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new WriteAttributesResponse(toLwM2mResponseCode(coapResponse.getCode()),
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+        } else if (isResponseCodeChanged()) {
             // handle success response:
             lwM2mresponse = new WriteAttributesResponse(ResponseCode.CHANGED, null, coapResponse);
         } else {
@@ -141,7 +142,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new ExecuteResponse(toLwM2mResponseCode(coapResponse.getCode()),
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+        } else if (isResponseCodeChanged()) {
             // handle success response:
             lwM2mresponse = new ExecuteResponse(ResponseCode.CHANGED, null, coapResponse);
         } else {
@@ -188,19 +189,22 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
         if (coapResponse.isError()) {
             // handle error response:
             lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), null, null, null,
-                    coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT
+                    coapResponse.getPayloadString(), coapResponse
+            );
+        } else if (isResponseCodeContent()
                 // This is for backward compatibility, when the spec say notification used CHANGED code
-                || coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+                || isResponseCodeChanged()) {
             // handle success response:
             LwM2mNode content = decodeCoapResponse(request.getPath(), coapResponse, request, clientEndpoint);
-            SingleObservation observation = null;
+            Observation observation = null;
             if (coapResponse.getOptions().hasObserve()) {
                 // observe request successful
-                observation = ObserveUtil.createLwM2mSingleObservation(coapRequest);
+                observation = ObserveUtil.createLwM2mObservation(coapRequest);
             }
             // add the observation to an ObserveResponse instance
-            lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null, observation, null, coapResponse);
+            lwM2mresponse = new ObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
+                    observation, null, coapResponse
+            );
         } else {
             // handle unexpected response:
             handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
@@ -213,9 +217,9 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new CancelObservationResponse(toLwM2mResponseCode(coapResponse.getCode()), null, null, null,
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT
+        } else if (isResponseCodeContent()
                 // This is for backward compatibility, when the spec say notification used CHANGED code
-                || coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+                || isResponseCodeChanged()) {
             // handle success response:
             LwM2mNode content = decodeCoapResponse(request.getPath(), coapResponse, request, clientEndpoint);
             lwM2mresponse = new CancelObservationResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
@@ -232,7 +236,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new ReadCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()), null,
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT) {
+        } else if (isResponseCodeContent()) {
             // handle success response:
             Map<LwM2mPath, LwM2mNode> content = decodeCompositeCoapResponse(request.getPaths(), coapResponse, request,
                     clientEndpoint);
@@ -247,21 +251,15 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
     public void visit(ObserveCompositeRequest request) {
         if (coapResponse.isError()) {
             // handle error response:
-            lwM2mresponse = new CompositeObserveResponse(
-                    toLwM2mResponseCode(coapResponse.getCode()),
-                    null,
-                    coapResponse.getPayloadString(),
-                    coapResponse,
-                    null
+            lwM2mresponse = new ObserveCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()), null,
+                    coapResponse.getPayloadString(), coapResponse, null
             );
 
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT
-                // This is for backward compatibility, when the spec say notification used CHANGED code
-                || coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+        } else if (isResponseCodeContent() || isResponseCodeChanged()) {
             // handle success response:
-
-            Map<LwM2mPath, LwM2mNode> content = decodeCompositeCoapResponse(request.getPaths(), coapResponse, request,
-                    clientEndpoint);
+            Map<LwM2mPath, LwM2mNode> content = decodeCompositeCoapResponse(
+                    request.getPaths(), coapResponse, request, clientEndpoint
+            );
 
             CompositeObservation observation = null;
             if (coapResponse.getOptions().hasObserve()) {
@@ -269,8 +267,9 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
                 observation = ObserveUtil.createLwM2mCompositeObservation(coapRequest);
             }
             // add the observation to an ObserveResponse instance
-            lwM2mresponse = new CompositeObserveResponse(toLwM2mResponseCode(coapResponse.getCode()), content, null,
-                    coapResponse, observation);
+            lwM2mresponse = new ObserveCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()),
+                    content, null, coapResponse, observation
+            );
         } else {
             // handle unexpected response:
             handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
@@ -283,7 +282,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new WriteCompositeResponse(toLwM2mResponseCode(coapResponse.getCode()),
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+        } else if (isResponseCodeChanged()) {
             // handle success response:
             lwM2mresponse = new WriteCompositeResponse(ResponseCode.CHANGED, null, coapResponse);
         } else {
@@ -298,7 +297,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new BootstrapDiscoverResponse(toLwM2mResponseCode(coapResponse.getCode()), null,
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT) {
+        } else if (isResponseCodeContent()) {
             // handle success response:
             Link[] links;
             if (MediaTypeRegistry.APPLICATION_LINK_FORMAT != coapResponse.getOptions().getContentFormat()) {
@@ -320,7 +319,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new BootstrapWriteResponse(toLwM2mResponseCode(coapResponse.getCode()),
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+        } else if (isResponseCodeChanged()) {
             // handle success response:
             lwM2mresponse = new BootstrapWriteResponse(ResponseCode.CHANGED, null, coapResponse);
         } else {
@@ -335,7 +334,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new BootstrapReadResponse(toLwM2mResponseCode(coapResponse.getCode()), null,
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT) {
+        } else if (isResponseCodeContent()) {
             // handle success response:
             LwM2mNode content = decodeCoapResponse(request.getPath(), coapResponse, request, clientEndpoint);
             lwM2mresponse = new BootstrapReadResponse(ResponseCode.CONTENT, content, null, coapResponse);
@@ -366,13 +365,21 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
             // handle error response:
             lwM2mresponse = new BootstrapFinishResponse(toLwM2mResponseCode(coapResponse.getCode()),
                     coapResponse.getPayloadString(), coapResponse);
-        } else if (coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED) {
+        } else if (isResponseCodeChanged()) {
             // handle success response:
             lwM2mresponse = new BootstrapFinishResponse(ResponseCode.CHANGED, null, coapResponse);
         } else {
             // handle unexpected response:
             handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
         }
+    }
+
+    private boolean isResponseCodeContent() {
+        return coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CONTENT;
+    }
+
+    private boolean isResponseCodeChanged() {
+        return coapResponse.getCode() == org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED;
     }
 
     private LwM2mNode decodeCoapResponse(LwM2mPath path, Response coapResponse, LwM2mRequest<?> request,

@@ -12,6 +12,7 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.observation;
 
@@ -20,15 +21,15 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.californium.EndpointContextUtil;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
+import org.eclipse.leshan.core.observation.CompositeObservation;
+import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.observation.SingleObservation;
-import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.Identity;
+import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
-import org.eclipse.leshan.core.response.CompositeObserveResponse;
+import org.eclipse.leshan.core.response.ObserveCompositeResponse;
 import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.server.californium.CaliforniumTestSupport;
 import org.eclipse.leshan.server.californium.DummyDecoder;
@@ -72,7 +73,7 @@ public class ObservationServiceTest {
         givenAnObservation(support.registration.getId(), new LwM2mPath(3, 0, 12));
 
         // check the presence of only one observation.
-        Set<Observation> observations = observationService.getObservations(support.registration);
+        Set<AbstractObservation> observations = observationService.getObservations(support.registration);
         Assert.assertEquals(1, observations.size());
     }
 
@@ -87,7 +88,7 @@ public class ObservationServiceTest {
         givenAnObservation("anotherClient", new LwM2mPath(3, 0, 12));
 
         // check its presence
-        Set<Observation> observations = observationService.getObservations(support.registration);
+        Set<AbstractObservation> observations = observationService.getObservations(support.registration);
         Assert.assertEquals(2, observations.size());
 
         // cancel it
@@ -111,7 +112,7 @@ public class ObservationServiceTest {
         givenAnObservation("anotherClient", new LwM2mPath(3, 0, 12));
 
         // check its presence
-        Set<Observation> observations = observationService.getObservations(support.registration);
+        Set<AbstractObservation> observations = observationService.getObservations(support.registration);
         Assert.assertEquals(2, observations.size());
 
         // cancel it
@@ -132,10 +133,10 @@ public class ObservationServiceTest {
         givenAnObservation(support.registration.getId(), new LwM2mPath(3, 0, 12));
         givenAnObservation("anotherClient", new LwM2mPath(3, 0, 12));
 
-        Observation observationToCancel = givenAnObservation(support.registration.getId(), new LwM2mPath(3, 0, 12));
+        AbstractObservation observationToCancel = givenAnObservation(support.registration.getId(), new LwM2mPath(3, 0, 12));
 
         // check its presence
-        Set<Observation> observations = observationService.getObservations(support.registration);
+        Set<AbstractObservation> observations = observationService.getObservations(support.registration);
         Assert.assertEquals(2, observations.size());
 
         // cancel it
@@ -147,7 +148,7 @@ public class ObservationServiceTest {
     }
 
     @Test
-    public void on_notification_single_observe_response() {
+    public void on_notification_observe_response() {
         // given
         createDummyDecoderObservationService();
 
@@ -156,7 +157,7 @@ public class ObservationServiceTest {
         Response coapResponse = new Response(CoAP.ResponseCode.CONTENT);
         coapResponse.setToken(coapRequest.getToken());
 
-        DummyObservationListener listener = new DummyObservationListener();
+        CatchResponseObservationListener listener = new CatchResponseObservationListener();
 
         observationService.addListener(listener);
 
@@ -167,7 +168,7 @@ public class ObservationServiceTest {
         assertNotNull(listener.observeResponse);
         assertNotNull(listener.observation);
         assertTrue(listener.observeResponse instanceof ObserveResponse);
-        assertTrue(listener.observation instanceof SingleObservation);
+        assertTrue(listener.observation instanceof Observation);
     }
 
     @Test
@@ -180,7 +181,7 @@ public class ObservationServiceTest {
         Response coapResponse = new Response(CoAP.ResponseCode.CONTENT);
         coapResponse.setToken(coapRequest.getToken());
 
-        DummyObservationListener listener = new DummyObservationListener();
+        CatchResponseObservationListener listener = new CatchResponseObservationListener();
 
         observationService.addListener(listener);
 
@@ -190,7 +191,7 @@ public class ObservationServiceTest {
         // then
         assertNotNull(listener.observeResponse);
         assertNotNull(listener.observation);
-        assertTrue(listener.observeResponse instanceof CompositeObserveResponse);
+        assertTrue(listener.observeResponse instanceof ObserveCompositeResponse);
         assertTrue(listener.observation instanceof CompositeObservation);
     }
 
@@ -203,7 +204,7 @@ public class ObservationServiceTest {
                 new DefaultLwM2mDecoder());
     }
 
-    private Observation givenAnObservation(String registrationId, LwM2mPath target) {
+    private AbstractObservation givenAnObservation(String registrationId, LwM2mPath target) {
         Registration registration = store.getRegistration(registrationId);
         if (registration == null) {
             registration = givenASimpleClient(registrationId);
@@ -224,13 +225,13 @@ public class ObservationServiceTest {
 
         store.put(coapRequest.getToken(), new org.eclipse.californium.core.observe.Observation(coapRequest, null));
 
-        SingleObservation observation = ObserveUtil.createLwM2mSingleObservation(coapRequest);
+        Observation observation = ObserveUtil.createLwM2mObservation(coapRequest);
         observationService.addObservation(registration, observation);
 
         return observation;
     }
 
-    private Observation givenAnCompositeObservation(String registrationId, LwM2mPath target) {
+    private AbstractObservation givenAnCompositeObservation(String registrationId, LwM2mPath target) {
         Registration registration = store.getRegistration(registrationId);
         if (registration == null) {
             registration = givenASimpleClient(registrationId);
@@ -239,9 +240,6 @@ public class ObservationServiceTest {
 
         coapRequest = Request.newFetch();
         coapRequest.setToken(CaliforniumTestSupport.createToken());
-//        coapRequest.getOptions().addUriPath(String.valueOf(target.getObjectId()));
-//        coapRequest.getOptions().addUriPath(String.valueOf(target.getObjectInstanceId()));
-//        coapRequest.getOptions().addUriPath(String.valueOf(target.getResourceId()));
         coapRequest.setObserve();
         coapRequest.setDestinationContext(
                 EndpointContextUtil.extractContext(support.registration.getIdentity(), false)
@@ -256,7 +254,6 @@ public class ObservationServiceTest {
         store.put(coapRequest.getToken(), new org.eclipse.californium.core.observe.Observation(coapRequest, null));
 
         CompositeObservation observation = ObserveUtil.createLwM2mCompositeObservation(coapRequest);
-//        observationService.addObservation(registration, observation);
 
         return observation;
     }
@@ -272,29 +269,29 @@ public class ObservationServiceTest {
         }
     }
 
-    private static class DummyObservationListener implements ObservationListener {
+    private static class CatchResponseObservationListener implements ObservationListener {
 
         AbstractLwM2mResponse observeResponse;
-        Observation observation;
+        AbstractObservation observation;
 
         @Override
-        public void newObservation(Observation observation, Registration registration) {
+        public void newObservation(AbstractObservation observation, Registration registration) {
 
         }
 
         @Override
-        public void cancelled(Observation observation) {
+        public void cancelled(AbstractObservation observation) {
 
         }
 
         @Override
-        public void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response) {
+        public void onResponse(AbstractObservation observation, Registration registration, AbstractLwM2mResponse response) {
             this.observeResponse = response;
             this.observation = observation;
         }
 
         @Override
-        public void onError(Observation observation, Registration registration, Exception error) {
+        public void onError(AbstractObservation observation, Registration registration, Exception error) {
 
         }
     }

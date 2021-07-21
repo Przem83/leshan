@@ -27,8 +27,15 @@ import org.eclipse.leshan.client.LwM2mClient;
 import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
-import org.eclipse.leshan.core.node.*;
-import org.eclipse.leshan.core.response.*;
+import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mNode;
+import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mResource;
+import org.eclipse.leshan.core.node.LwM2mResourceInstance;
+import org.eclipse.leshan.core.response.ExecuteResponse;
+import org.eclipse.leshan.core.response.ObserveResponse;
+import org.eclipse.leshan.core.response.ReadResponse;
+import org.eclipse.leshan.core.response.WriteResponse;
 
 /**
  * A abstract implementation of {@link LwM2mInstanceEnabler}. It could be use as base for any
@@ -198,9 +205,9 @@ public class BaseInstanceEnabler implements LwM2mInstanceEnabler {
     }
 
     @Override
-    public ObserveResponse observe(ServerIdentity identity, int resourceId) {
+    public ObserveResponse observe(ServerIdentity identity, int resourceid) {
         // Perform a read by default
-        ReadResponse readResponse = this.read(identity, resourceId);
+        ReadResponse readResponse = this.read(identity, resourceid);
         return new ObserveResponse(readResponse.getCode(), readResponse.getContent(), null, null,
                 readResponse.getErrorMessage());
     }

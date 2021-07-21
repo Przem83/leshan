@@ -16,7 +16,7 @@
 package org.eclipse.leshan.core.request;
 
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.ObserveResponse;
 
@@ -138,7 +138,7 @@ public class ObserveRequest extends AbstractSimpleDownlinkRequest<ObserveRespons
      * @param format the desired format for the response
      * @param path the path to the LWM2M node to observe
      * @param context additional information about the request. This context will be available via the
-     *        {@link Observation} once established.
+     *        {@link AbstractObservation} once established.
      * @exception InvalidRequestException if the path is not valid.
      */
     public ObserveRequest(ContentFormat format, String path, Map<String, String> context)
@@ -151,8 +151,7 @@ public class ObserveRequest extends AbstractSimpleDownlinkRequest<ObserveRespons
         this(format, path, null, coapRequest);
     }
 
-    private ObserveRequest(ContentFormat format, LwM2mPath target, Map<String, String> context,
-                           Object coapRequest) {
+    private ObserveRequest(ContentFormat format, LwM2mPath target, Map<String, String> context, Object coapRequest) {
         super(target, coapRequest);
         if (target.isRoot())
             throw new InvalidRequestException("Observe request cannot target root path");

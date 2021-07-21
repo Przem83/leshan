@@ -26,7 +26,7 @@ import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.request.DownlinkRequest;
-import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.request.exception.RequestCanceledException;
 import org.eclipse.leshan.core.request.exception.RequestRejectedException;
@@ -106,11 +106,11 @@ public class CaliforniumLwM2mRequestSender implements LwM2mRequestSender, CoapRe
 
         // Handle special observe case
         if (response != null && response.isSuccess()) {
-            Observation observation = null;
+            AbstractObservation observation = null;
             if (response instanceof ObserveResponse) {
                 observation = ((ObserveResponse) response).getObservation();
-            } else if (response instanceof CompositeObserveResponse) {
-                observation = ((CompositeObserveResponse) response).getObservation();
+            } else if (response instanceof ObserveCompositeResponse) {
+                observation = ((ObserveCompositeResponse) response).getObservation();
             }
             if (observation != null) {
                 observationService.addObservation(destination, observation);

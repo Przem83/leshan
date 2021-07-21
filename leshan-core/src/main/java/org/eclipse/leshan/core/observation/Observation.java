@@ -1,100 +1,81 @@
 /*******************************************************************************
  * Copyright (c) 2013-2015 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.core.observation;
 
+import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.request.ContentFormat;
+import org.eclipse.leshan.core.util.Hex;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * An base class for observation of a resource provided by a LWM2M Client.
+ * An observation of a resource provided by a LWM2M Client.
  */
-public abstract class Observation {
+public class Observation extends AbstractObservation {
 
-    protected final byte[] id;
-    protected final ContentFormat contentFormat;
-    protected final String registrationId;
-    protected final Map<String, String> context;
+    private final LwM2mPath path;
 
     /**
-     * Instantiates an {@link Observation} for the given node path.
-     * 
+     * Instantiates an {@link CompositeObservation} for the given node paths.
+     *
      * @param id token identifier of the observation
      * @param registrationId client's unique registration identifier.
+     * @param path resource path for which the observation is set.
      * @param contentFormat contentFormat used to read the resource (could be null).
      * @param context additional information relative to this observation.
      */
-    public Observation(byte[] id, String registrationId, ContentFormat contentFormat, Map<String, String> context) {
-        this.id = id;
-        this.contentFormat = contentFormat;
-        this.registrationId = registrationId;
-        if (context != null)
-            this.context = Collections.unmodifiableMap(new HashMap<>(context));
-        else
-            this.context = Collections.emptyMap();
+    public Observation(byte[] id, String registrationId, LwM2mPath path, ContentFormat contentFormat,
+            Map<String, String> context) {
+        super(id, registrationId, contentFormat, context);
+        this.path = path;
     }
 
     /**
-     * Get the id of this observation.
-     * 
-     */
-    public byte[] getId() {
-        return id;
-    }
-
-    /**
-     * Get the registration ID link to this observation.
-     * 
-     * @return the registration ID
-     */
-    public String getRegistrationId() {
-        return registrationId;
-    }
-
-    /**
-     * Gets the requested contentFormat (could be null).
-     * 
+     * Gets the observed resource path.
+     *
      * @return the resource path
      */
-    public ContentFormat getContentFormat() {
-        return contentFormat;
+    public LwM2mPath getPath() {
+        return path;
     }
 
-    /**
-     * @return the contextual information relative to this observation.
-     */
-    public Map<String, String> getContext() {
-        return context;
+    @Override
+    public String toString() {
+        return "Observation{" +
+                "path=" + path +
+                ", id=" + Hex.encodeHexString(id) +
+                ", contentFormat=" + contentFormat +
+                ", registrationId='" + registrationId + '\'' +
+                ", context=" + context +
+                '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Observation)) return false;
+        if (!super.equals(o)) return false;
         Observation that = (Observation) o;
-        return Arrays.equals(id, that.id) &&
-                Objects.equals(contentFormat, that.contentFormat) &&
-                Objects.equals(registrationId, that.registrationId) &&
-                Objects.equals(context, that.context);
+        return Objects.equals(path, that.path);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(contentFormat, registrationId, context);
-        result = 31 * result + Arrays.hashCode(id);
-        return result;
+        return Objects.hash(super.hashCode(), path);
     }
 }

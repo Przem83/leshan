@@ -1,21 +1,38 @@
+/*******************************************************************************
+ * Copyright (c) 2021 Orange Polska SA.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ *    http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *    http://www.eclipse.org/org/documents/edl-v10.html.
+ *
+ * Contributors:
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
+ *******************************************************************************/
 package org.eclipse.leshan.server.californium.request;
 
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.coap.Token;
-import org.eclipse.leshan.core.node.*;
+import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
-import org.eclipse.leshan.core.response.CompositeObserveResponse;
+import org.eclipse.leshan.core.response.ObserveCompositeResponse;
 import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.server.californium.DummyDecoder;
 import org.eclipse.leshan.server.californium.observation.ObserveUtil;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -51,7 +68,7 @@ public class LwM2mResponseBuilderTest {
         assertNotNull(response);
         assertNotNull(response.getObservation());
 
-        SingleObservation observation = response.getObservation();
+        Observation observation = response.getObservation();
         assertEquals(examplePath, observation.getPath().toString());
     }
 
@@ -73,14 +90,14 @@ public class LwM2mResponseBuilderTest {
         Response coapResponse = new Response(CoAP.ResponseCode.CONTENT);
         coapResponse.getOptions().setObserve(1);
 
-        LwM2mResponseBuilder<CompositeObserveResponse> responseBuilder = new LwM2mResponseBuilder<>(
+        LwM2mResponseBuilder<ObserveCompositeResponse> responseBuilder = new LwM2mResponseBuilder<>(
                 coapRequest, coapResponse, null, null, new DummyDecoder()
         );
         // when
         responseBuilder.visit(observeRequest);
 
         // then
-        CompositeObserveResponse response = responseBuilder.getResponse();
+        ObserveCompositeResponse response = responseBuilder.getResponse();
         assertNotNull(response);
         assertNotNull(response.getObservation());
 

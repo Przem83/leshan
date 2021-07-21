@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2015 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
@@ -16,14 +16,9 @@
  *     Achim Kraus (Bosch Software Innovations GmbH) - use ServerIdentity
  *     Achim Kraus (Bosch Software Innovations GmbH) - implement POST "/oid/iid" 
  *                                                     as UPDATE instance
+ *     Michał Wadowski (Orange Polska SA)            - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.client.californium.object;
-
-import static org.eclipse.leshan.core.californium.ResponseCodeUtil.toCoapResponseCode;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -42,41 +37,19 @@ import org.eclipse.leshan.core.Link;
 import org.eclipse.leshan.core.attributes.AttributeSet;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mObject;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
-import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mResource;
+import org.eclipse.leshan.core.node.*;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
-import org.eclipse.leshan.core.request.BootstrapDeleteRequest;
-import org.eclipse.leshan.core.request.BootstrapDiscoverRequest;
-import org.eclipse.leshan.core.request.BootstrapReadRequest;
-import org.eclipse.leshan.core.request.BootstrapWriteRequest;
-import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.CreateRequest;
-import org.eclipse.leshan.core.request.DeleteRequest;
-import org.eclipse.leshan.core.request.DiscoverRequest;
-import org.eclipse.leshan.core.request.DownlinkRequest;
-import org.eclipse.leshan.core.request.ExecuteRequest;
-import org.eclipse.leshan.core.request.ObserveRequest;
-import org.eclipse.leshan.core.request.ReadRequest;
-import org.eclipse.leshan.core.request.WriteAttributesRequest;
-import org.eclipse.leshan.core.request.WriteRequest;
+import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.request.WriteRequest.Mode;
-import org.eclipse.leshan.core.response.BootstrapDeleteResponse;
-import org.eclipse.leshan.core.response.BootstrapDiscoverResponse;
-import org.eclipse.leshan.core.response.BootstrapReadResponse;
-import org.eclipse.leshan.core.response.BootstrapWriteResponse;
-import org.eclipse.leshan.core.response.CreateResponse;
-import org.eclipse.leshan.core.response.DeleteResponse;
-import org.eclipse.leshan.core.response.DiscoverResponse;
-import org.eclipse.leshan.core.response.ExecuteResponse;
-import org.eclipse.leshan.core.response.ObserveResponse;
-import org.eclipse.leshan.core.response.ReadResponse;
-import org.eclipse.leshan.core.response.WriteAttributesResponse;
-import org.eclipse.leshan.core.response.WriteResponse;
+import org.eclipse.leshan.core.response.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.eclipse.leshan.core.californium.ResponseCodeUtil.toCoapResponseCode;
 
 /**
  * A CoAP {@link Resource} in charge of handling requests targeting a lwM2M Object.
@@ -159,9 +132,7 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
                     exchange.respond(toCoapResponseCode(response.getCode()), response.getErrorMessage());
                     return;
                 }
-            }
-
-            else {
+            } else {
                 if (identity.isLwm2mBootstrapServer()) {
                     // Manage Bootstrap Read Request
                     BootstrapReadRequest readRequest = new BootstrapReadRequest(requestedContentFormat, URI,

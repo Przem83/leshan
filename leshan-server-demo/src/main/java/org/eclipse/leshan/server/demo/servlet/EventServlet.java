@@ -12,6 +12,7 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.demo.servlet;
 
@@ -30,10 +31,10 @@ import org.eclipse.jetty.servlets.EventSourceServlet;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
+import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
-import org.eclipse.leshan.core.response.CompositeObserveResponse;
+import org.eclipse.leshan.core.response.ObserveCompositeResponse;
 import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.server.californium.LeshanServer;
 import org.eclipse.leshan.server.demo.servlet.json.LwM2mNodeSerializer;
@@ -86,7 +87,7 @@ public class EventServlet extends EventSourceServlet {
 
         @Override
         public void registered(Registration registration, Registration previousReg,
-                Collection<Observation> previousObsersations) {
+                Collection<AbstractObservation> previousObsersations) {
             String jReg = EventServlet.this.gson.toJson(registration);
             sendEvent(EVENT_REGISTRATION, jReg, registration.getEndpoint());
         }
@@ -102,7 +103,7 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void unregistered(Registration registration, Collection<Observation> observations, boolean expired,
+        public void unregistered(Registration registration, Collection<AbstractObservation> observations, boolean expired,
                 Registration newReg) {
             String jReg = EventServlet.this.gson.toJson(registration);
             sendEvent(EVENT_DEREGISTRATION, jReg, registration.getEndpoint());
@@ -129,11 +130,11 @@ public class EventServlet extends EventSourceServlet {
     private final ObservationListener observationListener = new ObservationListener() {
 
         @Override
-        public void cancelled(Observation observation) {
+        public void cancelled(AbstractObservation observation) {
         }
 
         @Override
-        public void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response) {
+        public void onResponse(AbstractObservation observation, Registration registration, AbstractLwM2mResponse response) {
             String path = getObservationPaths(observation);
 
             String stringContent = null;
@@ -143,8 +144,8 @@ public class EventServlet extends EventSourceServlet {
                 LwM2mNode content = ((ObserveResponse) response).getContent();
                 stringContent = content.toString();
                 jsonContent = gson.toJson(content);
-            } else if (response instanceof CompositeObserveResponse) {
-                Map<LwM2mPath, LwM2mNode> content = ((CompositeObserveResponse) response).getContent();
+            } else if (response instanceof ObserveCompositeResponse) {
+                Map<LwM2mPath, LwM2mNode> content = ((ObserveCompositeResponse) response).getContent();
                 stringContent = content.toString();
                 jsonContent = gson.toJson(content);
             }
@@ -166,7 +167,7 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void onError(Observation observation, Registration registration, Exception error) {
+        public void onError(AbstractObservation observation, Registration registration, Exception error) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn(String.format("Unable to handle notification of [%s:%s]", observation.getRegistrationId(),
                         getObservationPaths(observation)), error);
@@ -174,14 +175,14 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void newObservation(Observation observation, Registration registration) {
+        public void newObservation(AbstractObservation observation, Registration registration) {
         }
     };
 
-    private String getObservationPaths(final Observation observation) {
+    private String getObservationPaths(final AbstractObservation observation) {
         String path = null;
-        if (observation instanceof SingleObservation) {
-            path = ((SingleObservation) observation).getPath().toString();
+        if (observation instanceof Observation) {
+            path = ((Observation) observation).getPath().toString();
         } else if (observation instanceof CompositeObservation) {
             path = ((CompositeObservation) observation).getPaths().toString();
         }

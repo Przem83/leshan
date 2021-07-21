@@ -12,23 +12,24 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.observation;
+
+import org.eclipse.californium.core.coap.Request;
+import org.eclipse.leshan.core.node.LwM2mPath;
+import org.eclipse.leshan.core.observation.CompositeObservation;
+import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.request.ContentFormat;
+import org.eclipse.leshan.core.request.ObserveCompositeRequest;
+import org.eclipse.leshan.core.request.ObserveRequest;
+import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.eclipse.californium.core.coap.Request;
-import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.SingleObservation;
-import org.eclipse.leshan.core.request.ContentFormat;
-import org.eclipse.leshan.core.request.ObserveCompositeRequest;
-import org.eclipse.leshan.core.request.ObserveRequest;
-import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
 
 /**
  * Utility functions to help to handle observation in Leshan. Those helper functions are only needed if you're
@@ -44,10 +45,10 @@ public class ObserveUtil {
     /**
      * Create a LWM2M observation from a CoAP request.
      */
-    public static SingleObservation createLwM2mSingleObservation(Request request) {
+    public static Observation createLwM2mObservation(Request request) {
         ObserveCommon observeCommon = new ObserveCommon(request);
 
-        return new SingleObservation(
+        return new Observation(
                 request.getToken().getBytes(),
                 observeCommon.regId,
                 observeCommon.lwm2mPath.get(0),
@@ -125,13 +126,13 @@ public class ObserveUtil {
     }
 
     public static Map<String, String> createCoapObserveCompositeRequestContext(String endpoint, String registrationId,
-                                                                               ObserveCompositeRequest request) {
+            ObserveCompositeRequest request) {
         Map<String, String> context = new HashMap<>();
         context.put(CTX_ENDPOINT, endpoint);
         context.put(CTX_REGID, registrationId);
 
         StringBuilder sb = new StringBuilder();
-        for (LwM2mPath path: request.getPaths()) {
+        for (LwM2mPath path : request.getPaths()) {
             sb.append(path.toString());
             sb.append("\n");
         }

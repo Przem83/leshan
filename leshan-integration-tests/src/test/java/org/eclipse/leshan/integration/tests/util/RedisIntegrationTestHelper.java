@@ -29,7 +29,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.Pool;
 
 public class RedisIntegrationTestHelper extends IntegrationTestHelper {
-
     @Override
     public void createServer() {
         LeshanServerBuilder builder = new LeshanServerBuilder();
