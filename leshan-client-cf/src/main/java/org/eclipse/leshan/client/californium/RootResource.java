@@ -13,6 +13,7 @@
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Achim Kraus (Bosch Software Innovations GmbH) - use ServerIdentity
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.client.californium;
 
@@ -23,7 +24,6 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.californium.core.server.resources.CoapExchange;
-import org.eclipse.californium.core.server.resources.Resource;
 import org.eclipse.leshan.client.bootstrap.BootstrapHandler;
 import org.eclipse.leshan.client.californium.object.ResourceObserveFilter;
 import org.eclipse.leshan.client.engine.RegistrationEngine;
@@ -121,7 +121,7 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
         if (exchange.getRequestOptions().hasObserve()) {
             ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(requestContentFormat,
                     responseContentFormat, paths, coapRequest);
-            CompositeObserveResponse response = rootEnabler.observe(identity, observeRequest);
+            ObserveCompositeResponse response = rootEnabler.observe(identity, observeRequest);
 
             if (response.getCode().isError()) {
                 exchange.respond(toCoapResponseCode(response.getCode()), response.getErrorMessage());
@@ -146,20 +146,6 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
             }
             return;
         }
-    }
-
-    private Resource getResourceFromPath(LwM2mPath path) {
-        Resource resource = this;
-        for (String pathItem: path.toString().split("/") ) {
-            if (pathItem.isEmpty()) {
-                continue;
-            }
-            if (getChild(pathItem) == null) {
-                break;
-            }
-            resource = resource.getChild(pathItem);
-        }
-        return resource;
     }
 
     @Override

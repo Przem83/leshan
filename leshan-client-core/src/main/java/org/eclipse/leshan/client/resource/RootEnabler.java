@@ -1,41 +1,36 @@
 /*******************************************************************************
  * Copyright (c) 2021 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.client.resource;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
-import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
-import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mResource;
-import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.*;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.request.WriteRequest.Mode;
 import org.eclipse.leshan.core.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A default implementation of {@link LwM2mRootEnabler}.
@@ -188,7 +183,7 @@ public class RootEnabler implements LwM2mRootEnabler {
     }
 
     @Override
-    public synchronized CompositeObserveResponse observe(ServerIdentity identity, ObserveCompositeRequest request) {
+    public synchronized ObserveCompositeResponse observe(ServerIdentity identity, ObserveCompositeRequest request) {
         List<LwM2mPath> paths = request.getPaths();
 
         // Read Nodes
@@ -208,21 +203,22 @@ public class RootEnabler implements LwM2mRootEnabler {
                     node = response.getContent();
                     isEmpty = false;
                 } else {
-                    LOG.debug("Server {} try to read node {} in a Observe-Composite Request {} but it failed for {} {}",
-                            identity, path, paths, response.getCode(), response.getErrorMessage());
+                    LOG.debug("Server {} try to read node {} in a Observe-Composite Request {} but it failed for {} " +
+                            "{}", identity, path, paths, response.getCode(), response.getErrorMessage()
+                    );
                 }
             } else {
-                LOG.debug(
-                        "Server {} try to read node {} in a Observe-Composite Request {} but it failed because Object {} is not supported",
-                        identity, path, paths, objectId);
+                LOG.debug("Server {} try to read node {} in a Observe-Composite Request {} but it failed because " +
+                        "Object {} is not supported", identity, path, paths, objectId
+                );
             }
 
             content.put(path, node);
         }
         if (isEmpty) {
-            return CompositeObserveResponse.notFound();
+            return ObserveCompositeResponse.notFound();
         } else {
-            return CompositeObserveResponse.success(content);
+            return ObserveCompositeResponse.success(content);
         }
     }
 

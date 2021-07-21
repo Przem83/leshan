@@ -1,10 +1,25 @@
+/*******************************************************************************
+ * Copyright (c) 2021 Orange Polska SA.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ *    http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *    http://www.eclipse.org/org/documents/edl-v10.html.
+ *
+ * Contributors:
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
+ *******************************************************************************/
 package org.eclipse.leshan.server.californium.observation;
 
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Token;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
@@ -21,7 +36,7 @@ import static org.junit.Assert.*;
 public class ObserveUtilTest {
 
     @Test
-    public void should_create_single_observation_from_context() {
+    public void should_create_observation_from_context() {
         // given
         String examplePath = "/1/2/3";
         String exampleRegistrationId = "registrationId";
@@ -40,7 +55,7 @@ public class ObserveUtilTest {
         coapRequest.setToken(exampleToken);
         coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
 
-        SingleObservation observation = ObserveUtil.createLwM2mSingleObservation(coapRequest);
+        Observation observation = ObserveUtil.createLwM2mObservation(coapRequest);
 
         // then
         assertEquals(examplePath, observation.getPath().toString());
@@ -91,7 +106,7 @@ public class ObserveUtilTest {
         assertThrows(IllegalStateException.class, new ThrowingRunnable() {
             @Override
             public void run() {
-                ObserveUtil.createLwM2mSingleObservation(coapRequest);
+                ObserveUtil.createLwM2mObservation(coapRequest);
             }
         });
     }
@@ -108,7 +123,7 @@ public class ObserveUtilTest {
         assertThrows(IllegalStateException.class, new ThrowingRunnable() {
             @Override
             public void run() {
-                ObserveUtil.createLwM2mSingleObservation(coapRequest);
+                ObserveUtil.createLwM2mObservation(coapRequest);
             }
         });
     }

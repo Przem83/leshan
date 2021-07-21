@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
 import org.eclipse.leshan.server.observation.ObservationListener;
 import org.eclipse.leshan.server.registration.Registration;
@@ -19,7 +19,7 @@ public class TestObservationListener implements ObservationListener {
     private Exception error;
 
     @Override
-    public void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response) {
+    public void onResponse(AbstractObservation observation, Registration registration, AbstractLwM2mResponse response) {
         receivedNotify.set(true);
         this.response = response;
         this.error = null;
@@ -28,7 +28,7 @@ public class TestObservationListener implements ObservationListener {
     }
 
     @Override
-    public void onError(Observation observation, Registration registration, Exception error) {
+    public void onError(AbstractObservation observation, Registration registration, Exception error) {
         receivedNotify.set(true);
         this.response = null;
         this.error = error;
@@ -36,12 +36,12 @@ public class TestObservationListener implements ObservationListener {
     }
 
     @Override
-    public void cancelled(Observation observation) {
+    public void cancelled(AbstractObservation observation) {
         latch.countDown();
     }
 
     @Override
-    public void newObservation(Observation observation, Registration registration) {
+    public void newObservation(AbstractObservation observation, Registration registration) {
     }
 
     public AtomicBoolean receivedNotify() {

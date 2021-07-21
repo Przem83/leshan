@@ -12,6 +12,7 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium;
 

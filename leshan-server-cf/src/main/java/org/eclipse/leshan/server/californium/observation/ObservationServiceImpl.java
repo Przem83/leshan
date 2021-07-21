@@ -12,6 +12,7 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.observation;
 
@@ -29,15 +30,15 @@ import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
-import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
+import org.eclipse.leshan.core.observation.CompositeObservation;
+import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
-import org.eclipse.leshan.core.response.CompositeObserveResponse;
+import org.eclipse.leshan.core.response.ObserveCompositeResponse;
 import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.server.californium.registration.CaliforniumRegistrationStore;
@@ -104,8 +105,8 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         this.updateRegistrationOnNotification = updateRegistrationOnNotification;
     }
 
-    public void addObservation(Registration registration, Observation observation) {
-        for (Observation existing : registrationStore.addObservation(registration.getId(), observation)) {
+    public void addObservation(Registration registration, AbstractObservation observation) {
+        for (AbstractObservation existing : registrationStore.addObservation(registration.getId(), observation)) {
             cancel(existing);
         }
 
@@ -129,11 +130,11 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         if (registrationId == null)
             return 0;
 
-        Collection<Observation> observations = registrationStore.removeObservations(registrationId);
+        Collection<AbstractObservation> observations = registrationStore.removeObservations(registrationId);
         if (observations == null)
             return 0;
 
-        for (Observation observation : observations) {
+        for (AbstractObservation observation : observations) {
             cancel(observation);
         }
 
@@ -145,15 +146,15 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         if (registration == null || registration.getId() == null || resourcepath == null || resourcepath.isEmpty())
             return 0;
 
-        Set<Observation> observations = getObservations(registration.getId(), resourcepath);
-        for (Observation observation : observations) {
+        Set<AbstractObservation> observations = getObservations(registration.getId(), resourcepath);
+        for (AbstractObservation observation : observations) {
             cancelObservation(observation);
         }
         return observations.size();
     }
 
     @Override
-    public void cancelObservation(Observation observation) {
+    public void cancelObservation(AbstractObservation observation) {
         if (observation == null)
             return;
 
@@ -161,7 +162,7 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         cancel(observation);
     }
 
-    private void cancel(Observation observation) {
+    private void cancel(AbstractObservation observation) {
         Token token = new Token(observation.getId());
         if (secureEndpoint != null)
             secureEndpoint.cancelObservation(token);
@@ -174,26 +175,26 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
     }
 
     @Override
-    public Set<Observation> getObservations(Registration registration) {
+    public Set<AbstractObservation> getObservations(Registration registration) {
         return getObservations(registration.getId());
     }
 
-    private Set<Observation> getObservations(String registrationId) {
+    private Set<AbstractObservation> getObservations(String registrationId) {
         if (registrationId == null)
             return Collections.emptySet();
 
         return new HashSet<>(registrationStore.getObservations(registrationId));
     }
 
-    private Set<Observation> getObservations(String registrationId, String resourcePath) {
+    private Set<AbstractObservation> getObservations(String registrationId, String resourcePath) {
         if (registrationId == null || resourcePath == null)
             return Collections.emptySet();
 
-        Set<Observation> result = new HashSet<>();
+        Set<AbstractObservation> result = new HashSet<>();
         LwM2mPath lwPath = new LwM2mPath(resourcePath);
-        for (Observation obs : getObservations(registrationId)) {
-            if (obs instanceof SingleObservation) {
-                if (lwPath.equals(((SingleObservation) obs).getPath())) {
+        for (AbstractObservation obs : getObservations(registrationId)) {
+            if (obs instanceof Observation) {
+                if (lwPath.equals(((Observation) obs).getPath())) {
                     result.add(obs);
                 }
             }
@@ -231,7 +232,7 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         String regid = coapRequest.getUserContext().get(ObserveUtil.CTX_REGID);
 
         // get observation for this request
-        Observation observation = registrationStore.getObservation(regid, coapResponse.getToken().getBytes());
+        AbstractObservation observation = registrationStore.getObservation(regid, coapResponse.getToken().getBytes());
         if (observation == null) {
             LOG.error("Unexpected error: Unable to find observation with token {} for registration {}",
                     coapResponse.getToken(), regid);
@@ -292,12 +293,12 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         }
     }
 
-    private AbstractLwM2mResponse createObserveResponse(Observation observation, LwM2mModel model, Response coapResponse) {
+    private AbstractLwM2mResponse createObserveResponse(AbstractObservation abstractObservation, LwM2mModel model, Response coapResponse) {
         // CHANGED response is supported for backward compatibility with old spec.
         if (coapResponse.getCode() != CoAP.ResponseCode.CHANGED
                 && coapResponse.getCode() != CoAP.ResponseCode.CONTENT) {
             throw new InvalidResponseException("Unexpected response code [%s] for %s", coapResponse.getCode(),
-                    observation);
+                    abstractObservation);
         }
 
         // get content format
@@ -310,22 +311,23 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         try {
             ResponseCode responseCode = toLwM2mResponseCode(coapResponse.getCode());
 
-            if (observation instanceof SingleObservation) {
-                SingleObservation singleObservation = (SingleObservation) observation;
+            if (abstractObservation instanceof Observation) {
+                Observation observation = (Observation) abstractObservation;
 
-                List<TimestampedLwM2mNode> timestampedNodes = decoder.decodeTimestampedData(coapResponse.getPayload(),
-                        contentFormat, singleObservation.getPath(), model);
+                List<TimestampedLwM2mNode> timestampedNodes = decoder.decodeTimestampedData(
+                        coapResponse.getPayload(), contentFormat, observation.getPath(), model
+                );
 
                 return new ObserveResponse(
-                        responseCode, null, timestampedNodes, singleObservation, null, coapResponse
+                        responseCode, null, timestampedNodes, observation, null, coapResponse
                 );
-            } else if (observation instanceof CompositeObservation) {
+            } else if (abstractObservation instanceof CompositeObservation) {
 
-                CompositeObservation compositeObservation = (CompositeObservation) observation;
+                CompositeObservation compositeObservation = (CompositeObservation) abstractObservation;
 
                 Map<LwM2mPath, LwM2mNode> nodes = decoder.decodeNodes(coapResponse.getPayload(), contentFormat, compositeObservation.getPaths(), model);
 
-                return new CompositeObserveResponse(
+                return new ObserveCompositeResponse(
                         responseCode, nodes, null, null, coapResponse, compositeObservation
                 );
             }
@@ -334,11 +336,11 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
         } catch (CodecException e) {
             if (LOG.isDebugEnabled()) {
                 byte[] payload = coapResponse.getPayload() == null ? new byte[0] : coapResponse.getPayload();
-                LOG.debug(String.format("Unable to decode notification payload [%s] of observation [%s] ",
-                        Hex.encodeHexString(payload), observation), e);
+                LOG.debug(String.format("Unable to decode notification payload [%s] of abstractObservation [%s] ",
+                        Hex.encodeHexString(payload), abstractObservation), e);
             }
-            throw new InvalidResponseException(e, "Unable to decode notification payload  of observation [%s] ",
-                    observation);
+            throw new InvalidResponseException(e, "Unable to decode notification payload  of abstractObservation [%s] ",
+                    abstractObservation);
         }
     }
 }

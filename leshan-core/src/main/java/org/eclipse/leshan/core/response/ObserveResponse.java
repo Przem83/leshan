@@ -20,7 +20,7 @@ import java.util.List;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
-import org.eclipse.leshan.core.observation.SingleObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 
 /**
@@ -30,16 +30,16 @@ import org.eclipse.leshan.core.request.exception.InvalidResponseException;
  */
 public class ObserveResponse extends ReadResponse {
 
-    protected final SingleObservation observation;
+    protected final Observation observation;
     protected final List<TimestampedLwM2mNode> timestampedValues;
 
     public ObserveResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
-                           SingleObservation observation, String errorMessage) {
+            Observation observation, String errorMessage) {
         this(code, content, timestampedValues, observation, errorMessage, null);
     }
 
     public ObserveResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
-                           SingleObservation observation, String errorMessage, Object coapResponse) {
+            Observation observation, String errorMessage, Object coapResponse) {
         super(code, getContent(content, timestampedValues), errorMessage, coapResponse);
 
         // CHANGED is out of spec but is supported for backward compatibility. (previous draft version)
@@ -61,7 +61,8 @@ public class ObserveResponse extends ReadResponse {
         return getFirstListItemOrContent(content, timestampedValues);
     }
 
-    private static LwM2mNode getFirstListItemOrContent(LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues) {
+    private static LwM2mNode getFirstListItemOrContent(LwM2mNode content,
+            List<TimestampedLwM2mNode> timestampedValues) {
         return timestampedValues != null && timestampedValues.size() > 0 ? timestampedValues.get(0).getNode() : content;
     }
 
@@ -90,7 +91,7 @@ public class ObserveResponse extends ReadResponse {
             return String.format("ObserveResponse [code=%s, content=%s, observation=%s]", code, content, observation);
     }
 
-    public SingleObservation getObservation() {
+    public Observation getObservation() {
         return observation;
     }
 

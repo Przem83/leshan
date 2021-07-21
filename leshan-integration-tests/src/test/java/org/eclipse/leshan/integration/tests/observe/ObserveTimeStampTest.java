@@ -21,8 +21,8 @@ import org.eclipse.leshan.core.model.StaticModel;
 import org.eclipse.leshan.core.node.*;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
+import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.Observation;
-import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.response.ObserveResponse;
@@ -47,10 +47,10 @@ public class ObserveTimeStampTest {
 
     @Parameters(name = "{0}")
     public static Collection<?> contentFormats() {
-        return Arrays.asList(new Object[][]{ //
-                {ContentFormat.JSON}, //
-                {ContentFormat.SENML_JSON}, //
-                {ContentFormat.SENML_CBOR}});
+        return Arrays.asList(new Object[][] { //
+                                { ContentFormat.JSON }, //
+                                { ContentFormat.SENML_JSON }, //
+                                { ContentFormat.SENML_CBOR } });
     }
 
     protected IntegrationTestHelper helper = new IntegrationTestHelper();
@@ -92,10 +92,10 @@ public class ObserveTimeStampTest {
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        SingleObservation observation = observeResponse.getObservation();
+        Observation observation = observeResponse.getObservation();
         assertEquals("/3/0/15", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
-        Set<Observation> observations = helper.server.getObservationService()
+        Set<AbstractObservation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
         assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
@@ -129,17 +129,16 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new ObserveRequest(3, 0));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new ObserveRequest(3, 0));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        SingleObservation observation = observeResponse.getObservation();
+        Observation observation = observeResponse.getObservation();
         assertEquals("/3/0", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
-        Set<Observation> observations = helper.server.getObservationService()
+        Set<AbstractObservation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
         assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
@@ -173,17 +172,16 @@ public class ObserveTimeStampTest {
         helper.server.getObservationService().addListener(listener);
 
         // observe device timezone
-        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new ObserveRequest(3));
+        ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(), new ObserveRequest(3));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
         assertNotNull(observeResponse.getCoapResponse());
         assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
 
         // an observation response should have been sent
-        SingleObservation observation = observeResponse.getObservation();
+        Observation observation = observeResponse.getObservation();
         assertEquals("/3", observation.getPath().toString());
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
-        Set<Observation> observations = helper.server.getObservationService()
+        Set<AbstractObservation> observations = helper.server.getObservationService()
                 .getObservations(helper.getCurrentRegistration());
         assertTrue("We should have only one observation", observations.size() == 1);
         assertTrue("New observation is not there", observations.contains(observation));
