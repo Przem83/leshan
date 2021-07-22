@@ -212,23 +212,4 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
     @Override
     public void objectInstancesRemoved(LwM2mObjectEnabler object, int... instanceIds) {
     }
-
-    @Override
-    public void resourceChanged(LwM2mObjectEnabler object, int instanceId, int... resourceIds) {
-        // notify CoAP layer than resources changes, this will send observe notification if an observe relationship
-        // exits.
-        changed(new ResourceObserveFilter(object.getId() + ""));
-        changed(new ResourceObserveFilter(object.getId() + "/" + instanceId));
-        for (int resourceId : resourceIds) {
-            changed(new ResourceObserveFilter(object.getId() + "/" + instanceId + "/" + resourceId));
-        }
-    }
-
-    @Override
-    public void objectInstancesAdded(LwM2mObjectEnabler object, int... instanceIds) {
-    }
-
-    @Override
-    public void objectInstancesRemoved(LwM2mObjectEnabler object, int... instanceIds) {
-    }
 }
