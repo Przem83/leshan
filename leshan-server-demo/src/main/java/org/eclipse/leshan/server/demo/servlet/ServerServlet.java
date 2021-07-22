@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.leshan.server.californium.LeshanServer;
+import org.eclipse.leshan.server.demo.LeshanMultiConnectionServer;
 import org.eclipse.leshan.server.demo.servlet.json.PublicKeySerDes;
 import org.eclipse.leshan.server.demo.servlet.json.SecuritySerializer;
 import org.eclipse.leshan.server.demo.servlet.json.X509CertificateSerDes;
@@ -42,11 +42,11 @@ public class ServerServlet extends HttpServlet {
     private final X509CertificateSerDes certificateSerDes;
     private final PublicKeySerDes publicKeySerDes;
 
-    private final LeshanServer server;
+    private final LeshanMultiConnectionServer server;
     private final PublicKey publicKey;
     private final X509Certificate serverCertificate;
 
-    public ServerServlet(LeshanServer server, X509Certificate serverCertificate) {
+    public ServerServlet(LeshanMultiConnectionServer server, X509Certificate serverCertificate) {
         this.server = server;
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(SecurityInfo.class, new SecuritySerializer());
@@ -57,7 +57,7 @@ public class ServerServlet extends HttpServlet {
         this.serverCertificate = serverCertificate;
     }
 
-    public ServerServlet(LeshanServer server, PublicKey serverPublicKey) {
+    public ServerServlet(LeshanMultiConnectionServer server, PublicKey serverPublicKey) {
         this.server = server;
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(SecurityInfo.class, new SecuritySerializer());
@@ -94,8 +94,8 @@ public class ServerServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.getOutputStream()
                     .write(String
-                            .format("{ \"securedEndpointPort\":\"%s\", \"unsecuredEndpointPort\":\"%s\"}",
-                                    server.getSecuredAddress().getPort(), server.getUnsecuredAddress().getPort())
+                            .format("{ \"getFirstAddressPort\":\"%s\"}",
+                                    server.getFirstAddress().getPort())
                             .getBytes(StandardCharsets.UTF_8));
             return;
         }

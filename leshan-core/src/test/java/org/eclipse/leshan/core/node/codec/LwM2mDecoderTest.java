@@ -56,7 +56,7 @@ import org.junit.Test;
 /**
  * Unit tests for {@link LwM2mDecoder}
  */
-public class LwM2mNodeDecoderTest {
+public class LwM2mDecoderTest {
 
     private static LwM2mModel model;
     private static LwM2mDecoder decoder;

@@ -30,8 +30,8 @@ import org.eclipse.leshan.core.Startable;
 import org.eclipse.leshan.core.Stoppable;
 import org.eclipse.leshan.core.californium.CoapResponseCallback;
 import org.eclipse.leshan.core.node.codec.CodecException;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeEncoder;
+import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
+import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.DownlinkRequest;
 import org.eclipse.leshan.core.request.SendRequest;
@@ -129,7 +129,7 @@ public class LeshanMultiConnectionServer {
      */
     public LeshanMultiConnectionServer(List<Endpoint> endpoints,
                                        CaliforniumRegistrationStore registrationStore, SecurityStore securityStore, Authorizer authorizer,
-                                       LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
+                                       LwM2mModelProvider modelProvider, LwM2mEncoder encoder, LwM2mDecoder decoder,
                                        NetworkConfig coapConfig, boolean noQueueMode, ClientAwakeTimeProvider awakeTimeProvider,
                                        RegistrationIdProvider registrationIdProvider, boolean updateRegistrationOnNotification) {
 
@@ -185,7 +185,7 @@ public class LeshanMultiConnectionServer {
         return new CoapServer(coapConfig) {
             @Override
             protected Resource createRoot() {
-                return new RootResource(this);
+                return new RootResource();
             }
         };
     }
@@ -195,7 +195,7 @@ public class LeshanMultiConnectionServer {
     }
 
     protected ObservationMultiConnectionServiceImpl createObservationService(CaliforniumRegistrationStore registrationStore,
-            LwM2mModelProvider modelProvider, LwM2mNodeDecoder decoder, List<Endpoint> endpoints) {
+            LwM2mModelProvider modelProvider, LwM2mDecoder decoder, List<Endpoint> endpoints) {
 
         ObservationMultiConnectionServiceImpl observationService = new ObservationMultiConnectionServiceImpl(registrationStore, modelProvider,
                 decoder, updateRegistrationOnNotification);
@@ -229,13 +229,13 @@ public class LeshanMultiConnectionServer {
     }
 
     protected CoapResource createSendResource(SendHandler sendHandler, LwM2mModelProvider modelProvider,
-            LwM2mNodeDecoder decoder, CaliforniumRegistrationStore registrationStore) {
+            LwM2mDecoder decoder, CaliforniumRegistrationStore registrationStore) {
         return new SendResource(sendHandler, modelProvider, decoder, registrationStore);
     }
 
     protected LwM2mRequestSender createRequestSender(List<Endpoint> endpoints,
                                                      RegistrationServiceImpl registrationService, ObservationMultiConnectionServiceImpl observationService,
-                                                     LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
+                                                     LwM2mModelProvider modelProvider, LwM2mEncoder encoder, LwM2mDecoder decoder,
                                                      PresenceServiceImpl presenceService) {
 
         // if no queue mode, create a "simple" sender
@@ -623,7 +623,7 @@ public class LeshanMultiConnectionServer {
     /**
      * @return the {@link InetSocketAddress} used for <code>coaps://</code>
      */
-    public InetSocketAddress getSecuredAddress() {
+    public InetSocketAddress getFirstAddress() {
         for( Endpoint endpoint: endpoints ) {
             return endpoint.getAddress();
         }

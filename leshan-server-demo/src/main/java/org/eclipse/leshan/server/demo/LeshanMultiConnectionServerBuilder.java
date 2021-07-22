@@ -27,15 +27,16 @@ import org.eclipse.californium.scandium.DTLSConnector;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig.Builder;
 import org.eclipse.californium.scandium.dtls.CertificateType;
-import org.eclipse.californium.scandium.dtls.x509.BridgeCertificateVerifier;
+import org.eclipse.californium.scandium.dtls.x509.SingleCertificateProvider;
+import org.eclipse.californium.scandium.dtls.x509.StaticNewAdvancedCertificateVerifier;
 import org.eclipse.leshan.core.LwM2m;
 import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
 import org.eclipse.leshan.core.californium.EndpointFactory;
 import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeDecoder;
-import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeEncoder;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeEncoder;
+import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
+import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
+import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
+import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.exception.ClientSleepingException;
 import org.eclipse.leshan.server.californium.LeshanServer;
@@ -82,8 +83,8 @@ public class LeshanMultiConnectionServerBuilder {
     private InetSocketAddress localAddress;
     private InetSocketAddress localSecureAddress;
 
-    private LwM2mNodeEncoder encoder;
-    private LwM2mNodeDecoder decoder;
+    private LwM2mEncoder encoder;
+    private LwM2mDecoder decoder;
 
     private PublicKey publicKey;
     private PrivateKey privateKey;
@@ -258,22 +259,22 @@ public class LeshanMultiConnectionServerBuilder {
 
     /**
      * <p>
-     * Set the {@link LwM2mNodeEncoder} which will encode {@link LwM2mNode} with supported content format.
+     * Set the {@link LwM2mEncoder} which will encode {@link LwM2mNode} with supported content format.
      * </p>
-     * By default the {@link DefaultLwM2mNodeEncoder} is used. It supports Text, Opaque, TLV and JSON format.
+     * By default the {@link DefaultLwM2mEncoder} is used. It supports Text, Opaque, TLV and JSON format.
      */
-    public LeshanMultiConnectionServerBuilder setEncoder(LwM2mNodeEncoder encoder) {
+    public LeshanMultiConnectionServerBuilder setEncoder(LwM2mEncoder encoder) {
         this.encoder = encoder;
         return this;
     }
 
     /**
      * <p>
-     * Set the {@link LwM2mNodeDecoder} which will decode data in supported content format to create {@link LwM2mNode}.
+     * Set the {@link LwM2mDecoder} which will decode data in supported content format to create {@link LwM2mNode}.
      * </p>
-     * By default the {@link DefaultLwM2mNodeDecoder} is used. It supports Text, Opaque, TLV and JSON format.
+     * By default the {@link DefaultLwM2mDecoder} is used. It supports Text, Opaque, TLV and JSON format.
      */
-    public LeshanMultiConnectionServerBuilder setDecoder(LwM2mNodeDecoder decoder) {
+    public LeshanMultiConnectionServerBuilder setDecoder(LwM2mDecoder decoder) {
         this.decoder = decoder;
         return this;
     }
@@ -412,9 +413,9 @@ public class LeshanMultiConnectionServerBuilder {
         if (modelProvider == null)
             modelProvider = new StandardModelProvider();
         if (encoder == null)
-            encoder = new DefaultLwM2mNodeEncoder();
+            encoder = new DefaultLwM2mEncoder();
         if (decoder == null)
-            decoder = new DefaultLwM2mNodeDecoder();
+            decoder = new DefaultLwM2mDecoder();
         if (coapConfig == null)
             coapConfig = createDefaultNetworkConfig();
         if (awakeTimeProvider == null) {
@@ -468,74 +469,48 @@ public class LeshanMultiConnectionServerBuilder {
             if (incompleteConfig.getStaleConnectionThreshold() == null)
                 dtlsConfigBuilder.setStaleConnectionThreshold(coapConfig.getLong(Keys.MAX_PEER_INACTIVITY_PERIOD));
 
-            // check conflict for private key
-            if (privateKey != null) {
-                if (incompleteConfig.getPrivateKey() != null && !incompleteConfig.getPrivateKey().equals(privateKey)) {
+            // check conflict in configuration
+            if (incompleteConfig.getCertificateIdentityProvider() != null) {
+                if (privateKey != null) {
                     throw new IllegalStateException(String.format(
-                            "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder for private key: %s != %s",
-                            privateKey, incompleteConfig.getPrivateKey()));
+                            "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder for private key"));
                 }
-
+                if (publicKey != null) {
+                    throw new IllegalStateException(String.format(
+                            "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder for public key"));
+                }
+                if (certificateChain != null) {
+                    throw new IllegalStateException(String.format(
+                            "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder for certificate chain"));
+                }
+            } else if (privateKey != null) {
                 // if in raw key mode and not in X.509 set the raw keys
                 if (certificateChain == null && publicKey != null) {
-                    if (incompleteConfig.getPublicKey() != null && !incompleteConfig.getPublicKey().equals(publicKey)) {
-                        throw new IllegalStateException(String.format(
-                                "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder for public key: %s != %s",
-                                publicKey, incompleteConfig.getPublicKey()));
-                    }
 
-                    dtlsConfigBuilder.setIdentity(privateKey, publicKey);
+                    dtlsConfigBuilder.setCertificateIdentityProvider(new SingleCertificateProvider(privateKey, publicKey));
                 }
                 // if in X.509 mode set the private key, certificate chain, public key is extracted from the certificate
                 if (certificateChain != null && certificateChain.length > 0) {
-                    if (incompleteConfig.getCertificateChain() != null
-                            && !Arrays.asList(certificateChain).equals(incompleteConfig.getCertificateChain())) {
-                        throw new IllegalStateException(String.format(
-                                "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder for certificate chain: %s != %s",
-                                Arrays.toString(certificateChain), incompleteConfig.getCertificateChain()));
-                    }
 
-                    dtlsConfigBuilder.setIdentity(privateKey, certificateChain, CertificateType.X_509,
-                            CertificateType.RAW_PUBLIC_KEY);
+                    dtlsConfigBuilder.setCertificateIdentityProvider(new SingleCertificateProvider(privateKey, certificateChain, CertificateType.X_509,
+                            CertificateType.RAW_PUBLIC_KEY));
                 }
+            }
 
-                // handle trusted certificates or RPK
-                if (incompleteConfig.getAdvancedCertificateVerifier() != null) {
-                    if (trustedCertificates != null) {
-                        throw new IllegalStateException(
-                                "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder: if a AdvancedCertificateVerifier is set, trustedCertificates must not be set.");
-                    }
-                } else {
-                    BridgeCertificateVerifier.Builder verifierBuilder = new BridgeCertificateVerifier.Builder();
-                    if (incompleteConfig.getRpkTrustStore() != null) {
-                        verifierBuilder.setTrustedRPKs(incompleteConfig.getRpkTrustStore());
-                    } else {
-                        // by default trust all RPK
-                        verifierBuilder.setTrustAllRPKs();
-                    }
-                    if (incompleteConfig.getTrustStore() != null) {
-                        if (trustedCertificates != null
-                                && !Arrays.equals(trustedCertificates, incompleteConfig.getTrustStore())) {
-                            throw new IllegalStateException(String.format(
-                                    "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder for trusted Certificates (trustStore) : \n%s != \n%s",
-                                    Arrays.toString(trustedCertificates),
-                                    Arrays.toString(incompleteConfig.getTrustStore())));
-                        }
-                        verifierBuilder.setTrustedCertificates(incompleteConfig.getTrustStore());
-                    } else {
-                        if (trustedCertificates != null) {
-                            verifierBuilder.setTrustedCertificates(trustedCertificates);
-                        }
-                    }
-                    if (incompleteConfig.getCertificateVerifier() != null) {
-                        if (trustedCertificates != null) {
-                            throw new IllegalStateException(
-                                    "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder: if a CertificateVerifier is set, trustedCertificates must not be set.");
-                        }
-                        verifierBuilder.setCertificateVerifier(incompleteConfig.getCertificateVerifier());
-                    }
-                    dtlsConfigBuilder.setAdvancedCertificateVerifier(verifierBuilder.build());
+            // handle trusted certificates or RPK
+            if (incompleteConfig.getAdvancedCertificateVerifier() != null) {
+                if (trustedCertificates != null) {
+                    throw new IllegalStateException(
+                            "Configuration conflict between LeshanBuilder and DtlsConnectorConfig.Builder: if a AdvancedCertificateVerifier is set, trustedCertificates must not be set.");
                 }
+            } else if (incompleteConfig.getCertificateIdentityProvider() != null){
+                StaticNewAdvancedCertificateVerifier.Builder verifierBuilder = StaticNewAdvancedCertificateVerifier.builder();
+                // by default trust all RPK
+                verifierBuilder.setTrustAllRPKs();
+                if (trustedCertificates != null) {
+                    verifierBuilder.setTrustedCertificates(trustedCertificates);
+                }
+                dtlsConfigBuilder.setAdvancedCertificateVerifier(verifierBuilder.build());
             }
 
             // Deactivate SNI by default
@@ -615,7 +590,7 @@ public class LeshanMultiConnectionServerBuilder {
      */
     protected LeshanMultiConnectionServer createServer(List<Endpoint> endpoints,
                                                        CaliforniumRegistrationStore registrationStore, SecurityStore securityStore, Authorizer authorizer,
-                                                       LwM2mModelProvider modelProvider, LwM2mNodeEncoder encoder, LwM2mNodeDecoder decoder,
+                                                       LwM2mModelProvider modelProvider, LwM2mEncoder encoder, LwM2mDecoder decoder,
                                                        NetworkConfig coapConfig, boolean noQueueMode, ClientAwakeTimeProvider awakeTimeProvider,
                                                        RegistrationIdProvider registrationIdProvider) {
         return new LeshanMultiConnectionServer(endpoints, registrationStore, securityStore, authorizer,

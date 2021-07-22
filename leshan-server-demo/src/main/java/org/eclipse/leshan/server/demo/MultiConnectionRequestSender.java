@@ -26,8 +26,8 @@ import org.eclipse.leshan.core.californium.*;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeDecoder;
-import org.eclipse.leshan.core.node.codec.LwM2mNodeEncoder;
+import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
+import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.request.DownlinkRequest;
 import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.request.exception.TimeoutException;
@@ -62,8 +62,8 @@ public class MultiConnectionRequestSender implements Destroyable {
             new NamedThreadFactory("Leshan Async Request timeout"));
 
     private final List<Endpoint> endpoints;
-    private final LwM2mNodeDecoder decoder;
-    private final LwM2mNodeEncoder encoder;
+    private final LwM2mDecoder decoder;
+    private final LwM2mEncoder encoder;
 
     // A map which contains all ongoing CoAP requests
     // This is used to be able to cancel request
@@ -73,11 +73,11 @@ public class MultiConnectionRequestSender implements Destroyable {
 
     /**
      * @param endpoints The endpoint used to send coaps request.
-     * @param encoder The {@link LwM2mNodeEncoder} used to encode {@link LwM2mNode}.
-     * @param decoder The {@link LwM2mNodeDecoder} used to encode {@link LwM2mNode}.
+     * @param encoder The {@link LwM2mEncoder} used to encode {@link LwM2mNode}.
+     * @param decoder The {@link LwM2mDecoder} used to encode {@link LwM2mNode}.
      */
-    public MultiConnectionRequestSender(List<Endpoint> endpoints, LwM2mNodeEncoder encoder,
-                                        LwM2mNodeDecoder decoder, ConnectionUriAssociation connectionUriAssociation) {
+    public MultiConnectionRequestSender(List<Endpoint> endpoints, LwM2mEncoder encoder,
+                                        LwM2mDecoder decoder, ConnectionUriAssociation connectionUriAssociation) {
         this.endpoints = endpoints;
         this.encoder = encoder;
         this.decoder = decoder;
