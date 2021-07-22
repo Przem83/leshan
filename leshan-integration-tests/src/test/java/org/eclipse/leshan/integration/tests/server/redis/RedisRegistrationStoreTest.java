@@ -18,12 +18,12 @@ package org.eclipse.leshan.integration.tests.server.redis;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Token;
+import org.eclipse.californium.core.observe.Observation;
 import org.eclipse.californium.elements.AddressEndpointContext;
 import org.eclipse.leshan.core.Link;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.integration.tests.util.RedisIntegrationTestHelper;
 import org.eclipse.leshan.server.californium.observation.ObserveUtil;
@@ -76,7 +76,7 @@ public class RedisRegistrationStoreTest {
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapObservationOnSingle(examplePath);
+        Observation observationToStore = prepareCoapObservationOnSingle(examplePath);
 
         // when
         store.put(exampleToken, observationToStore);
@@ -86,8 +86,9 @@ public class RedisRegistrationStoreTest {
                 exampleToken.getBytes()
         );
         assertNotNull(leshanObservation);
-        assertTrue(leshanObservation instanceof Observation);
-        Observation observation = (Observation) leshanObservation;
+        assertTrue(leshanObservation instanceof org.eclipse.leshan.core.observation.Observation);
+        org.eclipse.leshan.core.observation.Observation observation =
+                (org.eclipse.leshan.core.observation.Observation) leshanObservation;
         assertEquals(examplePath, observation.getPath().toString());
     }
 
@@ -100,7 +101,7 @@ public class RedisRegistrationStoreTest {
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapObservationOnComposite(examplePaths);
+        Observation observationToStore = prepareCoapObservationOnComposite(examplePaths);
 
         // when
         store.put(exampleToken, observationToStore);
@@ -125,7 +126,7 @@ public class RedisRegistrationStoreTest {
                 .build();
     }
 
-    private org.eclipse.californium.core.observe.Observation prepareCoapObservationOnSingle(String path) {
+    private Observation prepareCoapObservationOnSingle(String path) {
         ObserveRequest observeRequest = new ObserveRequest(null, path);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveRequestContext(
@@ -135,7 +136,7 @@ public class RedisRegistrationStoreTest {
         return prepareCoapObservation(new Request(CoAP.Code.GET), userContext);
     }
 
-    private org.eclipse.californium.core.observe.Observation prepareCoapObservationOnComposite(List<LwM2mPath> paths) {
+    private Observation prepareCoapObservationOnComposite(List<LwM2mPath> paths) {
         ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(null, null, paths);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
@@ -145,7 +146,7 @@ public class RedisRegistrationStoreTest {
         return prepareCoapObservation(new Request(CoAP.Code.FETCH), userContext);
     }
 
-    private org.eclipse.californium.core.observe.Observation prepareCoapObservation(Request coapRequest, Map<String, String> userContext) {
+    private Observation prepareCoapObservation(Request coapRequest, Map<String, String> userContext) {
         coapRequest.setUserContext(userContext);
         coapRequest.setToken(exampleToken);
         coapRequest.setObserve();
@@ -154,6 +155,6 @@ public class RedisRegistrationStoreTest {
 
         coapRequest.setDestinationContext(new AddressEndpointContext(new InetSocketAddress(address, port)));
 
-        return new org.eclipse.californium.core.observe.Observation(coapRequest, null);
+        return new Observation(coapRequest, null);
     }
 }

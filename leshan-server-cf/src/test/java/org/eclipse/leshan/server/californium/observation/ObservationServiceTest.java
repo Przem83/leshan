@@ -133,7 +133,9 @@ public class ObservationServiceTest {
         givenAnObservation(support.registration.getId(), new LwM2mPath(3, 0, 12));
         givenAnObservation("anotherClient", new LwM2mPath(3, 0, 12));
 
-        AbstractObservation observationToCancel = givenAnObservation(support.registration.getId(), new LwM2mPath(3, 0, 12));
+        AbstractObservation observationToCancel = givenAnObservation(
+                support.registration.getId(), new LwM2mPath(3, 0, 12)
+        );
 
         // check its presence
         Set<AbstractObservation> observations = observationService.getObservations(support.registration);
