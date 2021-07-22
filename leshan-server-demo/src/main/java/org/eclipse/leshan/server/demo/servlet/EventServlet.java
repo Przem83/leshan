@@ -12,6 +12,7 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - add multi-protocol capability
  *******************************************************************************/
 package org.eclipse.leshan.server.demo.servlet;
 

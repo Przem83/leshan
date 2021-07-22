@@ -12,19 +12,12 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Michał Wadowski (Orange Polska SA) - add multi-protocol capability
  *******************************************************************************/
 package org.eclipse.leshan.server.demo.servlet;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.PublicKey;
-import java.security.cert.X509Certificate;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.eclipsesource.json.JsonObject;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.leshan.server.demo.LeshanMultiConnectionServer;
 import org.eclipse.leshan.server.demo.servlet.json.PublicKeySerDes;
@@ -32,8 +25,14 @@ import org.eclipse.leshan.server.demo.servlet.json.SecuritySerializer;
 import org.eclipse.leshan.server.demo.servlet.json.X509CertificateSerDes;
 import org.eclipse.leshan.server.security.SecurityInfo;
 
-import com.eclipsesource.json.JsonObject;
-import com.google.gson.GsonBuilder;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 
 public class ServerServlet extends HttpServlet {
 
@@ -92,11 +91,8 @@ public class ServerServlet extends HttpServlet {
         if ("endpoint".equals(path[0])) {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType("application/json");
-            resp.getOutputStream()
-                    .write(String
-                            .format("{ \"getFirstAddressPort\":\"%s\"}",
-                                    server.getFirstAddress().getPort())
-                            .getBytes(StandardCharsets.UTF_8));
+            resp.getOutputStream().write(String.format("{ \"getFirstAddressPort\":\"%s\"}",
+                    server.getFirstAddress().getPort()).getBytes(StandardCharsets.UTF_8));
             return;
         }
 

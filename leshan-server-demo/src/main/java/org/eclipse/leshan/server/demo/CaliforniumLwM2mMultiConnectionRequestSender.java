@@ -13,6 +13,7 @@
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Achim Kraus (Bosch Software Innovations GmbH) - use Identity as destination
+ *     Michał Wadowski (Orange Polska SA) - add multi-protocol capability
  *******************************************************************************/
 package org.eclipse.leshan.server.demo;
 
@@ -33,9 +34,7 @@ import org.eclipse.leshan.core.response.LwM2mResponse;
 import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.core.response.ResponseCallback;
 import org.eclipse.leshan.core.util.Validate;
-import org.eclipse.leshan.server.californium.observation.ObservationServiceImpl;
 import org.eclipse.leshan.server.californium.request.CoapRequestSender;
-import org.eclipse.leshan.server.californium.request.RequestSender;
 import org.eclipse.leshan.server.model.LwM2mModelProvider;
 import org.eclipse.leshan.server.registration.Registration;
 import org.eclipse.leshan.server.request.LowerLayerConfig;
@@ -61,9 +60,10 @@ public class CaliforniumLwM2mMultiConnectionRequestSender implements LwM2mReques
      * @param decoder The {@link LwM2mDecoder} used to encode {@link LwM2mNode}.
      */
     public CaliforniumLwM2mMultiConnectionRequestSender(List<Endpoint> endpoints,
-                                                        ObservationMultiConnectionServiceImpl observationService, LwM2mModelProvider modelProvider, LwM2mEncoder encoder,
-                                                        LwM2mDecoder decoder,
-                                                        ConnectionUriAssociation connectionUriAssociation) {
+            ObservationMultiConnectionServiceImpl observationService, LwM2mModelProvider modelProvider,
+            LwM2mEncoder encoder,
+            LwM2mDecoder decoder,
+            ConnectionUriAssociation connectionUriAssociation) {
         Validate.notNull(observationService);
         Validate.notNull(modelProvider);
         this.observationService = observationService;

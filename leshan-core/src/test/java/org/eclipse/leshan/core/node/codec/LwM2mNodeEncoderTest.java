@@ -49,7 +49,7 @@ import org.junit.Test;
 /**
  * Unit tests for {@link LwM2mEncoder}
  */
-public class LwM2mEncoderTest {
+public class LwM2mNodeEncoderTest {
 
     private static LwM2mModel model;
     private static LwM2mEncoder encoder;

@@ -15,6 +15,7 @@
  *     Achim Kraus (Bosch Software Innovations GmbH) - use Lwm2mEndpointContextMatcher
  *                                                     for secure endpoint.
  *     Achim Kraus (Bosch Software Innovations GmbH) - use CoapEndpointBuilder
+ *     Michał Wadowski (Orange Polska SA) - add multi-protocol capability
  *******************************************************************************/
 package org.eclipse.leshan.server.demo;
 
@@ -430,9 +431,6 @@ public class LeshanMultiConnectionServerBuilder {
         }
         if (registrationIdProvider == null)
             registrationIdProvider = new RandomStringRegistrationIdProvider();
-//        if (endpointFactoryList == null) {
-//            endpointFactoryList = Arrays.asList(new DefaultEndpointFactory("LWM2M Server", false));
-//        }
 
         // handle dtlsConfig
         DtlsConnectorConfig dtlsConfig = null;

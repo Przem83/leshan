@@ -13,7 +13,8 @@
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Bosch Software Innovations - added Redis URL support with authentication
- *     Firis SA - added mDNS services registering 
+ *     Firis SA - added mDNS services registering
+ *     Michał Wadowski (Orange Polska SA) - add multi-protocol capability
  *******************************************************************************/
 package org.eclipse.leshan.server.demo;
 

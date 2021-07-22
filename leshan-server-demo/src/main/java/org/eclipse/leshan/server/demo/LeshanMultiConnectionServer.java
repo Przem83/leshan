@@ -13,6 +13,7 @@
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     RISE SICS AB - added Queue Mode operation
+ *     Michał Wadowski (Orange Polska SA) - add multi-protocol capability
  *******************************************************************************/
 package org.eclipse.leshan.server.demo;
 
@@ -315,12 +316,6 @@ public class LeshanMultiConnectionServer {
 
         // Start server
         coapServer.start();
-
-//        if (LOG.isInfoEnabled()) {
-//            LOG.info("LWM2M server started at {} {}",
-//                    getUnsecuredAddress() == null ? "" : "coap://" + getUnsecuredAddress(),
-//                    getSecuredAddress() == null ? "" : "coaps://" + getSecuredAddress());
-//        }
     }
 
     /**
@@ -609,17 +604,6 @@ public class LeshanMultiConnectionServer {
         requestSender.send(destination, request, lowerLayerConfig, timeoutInMs, responseCallback, errorCallback);
     }
 
-//    /**
-//     * @return the {@link InetSocketAddress} used for <code>coap://</code>
-//     */
-//    public InetSocketAddress getUnsecuredAddress() {
-//        if (unsecuredEndpoint != null) {
-//            return unsecuredEndpoint.getAddress();
-//        } else {
-//            return null;
-//        }
-//    }
-//
     /**
      * @return the {@link InetSocketAddress} used for <code>coaps://</code>
      */
@@ -646,20 +630,6 @@ public class LeshanMultiConnectionServer {
         public CoapServer getServer() {
             return coapServer;
         }
-
-//        /**
-//         * @return the {@link CoapEndpoint} used for secured CoAP communication (coaps://)
-//         */
-//        public CoapEndpoint getSecuredEndpoint() {
-//            return securedEndpoint;
-//        }
-//
-//        /**
-//         * @return the {@link CoapEndpoint} used for unsecured CoAP communication (coap://)
-//         */
-//        public CoapEndpoint getUnsecuredEndpoint() {
-//            return unsecuredEndpoint;
-//        }
 
         /**
          * Send a CoAP {@link Request} synchronously to a LWM2M client using a default 2min timeout. Will block until a
