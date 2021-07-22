@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2015 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Achim Kraus (Bosch Software Innovations GmbH) - use ServerIdentity
@@ -192,6 +192,25 @@ public class RootResource extends LwM2mClientCoapResource implements ObjectListe
         BootstrapDeleteResponse response = bootstrapHandler.delete(identity,
                 new BootstrapDeleteRequest(URI, coapRequest));
         exchange.respond(toCoapResponseCode(response.getCode()), response.getErrorMessage());
+    }
+
+    @Override
+    public void resourceChanged(LwM2mObjectEnabler object, int instanceId, int... resourceIds) {
+        // notify CoAP layer than resources changes, this will send observe notification if an observe relationship
+        // exits.
+        changed(new ResourceObserveFilter(object.getId() + ""));
+        changed(new ResourceObserveFilter(object.getId() + "/" + instanceId));
+        for (int resourceId : resourceIds) {
+            changed(new ResourceObserveFilter(object.getId() + "/" + instanceId + "/" + resourceId));
+        }
+    }
+
+    @Override
+    public void objectInstancesAdded(LwM2mObjectEnabler object, int... instanceIds) {
+    }
+
+    @Override
+    public void objectInstancesRemoved(LwM2mObjectEnabler object, int... instanceIds) {
     }
 
     @Override
