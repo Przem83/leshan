@@ -77,12 +77,12 @@ public class ObserveCompositeResponse extends ReadCompositeResponse {
     @Override
     public String toString() {
         if (errorMessage != null) {
-            return String.format("CompositeObserveResponse [code=%s, errormessage=%s]", code, errorMessage);
+            return String.format("ObserveCompositeResponse [code=%s, errormessage=%s]", code, errorMessage);
         } else if (timestampedValues != null) {
-            return String.format("CompositeObserveResponse [code=%s, content=%s, observation=%s, timestampedValues=" +
+            return String.format("ObserveCompositeResponse [code=%s, content=%s, observation=%s, timestampedValues=" +
                     "%d entries]", code, content, observation, timestampedValues.keySet().size());
         } else {
-            return String.format("CompositeObserveResponse [code=%s, content=%s, compositeObservation=%s]", code,
+            return String.format("ObserveCompositeResponse [code=%s, content=%s, compositeObservation=%s]", code,
                     content, observation
             );
         }
