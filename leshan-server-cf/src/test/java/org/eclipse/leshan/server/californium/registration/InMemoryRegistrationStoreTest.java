@@ -1,28 +1,20 @@
 /*******************************************************************************
  * Copyright (c) 2013-2015 Sierra Wireless and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and Eclipse Distribution License v1.0 which accompany this distribution.
- * 
+ *
  * The Eclipse Public License is available at
  *    http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *    http://www.eclipse.org/org/documents/edl-v10.html.
- * 
+ *
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.registration;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Request;
@@ -41,6 +33,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class InMemoryRegistrationStoreTest {
@@ -52,6 +52,12 @@ public class InMemoryRegistrationStoreTest {
     private final EnumSet<BindingMode> binding = EnumSet.of(BindingMode.U, BindingMode.Q, BindingMode.S);
     private final Link[] objectLinks = Link.parse("</3>".getBytes(StandardCharsets.UTF_8));
     private final String registrationId = "4711";
+    private final Token exampleToken = Token.EMPTY;
+    private final String examplePath = "/1/2/3";
+    private final List<LwM2mPath> examplePaths = Arrays.asList(
+            new LwM2mPath("/1/2/3"),
+            new LwM2mPath("/4/5/6")
+    );
 
     CaliforniumRegistrationStore store;
     InetAddress address;
@@ -108,13 +114,10 @@ public class InMemoryRegistrationStoreTest {
     @Test
     public void put_coap_observation_with_valid_request() {
         // given
-        String examplePath = "/1/2/3";
-        Token exampleToken = Token.EMPTY;
-
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapObservation(examplePath, exampleToken);
+        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapObservation();
 
         // when
         store.put(exampleToken, observationToStore);
@@ -129,13 +132,10 @@ public class InMemoryRegistrationStoreTest {
     @Test
     public void get_observation_from_request() {
         // given
-        String examplePath = "/1/2/3";
-        Token exampleToken = Token.EMPTY;
-
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapObservation(examplePath, exampleToken);
+        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapObservation();
 
         // when
         store.put(exampleToken, observationToStore);
@@ -151,13 +151,10 @@ public class InMemoryRegistrationStoreTest {
     @Test
     public void get_composite_observation_from_request() {
         // given
-        List<LwM2mPath> examplePaths = Arrays.asList(new LwM2mPath("/1/2/3"), new LwM2mPath("/4/5/6"));
-        Token exampleToken = Token.EMPTY;
-
         givenASimpleRegistration(lifetime);
         store.addRegistration(registration);
 
-        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapObservation(examplePaths, exampleToken);
+        org.eclipse.californium.core.observe.Observation observationToStore = prepareCoapCompositeObservation();
 
         // when
         store.put(exampleToken, observationToStore);
@@ -170,8 +167,8 @@ public class InMemoryRegistrationStoreTest {
         assertEquals(examplePaths, compositeObservation.getPaths());
     }
 
-    private org.eclipse.californium.core.observe.Observation prepareCoapObservation(String path, Token token) {
-        ObserveRequest observeRequest = new ObserveRequest(null, path);
+    private org.eclipse.californium.core.observe.Observation prepareCoapObservation() {
+        ObserveRequest observeRequest = new ObserveRequest(null, examplePath);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveRequestContext(
                 ep, registrationId, observeRequest
@@ -179,15 +176,15 @@ public class InMemoryRegistrationStoreTest {
 
         Request coapRequest = new Request(CoAP.Code.GET);
         coapRequest.setUserContext(userContext);
-        coapRequest.setToken(token);
+        coapRequest.setToken(exampleToken);
         coapRequest.setObserve();
         coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
 
         return new org.eclipse.californium.core.observe.Observation(coapRequest, null);
     }
 
-    private org.eclipse.californium.core.observe.Observation prepareCoapObservation(List<LwM2mPath> paths, Token token) {
-        ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(null, null, paths);
+    private org.eclipse.californium.core.observe.Observation prepareCoapCompositeObservation() {
+        ObserveCompositeRequest observeRequest = new ObserveCompositeRequest(null, null, examplePaths);
 
         Map<String, String> userContext = ObserveUtil.createCoapObserveCompositeRequestContext(
                 ep, registrationId, observeRequest
@@ -195,7 +192,7 @@ public class InMemoryRegistrationStoreTest {
 
         Request coapRequest = new Request(CoAP.Code.FETCH);
         coapRequest.setUserContext(userContext);
-        coapRequest.setToken(token);
+        coapRequest.setToken(exampleToken);
         coapRequest.setObserve();
         coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
 

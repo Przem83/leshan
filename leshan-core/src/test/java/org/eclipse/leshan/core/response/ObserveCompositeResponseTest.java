@@ -36,8 +36,12 @@ public class ObserveCompositeResponseTest {
     public void should_create_response_with_content() {
         // given
         Map<LwM2mPath, LwM2mNode> exampleContent = new HashMap<>();
-        exampleContent.put(new LwM2mPath("/1/2/3"), newResource(15, "example 1"));
-        exampleContent.put(new LwM2mPath("/2/3/4"), newResource(16, "example 2"));
+        exampleContent.put(
+                new LwM2mPath("/1/2/3"), newResource(15, "example 1")
+        );
+        exampleContent.put(
+                new LwM2mPath("/2/3/4"), newResource(16, "example 2")
+        );
 
         // when
         ObserveCompositeResponse response = new ObserveCompositeResponse(
@@ -76,8 +80,12 @@ public class ObserveCompositeResponseTest {
 
         // then
         Map<LwM2mPath, LwM2mNode> expectedContent = new HashMap<>();
-        expectedContent.put(new LwM2mPath("/1/2/3"), newResource(15, "example 1a"));
-        expectedContent.put(new LwM2mPath("/2/3/4"), newResource(16, "example 2a"));
+        expectedContent.put(
+                new LwM2mPath("/1/2/3"), newResource(15, "example 1a")
+        );
+        expectedContent.put(
+                new LwM2mPath("/2/3/4"), newResource(16, "example 2a")
+        );
 
         assertEquals(expectedContent, response.getContent());
         assertEquals(exampleTimestampedValues, response.getTimestampedValues());

@@ -53,7 +53,7 @@ public class ObserveResponseTest {
     public void should_throw_invalid_response_exception_if_no_content() {
         assertThrows(InvalidResponseException.class, new ThrowingRunnable() {
             @Override
-            public void run() throws Throwable {
+            public void run() {
                 new ObserveResponse(responseCode, null, null, null, null);
             }
         });
@@ -63,7 +63,7 @@ public class ObserveResponseTest {
     public void should_throw_invalid_response_exception_if_no_content_and_empty_timestamped_values() {
         assertThrows(InvalidResponseException.class, new ThrowingRunnable() {
             @Override
-            public void run() throws Throwable {
+            public void run() {
                 new ObserveResponse(responseCode, null, Collections.<TimestampedLwM2mNode>emptyList(), null, null);
             }
         });
