@@ -157,8 +157,8 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
         coapRequest = Request.newGet();
         coapRequest.setObserveCancel();
         coapRequest.setToken(request.getObservation().getId());
-        if (request.getObservation().getContentFormat() != null)
-            coapRequest.getOptions().setAccept(request.getObservation().getContentFormat().getCode());
+        if (request.getContentFormat() != null)
+            coapRequest.getOptions().setAccept(request.getContentFormat().getCode());
         setTarget(coapRequest, request.getPath());
         applyLowerLayerConfig(coapRequest);
     }
@@ -190,6 +190,23 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
         setTarget(coapRequest, LwM2mPath.ROOTPATH);
 
         coapRequest.setUserContext(ObserveUtil.createCoapObserveCompositeRequestContext(endpoint, registrationId, request));
+        applyLowerLayerConfig(coapRequest);
+    }
+
+    @Override
+    public void visit(CancelCompositeObservationRequest request) {
+        coapRequest = Request.newFetch();
+        coapRequest.setObserveCancel();
+        coapRequest.setToken(request.getObservation().getId());
+
+        coapRequest.getOptions().setContentFormat(request.getRequestContentFormat().getCode());
+        coapRequest.setPayload(encoder.encodePaths(request.getPaths(), request.getRequestContentFormat()));
+        if (request.getResponseContentFormat() != null) {
+            coapRequest.getOptions().setAccept(request.getResponseContentFormat().getCode());
+        }
+
+        setTarget(coapRequest, LwM2mPath.ROOTPATH);
+
         applyLowerLayerConfig(coapRequest);
     }
 

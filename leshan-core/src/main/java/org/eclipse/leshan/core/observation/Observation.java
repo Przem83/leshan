@@ -28,6 +28,7 @@ import java.util.Objects;
  */
 public class Observation extends AbstractObservation {
 
+    protected final ContentFormat contentFormat;
     private final LwM2mPath path;
 
     /**
@@ -41,8 +42,18 @@ public class Observation extends AbstractObservation {
      */
     public Observation(byte[] id, String registrationId, LwM2mPath path, ContentFormat contentFormat,
             Map<String, String> context) {
-        super(id, registrationId, contentFormat, context);
+        super(id, registrationId, context);
+        this.contentFormat = contentFormat;
         this.path = path;
+    }
+
+    /**
+     * Gets the requested contentFormat (could be null).
+     *
+     * @return the resource path
+     */
+    public ContentFormat getContentFormat() {
+        return contentFormat;
     }
 
     /**
@@ -71,11 +82,11 @@ public class Observation extends AbstractObservation {
         if (!(o instanceof Observation)) return false;
         if (!super.equals(o)) return false;
         Observation that = (Observation) o;
-        return Objects.equals(path, that.path);
+        return Objects.equals(contentFormat, that.contentFormat) && Objects.equals(path, that.path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), path);
+        return Objects.hash(super.hashCode(), contentFormat, path);
     }
 }

@@ -23,10 +23,7 @@ import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.request.*;
-import org.eclipse.leshan.core.response.LwM2mResponse;
-import org.eclipse.leshan.core.response.ObserveCompositeResponse;
-import org.eclipse.leshan.core.response.ReadResponse;
-import org.eclipse.leshan.core.response.WriteCompositeResponse;
+import org.eclipse.leshan.core.response.*;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.eclipse.leshan.server.registration.Registration;
 import org.junit.After;
@@ -37,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.*;
@@ -178,6 +174,58 @@ public class ObserveCompositeTest {
         assertListenerResponseEqualsToReadResponse(examplePath);
     }
 
+    @Test
+    public void can_passive_cancel_composite_observation() throws InterruptedException {
+        ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1);
+
+        CompositeObservation observation = observeCompositeResponse.getObservation();
+
+        writeSingleExampleValue();
+
+        // cancel observation : passive way
+        helper.server.getObservationService().cancelObservation(observation);
+        Set<AbstractObservation> observations =
+                helper.server.getObservationService().getObservations(helper.getCurrentRegistration());
+        assertTrue("Observation should be removed", observations.isEmpty());
+
+        // write device timezone
+        listener.reset();
+
+        writeSingleValue("Europe/London");
+
+        assertFalse("Observation should be cancelled", listener.receivedNotify().get());
+    }
+
+    @Test
+    public void can_active_cancel_composite_observation() throws InterruptedException {
+        ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1);
+
+        CompositeObservation observation = observeCompositeResponse.getObservation();
+
+        writeSingleExampleValue();
+
+        // cancel observation : active way
+        CancelCompositeObservationResponse response = helper.server.send(helper.getCurrentRegistration(),
+                new CancelCompositeObservationRequest(observation));
+        assertTrue(response.isSuccess());
+        assertEquals(ResponseCode.CONTENT, response.getCode());
+
+        assertResponseContainsPaths(examplePath1);
+        assertListenerResponseContainsValue(15, examplePath1, exampleValue1);
+
+        // active cancellation does not remove observation from store : it should be done manually using
+        // ObservationService().cancelObservation(observation)
+        assertOneValidObservation(observation);
+
+        // write device timezone
+        listener.reset();
+
+        writeSingleValue("Europe/London");
+
+        assertFalse("Observation should be cancelled", listener.receivedNotify().get());
+    }
+
+
     private void assertObservationContainsPaths(CompositeObservation observation, String... paths) {
         assertNotNull(observation);
         assertEquals(paths.length, observation.getPaths().size());
@@ -212,11 +260,15 @@ public class ObserveCompositeTest {
         );
     }
 
-    private void writeSingleExampleValue() throws InterruptedException {
+    private void writeSingleValue(String value) throws InterruptedException {
         LwM2mResponse writeResponse = helper.server.send(helper.getCurrentRegistration(),
-                new WriteRequest(3, 0, 15, exampleValue1));
+                new WriteRequest(3, 0, 15, value));
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
+    }
+
+    private void writeSingleExampleValue() throws InterruptedException {
+        writeSingleValue(exampleValue1);
     }
 
     private void writeCompositeExampleValues() throws InterruptedException {

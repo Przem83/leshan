@@ -277,6 +277,28 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
     }
 
     @Override
+    public void visit(CancelCompositeObservationRequest request) {
+        if (coapResponse.isError()) {
+            // handle error response:
+            lwM2mresponse = new CancelCompositeObservationResponse(
+                    toLwM2mResponseCode(coapResponse.getCode()), null, null, coapResponse.getPayloadString(),
+                    coapResponse, null
+            );
+        } else if (isResponseCodeContent() || isResponseCodeChanged()) {
+            // handle success response:
+            Map<LwM2mPath, LwM2mNode> content = decodeCompositeCoapResponse(
+                    request.getPaths(), coapResponse, request, clientEndpoint
+            );
+            lwM2mresponse = new CancelCompositeObservationResponse(
+                    toLwM2mResponseCode(coapResponse.getCode()), content, null, null, coapResponse, null
+            );
+        } else {
+            // handle unexpected response:
+            handleUnexpectedResponseCode(clientEndpoint, request, coapResponse);
+        }
+    }
+
+    @Override
     public void visit(WriteCompositeRequest request) {
         if (coapResponse.isError()) {
             // handle error response:

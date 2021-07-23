@@ -52,7 +52,7 @@ public class ObserveUtil {
                 request.getToken().getBytes(),
                 observeCommon.regId,
                 observeCommon.lwm2mPath.get(0),
-                observeCommon.contentFormat,
+                observeCommon.responseContentFormat,
                 observeCommon.context
         );
     }
@@ -64,7 +64,8 @@ public class ObserveUtil {
                 request.getToken().getBytes(),
                 observeCommon.regId,
                 observeCommon.lwm2mPath,
-                observeCommon.contentFormat,
+                observeCommon.requestContentFormat,
+                observeCommon.responseContentFormat,
                 observeCommon.context
         );
     }
@@ -73,7 +74,8 @@ public class ObserveUtil {
         String regId;
         Map<String, String> context;
         List<LwM2mPath> lwm2mPath;
-        ContentFormat contentFormat;
+        ContentFormat requestContentFormat;
+        ContentFormat responseContentFormat;
 
         public ObserveCommon(Request request) {
             if (request.getUserContext() == null) {
@@ -104,8 +106,12 @@ public class ObserveUtil {
                 throw new IllegalStateException("missing path in request context");
             }
 
+            if (request.getOptions().hasContentFormat()) {
+                requestContentFormat = ContentFormat.fromCode(request.getOptions().getContentFormat());
+            }
+
             if (request.getOptions().hasAccept()) {
-                contentFormat = ContentFormat.fromCode(request.getOptions().getAccept());
+                responseContentFormat = ContentFormat.fromCode(request.getOptions().getAccept());
             }
         }
     }

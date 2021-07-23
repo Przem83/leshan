@@ -84,7 +84,8 @@ public class ObserveUtilTest {
         Request coapRequest = new Request(null);
         coapRequest.setUserContext(userContext);
         coapRequest.setToken(exampleToken);
-        coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
+        coapRequest.getOptions().setContentFormat(ContentFormat.CBOR.getCode());
+        coapRequest.getOptions().setAccept(ContentFormat.JSON.getCode());
 
         CompositeObservation observation = ObserveUtil.createLwM2mCompositeObservation(coapRequest);
 
@@ -94,7 +95,8 @@ public class ObserveUtilTest {
         assertEquals(exampleToken.getBytes(), observation.getId());
         assertTrue(observation.getContext().containsKey("extraKey"));
         assertEquals("extraValue", observation.getContext().get("extraKey"));
-        assertEquals(ContentFormat.DEFAULT, observation.getContentFormat());
+        assertEquals(ContentFormat.CBOR, observation.getRequestContentFormat());
+        assertEquals(ContentFormat.JSON, observation.getResponseContentFormat());
     }
 
     @Test
