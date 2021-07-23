@@ -75,7 +75,7 @@ public class ObserveCompositeTest {
     }
 
     @Test
-    public void can_composite_observe_on_single_resource() throws InterruptedException {
+    public void can_observe_composite_on_single_resource() throws InterruptedException {
         ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1);
 
         assertObserveCompositeResponse(observeCompositeResponse);
@@ -94,7 +94,7 @@ public class ObserveCompositeTest {
     }
 
     @Test
-    public void can_composite_observe_on_multiple_resources() throws InterruptedException {
+    public void can_observe_composite_on_multiple_resources() throws InterruptedException {
         ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1, examplePath2);
 
         assertObserveCompositeResponse(observeCompositeResponse);
@@ -113,7 +113,7 @@ public class ObserveCompositeTest {
     }
 
     @Test
-    public void can_composite_observe_on_multiple_resources_with_write_composite() throws InterruptedException {
+    public void can_observe_composite_on_multiple_resources_with_write_composite() throws InterruptedException {
         ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1, examplePath2);
 
         assertObserveCompositeResponse(observeCompositeResponse);

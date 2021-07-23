@@ -174,7 +174,7 @@ public class ObservationServiceTest {
     }
 
     @Test
-    public void on_notification_composite_observe_response() {
+    public void on_notification_observe_composite_response() {
         // given
         createDummyDecoderObservationService();
 
