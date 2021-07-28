@@ -21,9 +21,9 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Token;
 import org.eclipse.leshan.core.Link;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.observation.AbstractObservation;
-import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.CompositeObservation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.server.californium.observation.ObserveUtil;
 import org.eclipse.leshan.server.registration.Registration;
@@ -141,10 +141,10 @@ public class InMemoryRegistrationStoreTest {
         store.put(exampleToken, observationToStore);
 
         // then
-        AbstractObservation leshanObservation = store.getObservation(registrationId, exampleToken.getBytes());
+        Observation leshanObservation = store.getObservation(registrationId, exampleToken.getBytes());
         assertNotNull(leshanObservation);
-        assertTrue(leshanObservation instanceof Observation);
-        Observation observation = (Observation) leshanObservation;
+        assertTrue(leshanObservation instanceof SingleObservation);
+        SingleObservation observation = (SingleObservation) leshanObservation;
         assertEquals(examplePath, observation.getPath().toString());
     }
 
@@ -160,7 +160,7 @@ public class InMemoryRegistrationStoreTest {
         store.put(exampleToken, observationToStore);
 
         // then
-        AbstractObservation leshanObservation = store.getObservation(registrationId, exampleToken.getBytes());
+        Observation leshanObservation = store.getObservation(registrationId, exampleToken.getBytes());
         assertNotNull(leshanObservation);
         assertTrue(leshanObservation instanceof CompositeObservation);
         CompositeObservation observation = (CompositeObservation) leshanObservation;

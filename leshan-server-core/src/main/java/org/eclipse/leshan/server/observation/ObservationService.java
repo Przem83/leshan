@@ -17,7 +17,7 @@ package org.eclipse.leshan.server.observation;
 
 import java.util.Set;
 
-import org.eclipse.leshan.core.observation.AbstractObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.server.registration.Registration;
 
 /**
@@ -56,14 +56,14 @@ public interface ObservationService {
      * 
      * @param observation the observation to cancel.
      */
-    void cancelObservation(AbstractObservation observation);
+    void cancelObservation(Observation observation);
 
     /**
      * Get all running observation for a given registration
      * 
      * @return an unmodifiable set of observation
      */
-    Set<AbstractObservation> getObservations(Registration registration);
+    Set<Observation> getObservations(Registration registration);
 
     void addListener(ObservationListener listener);
 

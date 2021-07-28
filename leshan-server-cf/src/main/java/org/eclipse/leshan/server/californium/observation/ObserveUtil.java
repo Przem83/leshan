@@ -19,7 +19,7 @@ package org.eclipse.leshan.server.californium.observation;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
@@ -45,10 +45,10 @@ public class ObserveUtil {
     /**
      * Create a LWM2M observation from a CoAP request.
      */
-    public static Observation createLwM2mObservation(Request request) {
+    public static SingleObservation createLwM2mObservation(Request request) {
         ObserveCommon observeCommon = new ObserveCommon(request);
 
-        return new Observation(
+        return new SingleObservation(
                 request.getToken().getBytes(),
                 observeCommon.regId,
                 observeCommon.lwm2mPath.get(0),

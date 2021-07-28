@@ -17,7 +17,7 @@ package org.eclipse.leshan.server.queue;
 
 import java.util.Collection;
 
-import org.eclipse.leshan.core.observation.AbstractObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
 import org.eclipse.leshan.server.observation.ObservationListener;
 import org.eclipse.leshan.server.registration.Registration;
@@ -39,7 +39,7 @@ public class PresenceStateListener implements RegistrationListener, ObservationL
     }
 
     @Override
-    public void registered(Registration reg, Registration previousReg, Collection<AbstractObservation> previousObsersations) {
+    public void registered(Registration reg, Registration previousReg, Collection<Observation> previousObsersations) {
         if (reg.usesQueueMode()) {
             presenceService.setAwake(reg);
         }
@@ -55,7 +55,7 @@ public class PresenceStateListener implements RegistrationListener, ObservationL
     }
 
     @Override
-    public void unregistered(Registration reg, Collection<AbstractObservation> observations, boolean expired,
+    public void unregistered(Registration reg, Collection<Observation> observations, boolean expired,
             Registration newReg) {
         presenceService.stopPresenceTracking(reg);
     }
@@ -66,7 +66,7 @@ public class PresenceStateListener implements RegistrationListener, ObservationL
      * @since 1.1
      */
     @Override
-    public void onResponse(AbstractObservation observation, Registration registration, AbstractLwM2mResponse response) {
+    public void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response) {
         presenceService.setAwake(registration);
     }
 
@@ -76,7 +76,7 @@ public class PresenceStateListener implements RegistrationListener, ObservationL
      * @since 1.1
      */
     @Override
-    public void newObservation(AbstractObservation observation, Registration registration) {
+    public void newObservation(Observation observation, Registration registration) {
     }
 
     /**
@@ -85,7 +85,7 @@ public class PresenceStateListener implements RegistrationListener, ObservationL
      * @since 1.1
      */
     @Override
-    public void cancelled(AbstractObservation observation) {
+    public void cancelled(Observation observation) {
     }
 
     /**
@@ -94,6 +94,6 @@ public class PresenceStateListener implements RegistrationListener, ObservationL
      * @since 1.1
      */
     @Override
-    public void onError(AbstractObservation observation, Registration registration, Exception error) {
+    public void onError(Observation observation, Registration registration, Exception error) {
     }
 }

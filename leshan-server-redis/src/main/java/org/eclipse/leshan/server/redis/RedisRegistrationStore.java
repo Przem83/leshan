@@ -44,8 +44,8 @@ import org.eclipse.leshan.core.Destroyable;
 import org.eclipse.leshan.core.Startable;
 import org.eclipse.leshan.core.Stoppable;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.util.NamedThreadFactory;
 import org.eclipse.leshan.core.util.Validate;
@@ -194,7 +194,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
                         removeIdentityIndex(j, oldRegistration);
                     }
                     // remove old observation
-                    Collection<AbstractObservation> obsRemoved = unsafeRemoveAllObservations(j, oldRegistration.getId());
+                    Collection<Observation> obsRemoved = unsafeRemoveAllObservations(j, oldRegistration.getId());
 
                     return new Deregistration(oldRegistration, obsRemoved);
                 }
@@ -406,7 +406,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
                 long nbRemoved = j.del(toRegIdKey(r.getId()));
                 if (nbRemoved > 0) {
                     j.del(toEndpointKey(r.getEndpoint()));
-                    Collection<AbstractObservation> obsRemoved = unsafeRemoveAllObservations(j, r.getId());
+                    Collection<Observation> obsRemoved = unsafeRemoveAllObservations(j, r.getId());
                     removeAddrIndex(j, r);
                     removeIdentityIndex(j, r);
                     removeExpiration(j, r);
@@ -489,9 +489,9 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
      * org.eclipse.californium.core.observe.ObservationStore#add method)
      */
     @Override
-    public Collection<AbstractObservation> addObservation(String registrationId, AbstractObservation observation) {
+    public Collection<Observation> addObservation(String registrationId, Observation observation) {
 
-        List<AbstractObservation> removed = new ArrayList<>();
+        List<Observation> removed = new ArrayList<>();
         try (Jedis j = pool.getResource()) {
 
             // fetch the client ep by registration ID index
@@ -507,7 +507,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
                 lockValue = lock.acquire(j, lockKey);
 
                 // cancel existing observations for the same path and registration id.
-                for (AbstractObservation obs : getObservations(j, registrationId)) {
+                for (Observation obs : getObservations(j, registrationId)) {
                     if (areTheSamePaths(observation, obs) && !Arrays.equals(observation.getId(), obs.getId())) {
                         removed.add(obs);
                         unsafeRemoveObservation(j, registrationId, obs.getId());
@@ -521,9 +521,9 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
         return removed;
     }
 
-    private boolean areTheSamePaths(AbstractObservation observation, AbstractObservation obs) {
-        if (observation instanceof Observation && obs instanceof Observation) {
-            return ((Observation) observation).getPath().equals(((Observation) obs).getPath());
+    private boolean areTheSamePaths(Observation observation, Observation obs) {
+        if (observation instanceof SingleObservation && obs instanceof SingleObservation) {
+            return ((SingleObservation) observation).getPath().equals(((SingleObservation) obs).getPath());
         }
         if (observation instanceof CompositeObservation && obs instanceof CompositeObservation) {
             return ((CompositeObservation) observation).getPaths().equals(((CompositeObservation) obs).getPaths());
@@ -532,7 +532,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
     }
 
     @Override
-    public AbstractObservation removeObservation(String registrationId, byte[] observationId) {
+    public Observation removeObservation(String registrationId, byte[] observationId) {
         try (Jedis j = pool.getResource()) {
 
             // fetch the client ep by registration ID index
@@ -547,7 +547,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
             try {
                 lockValue = lock.acquire(j, lockKey);
 
-                AbstractObservation observation = build(get(new Token(observationId)));
+                Observation observation = build(get(new Token(observationId)));
                 if (observation != null && registrationId.equals(observation.getRegistrationId())) {
                     unsafeRemoveObservation(j, registrationId, observationId);
                     return observation;
@@ -561,19 +561,19 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
     }
 
     @Override
-    public AbstractObservation getObservation(String registrationId, byte[] observationId) {
+    public Observation getObservation(String registrationId, byte[] observationId) {
         return build(get(new Token(observationId)));
     }
 
     @Override
-    public Collection<AbstractObservation> getObservations(String registrationId) {
+    public Collection<Observation> getObservations(String registrationId) {
         try (Jedis j = pool.getResource()) {
             return getObservations(j, registrationId);
         }
     }
 
-    private Collection<AbstractObservation> getObservations(Jedis j, String registrationId) {
-        Collection<AbstractObservation> result = new ArrayList<>();
+    private Collection<Observation> getObservations(Jedis j, String registrationId) {
+        Collection<Observation> result = new ArrayList<>();
         for (byte[] token : j.lrange(toKey(OBS_TKNS_REGID_IDX, registrationId), 0, -1)) {
             byte[] obs = j.get(toKey(OBS_TKN, token));
             if (obs != null) {
@@ -584,7 +584,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
     }
 
     @Override
-    public Collection<AbstractObservation> removeObservations(String registrationId) {
+    public Collection<Observation> removeObservations(String registrationId) {
         try (Jedis j = pool.getResource()) {
             // check registration exists
             Registration registration = getRegistration(j, registrationId);
@@ -730,8 +730,8 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
         }
     }
 
-    private Collection<AbstractObservation> unsafeRemoveAllObservations(Jedis j, String registrationId) {
-        Collection<AbstractObservation> removed = new ArrayList<>();
+    private Collection<Observation> unsafeRemoveAllObservations(Jedis j, String registrationId) {
+        Collection<Observation> removed = new ArrayList<>();
         byte[] regIdKey = toKey(OBS_TKNS_REGID_IDX, registrationId);
 
         // fetch all observations by token
@@ -760,7 +760,7 @@ public class RedisRegistrationStore implements CaliforniumRegistrationStore, Sta
         return ObservationSerDes.deserialize(data);
     }
 
-    private AbstractObservation build(org.eclipse.californium.core.observe.Observation cfObs) {
+    private Observation build(org.eclipse.californium.core.observe.Observation cfObs) {
         if (cfObs == null)
             return null;
 

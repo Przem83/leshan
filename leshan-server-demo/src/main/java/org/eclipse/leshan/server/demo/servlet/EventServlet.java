@@ -31,8 +31,8 @@ import org.eclipse.jetty.servlets.EventSourceServlet;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.AbstractObservation;
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
 import org.eclipse.leshan.core.response.ObserveCompositeResponse;
 import org.eclipse.leshan.core.response.ObserveResponse;
@@ -87,7 +87,7 @@ public class EventServlet extends EventSourceServlet {
 
         @Override
         public void registered(Registration registration, Registration previousReg,
-                Collection<AbstractObservation> previousObsersations) {
+                Collection<Observation> previousObsersations) {
             String jReg = EventServlet.this.gson.toJson(registration);
             sendEvent(EVENT_REGISTRATION, jReg, registration.getEndpoint());
         }
@@ -103,7 +103,7 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void unregistered(Registration registration, Collection<AbstractObservation> observations, boolean expired,
+        public void unregistered(Registration registration, Collection<Observation> observations, boolean expired,
                 Registration newReg) {
             String jReg = EventServlet.this.gson.toJson(registration);
             sendEvent(EVENT_DEREGISTRATION, jReg, registration.getEndpoint());
@@ -130,11 +130,11 @@ public class EventServlet extends EventSourceServlet {
     private final ObservationListener observationListener = new ObservationListener() {
 
         @Override
-        public void cancelled(AbstractObservation observation) {
+        public void cancelled(Observation observation) {
         }
 
         @Override
-        public void onResponse(AbstractObservation observation, Registration registration, AbstractLwM2mResponse response) {
+        public void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response) {
             String path = getObservationPaths(observation);
 
             String stringContent = null;
@@ -167,7 +167,7 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void onError(AbstractObservation observation, Registration registration, Exception error) {
+        public void onError(Observation observation, Registration registration, Exception error) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn(String.format("Unable to handle notification of [%s:%s]", observation.getRegistrationId(),
                         getObservationPaths(observation)), error);
@@ -175,14 +175,14 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void newObservation(AbstractObservation observation, Registration registration) {
+        public void newObservation(Observation observation, Registration registration) {
         }
     };
 
-    private String getObservationPaths(final AbstractObservation observation) {
+    private String getObservationPaths(final Observation observation) {
         String path = null;
-        if (observation instanceof Observation) {
-            path = ((Observation) observation).getPath().toString();
+        if (observation instanceof SingleObservation) {
+            path = ((SingleObservation) observation).getPath().toString();
         } else if (observation instanceof CompositeObservation) {
             path = ((CompositeObservation) observation).getPaths().toString();
         }

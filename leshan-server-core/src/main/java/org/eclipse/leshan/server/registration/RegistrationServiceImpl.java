@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.eclipse.leshan.core.observation.AbstractObservation;
+import org.eclipse.leshan.core.observation.Observation;
 
 /**
  * An implementation of {@link RegistrationService}
@@ -62,20 +62,20 @@ public class RegistrationServiceImpl implements RegistrationService, ExpirationL
     }
 
     @Override
-    public void registrationExpired(Registration registration, Collection<AbstractObservation> observations) {
+    public void registrationExpired(Registration registration, Collection<Observation> observations) {
         for (RegistrationListener l : listeners) {
             l.unregistered(registration, observations, true, null);
         }
     }
 
     public void fireRegistered(Registration registration, Registration previousReg,
-            Collection<AbstractObservation> previousObsersations) {
+            Collection<Observation> previousObsersations) {
         for (RegistrationListener l : listeners) {
             l.registered(registration, previousReg, previousObsersations);
         }
     }
 
-    public void fireUnregistered(Registration registration, Collection<AbstractObservation> observations, Registration newReg) {
+    public void fireUnregistered(Registration registration, Collection<Observation> observations, Registration newReg) {
         for (RegistrationListener l : listeners) {
             l.unregistered(registration, observations, false, newReg);
         }

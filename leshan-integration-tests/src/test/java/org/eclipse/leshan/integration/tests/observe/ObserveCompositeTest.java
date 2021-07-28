@@ -20,7 +20,7 @@ import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
-import org.eclipse.leshan.core.observation.AbstractObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.request.*;
 import org.eclipse.leshan.core.response.LwM2mResponse;
@@ -245,7 +245,7 @@ public class ObserveCompositeTest {
     private void assertOneValidObservation(CompositeObservation observation) {
         assertEquals(helper.getCurrentRegistration().getId(), observation.getRegistrationId());
 
-        Set<AbstractObservation> observations =
+        Set<Observation> observations =
                 helper.server.getObservationService().getObservations(helper.getCurrentRegistration());
         assertEquals("We should have only one observation", 1, observations.size());
         assertTrue("New observation is not there", observations.contains(observation));

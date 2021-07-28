@@ -19,7 +19,7 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Token;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
@@ -55,7 +55,7 @@ public class ObserveUtilTest {
         coapRequest.setToken(exampleToken);
         coapRequest.getOptions().setAccept(ContentFormat.DEFAULT.getCode());
 
-        Observation observation = ObserveUtil.createLwM2mObservation(coapRequest);
+        SingleObservation observation = ObserveUtil.createLwM2mObservation(coapRequest);
 
         // then
         assertEquals(examplePath, observation.getPath().toString());

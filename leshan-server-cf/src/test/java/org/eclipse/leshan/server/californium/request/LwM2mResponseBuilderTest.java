@@ -21,7 +21,7 @@ import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.coap.Token;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.observation.CompositeObservation;
-import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.response.ObserveCompositeResponse;
@@ -68,7 +68,7 @@ public class LwM2mResponseBuilderTest {
         assertNotNull(response);
         assertNotNull(response.getObservation());
 
-        Observation observation = response.getObservation();
+        SingleObservation observation = response.getObservation();
         assertEquals(examplePath, observation.getPath().toString());
     }
 

@@ -15,7 +15,7 @@
  *******************************************************************************/
 package org.eclipse.leshan.server.observation;
 
-import org.eclipse.leshan.core.observation.AbstractObservation;
+import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.response.AbstractLwM2mResponse;
 import org.eclipse.leshan.server.registration.Registration;
 
@@ -33,14 +33,14 @@ public interface ObservationListener {
      * @param observation the new observation.
      * @param registration the related registration
      */
-    void newObservation(AbstractObservation observation, Registration registration);
+    void newObservation(Observation observation, Registration registration);
 
     /**
      * Called when an observation is cancelled.
      * 
      * @param observation the cancelled observation.
      */
-    void cancelled(AbstractObservation observation);
+    void cancelled(Observation observation);
 
     /**
      * Called on new notification.
@@ -50,7 +50,7 @@ public interface ObservationListener {
      * @param response the lwm2m response received (successful or error response)
      * 
      */
-    void onResponse(AbstractObservation observation, Registration registration, AbstractLwM2mResponse response);
+    void onResponse(Observation observation, Registration registration, AbstractLwM2mResponse response);
 
     /**
      * Called when an error occurs on new notification.
@@ -63,5 +63,5 @@ public interface ObservationListener {
      *        <li>or any other RuntimeException for unexpected issue.
      *        </ul>
      */
-    void onError(AbstractObservation observation, Registration registration, Exception error);
+    void onError(Observation observation, Registration registration, Exception error);
 }

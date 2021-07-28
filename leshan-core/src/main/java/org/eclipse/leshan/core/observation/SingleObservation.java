@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Orange.
+ * Copyright (c) 2013-2015 Sierra Wireless and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -11,6 +11,7 @@
  *    http://www.eclipse.org/org/documents/edl-v10.html.
  *
  * Contributors:
+ *     Sierra Wireless - initial API and implementation
  *     Michał Wadowski (Orange) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.core.observation;
@@ -19,45 +20,44 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.util.Hex;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * An composite-observation of a resource provided by a LWM2M Client.
+ * An observation of a resource provided by a LWM2M Client.
  */
-public class CompositeObservation extends Observation {
+public class SingleObservation extends Observation {
 
-    private final List<LwM2mPath> paths;
+    private final LwM2mPath path;
 
     /**
-     * Instantiates an {@link CompositeObservation} for the given node paths.
+     * Instantiates an {@link SingleObservation} for the given node paths.
      *
      * @param id token identifier of the observation
      * @param registrationId client's unique registration identifier.
-     * @param paths resources paths for which the composite-observation is set.
+     * @param path resource path for which the observation is set.
      * @param contentFormat contentFormat used to read the resource (could be null).
      * @param context additional information relative to this observation.
      */
-    public CompositeObservation(byte[] id, String registrationId, List<LwM2mPath> paths, ContentFormat contentFormat,
+    public SingleObservation(byte[] id, String registrationId, LwM2mPath path, ContentFormat contentFormat,
             Map<String, String> context) {
         super(id, registrationId, contentFormat, context);
-        this.paths = paths;
+        this.path = path;
     }
 
     /**
-     * Gets the observed resources paths.
+     * Gets the observed resource path.
      *
-     * @return the resources paths
+     * @return the resource path
      */
-    public List<LwM2mPath> getPaths() {
-        return paths;
+    public LwM2mPath getPath() {
+        return path;
     }
 
     @Override
     public String toString() {
-        return "CompositeObservation{" +
-                "paths=" + paths +
+        return "SingleObservation{" +
+                "path=" + path +
                 ", id=" + Hex.encodeHexString(id) +
                 ", contentFormat=" + contentFormat +
                 ", registrationId='" + registrationId + '\'' +
@@ -68,14 +68,14 @@ public class CompositeObservation extends Observation {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CompositeObservation)) return false;
+        if (!(o instanceof SingleObservation)) return false;
         if (!super.equals(o)) return false;
-        CompositeObservation that = (CompositeObservation) o;
-        return Objects.equals(paths, that.paths);
+        SingleObservation that = (SingleObservation) o;
+        return Objects.equals(path, that.path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), paths);
+        return Objects.hash(super.hashCode(), path);
     }
 }
