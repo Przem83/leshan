@@ -16,7 +16,7 @@
  *     Achim Kraus (Bosch Software Innovations GmbH) - use ServerIdentity
  *     Achim Kraus (Bosch Software Innovations GmbH) - implement POST "/oid/iid" 
  *                                                     as UPDATE instance
- *     Michał Wadowski (Orange)            - Add Observe-Composite feature.
+ *     Michał Wadowski (Orange)                      - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.client.californium.object;
 

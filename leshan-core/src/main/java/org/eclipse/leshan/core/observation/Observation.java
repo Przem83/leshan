@@ -31,7 +31,7 @@ public class Observation extends AbstractObservation {
     private final LwM2mPath path;
 
     /**
-     * Instantiates an {@link CompositeObservation} for the given node paths.
+     * Instantiates an {@link Observation} for the given node paths.
      *
      * @param id token identifier of the observation
      * @param registrationId client's unique registration identifier.

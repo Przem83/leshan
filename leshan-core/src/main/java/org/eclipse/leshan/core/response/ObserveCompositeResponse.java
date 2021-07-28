@@ -82,7 +82,7 @@ public class ObserveCompositeResponse extends ReadCompositeResponse {
             return String.format("ObserveCompositeResponse [code=%s, content=%s, observation=%s, timestampedValues=" +
                     "%d entries]", code, content, observation, timestampedValues.keySet().size());
         } else {
-            return String.format("ObserveCompositeResponse [code=%s, content=%s, compositeObservation=%s]", code,
+            return String.format("ObserveCompositeResponse [code=%s, content=%s, observation=%s]", code,
                     content, observation
             );
         }

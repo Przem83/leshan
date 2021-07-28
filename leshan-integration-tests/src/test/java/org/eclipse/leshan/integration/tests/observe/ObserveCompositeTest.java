@@ -76,11 +76,11 @@ public class ObserveCompositeTest {
 
     @Test
     public void can_composite_observe_on_single_resource() throws InterruptedException {
-        ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1);
+        ObserveCompositeResponse observeResponse = sendObserveCompose(examplePath1);
 
-        assertObserveCompositeResponse(observeCompositeResponse);
+        assertObserveCompositeResponse(observeResponse);
 
-        CompositeObservation observation = observeCompositeResponse.getObservation();
+        CompositeObservation observation = observeResponse.getObservation();
         assertObservationContainsPaths(observation, examplePath1);
         assertOneValidObservation(observation);
 
@@ -95,11 +95,11 @@ public class ObserveCompositeTest {
 
     @Test
     public void can_composite_observe_on_multiple_resources() throws InterruptedException {
-        ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1, examplePath2);
+        ObserveCompositeResponse observeResponse = sendObserveCompose(examplePath1, examplePath2);
 
-        assertObserveCompositeResponse(observeCompositeResponse);
+        assertObserveCompositeResponse(observeResponse);
 
-        CompositeObservation observation = observeCompositeResponse.getObservation();
+        CompositeObservation observation = observeResponse.getObservation();
         assertObservationContainsPaths(observation, examplePath1, examplePath2);
         assertOneValidObservation(observation);
 
@@ -114,11 +114,11 @@ public class ObserveCompositeTest {
 
     @Test
     public void can_composite_observe_on_multiple_resources_with_write_composite() throws InterruptedException {
-        ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath1, examplePath2);
+        ObserveCompositeResponse observeResponse = sendObserveCompose(examplePath1, examplePath2);
 
-        assertObserveCompositeResponse(observeCompositeResponse);
+        assertObserveCompositeResponse(observeResponse);
 
-        CompositeObservation observation = observeCompositeResponse.getObservation();
+        CompositeObservation observation = observeResponse.getObservation();
         assertObservationContainsPaths(observation, examplePath1, examplePath2);
         assertOneValidObservation(observation);
 
@@ -135,11 +135,11 @@ public class ObserveCompositeTest {
     public void can_observe_instance() throws InterruptedException {
         String examplePath = "/3/0";
 
-        ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath);
+        ObserveCompositeResponse observeResponse = sendObserveCompose(examplePath);
 
-        assertObserveCompositeResponse(observeCompositeResponse);
+        assertObserveCompositeResponse(observeResponse);
 
-        CompositeObservation observation = observeCompositeResponse.getObservation();
+        CompositeObservation observation = observeResponse.getObservation();
         assertObservationContainsPaths(observation, examplePath);
         assertOneValidObservation(observation);
 
@@ -163,11 +163,11 @@ public class ObserveCompositeTest {
     public void can_observe_object() throws InterruptedException {
         String examplePath = "/3";
 
-        ObserveCompositeResponse observeCompositeResponse = sendObserveCompose(examplePath);
+        ObserveCompositeResponse observeResponse = sendObserveCompose(examplePath);
 
-        assertObserveCompositeResponse(observeCompositeResponse);
+        assertObserveCompositeResponse(observeResponse);
 
-        CompositeObservation observation = observeCompositeResponse.getObservation();
+        CompositeObservation observation = observeResponse.getObservation();
         assertObservationContainsPaths(observation, examplePath);
         assertOneValidObservation(observation);
 
@@ -236,10 +236,10 @@ public class ObserveCompositeTest {
         assertThat(listener.getResponse().getCoapResponse(), is(instanceOf(Response.class)));
     }
 
-    private void assertObserveCompositeResponse(ObserveCompositeResponse observeCompositeResponse) {
-        assertEquals(ResponseCode.CONTENT, observeCompositeResponse.getCode());
-        assertNotNull(observeCompositeResponse.getCoapResponse());
-        assertThat(observeCompositeResponse.getCoapResponse(), is(instanceOf(Response.class)));
+    private void assertObserveCompositeResponse(ObserveCompositeResponse observeResponse) {
+        assertEquals(ResponseCode.CONTENT, observeResponse.getCode());
+        assertNotNull(observeResponse.getCoapResponse());
+        assertThat(observeResponse.getCoapResponse(), is(instanceOf(Response.class)));
     }
 
     private void assertOneValidObservation(CompositeObservation observation) {

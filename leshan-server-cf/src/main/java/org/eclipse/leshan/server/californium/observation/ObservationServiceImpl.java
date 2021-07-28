@@ -31,8 +31,8 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
-import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.AbstractObservation;
+import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.Identity;
@@ -314,22 +314,19 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
             if (abstractObservation instanceof Observation) {
                 Observation observation = (Observation) abstractObservation;
 
-                List<TimestampedLwM2mNode> timestampedNodes = decoder.decodeTimestampedData(
-                        coapResponse.getPayload(), contentFormat, observation.getPath(), model
-                );
+                List<TimestampedLwM2mNode> timestampedNodes = decoder
+                        .decodeTimestampedData(coapResponse.getPayload(), contentFormat, observation.getPath(), model);
 
-                return new ObserveResponse(
-                        responseCode, null, timestampedNodes, observation, null, coapResponse
-                );
+                return new ObserveResponse(responseCode, null, timestampedNodes, observation, null, coapResponse);
             } else if (abstractObservation instanceof CompositeObservation) {
 
                 CompositeObservation compositeObservation = (CompositeObservation) abstractObservation;
 
-                Map<LwM2mPath, LwM2mNode> nodes = decoder.decodeNodes(coapResponse.getPayload(), contentFormat, compositeObservation.getPaths(), model);
+                Map<LwM2mPath, LwM2mNode> nodes = decoder
+                        .decodeNodes(coapResponse.getPayload(), contentFormat, compositeObservation.getPaths(), model);
 
-                return new ObserveCompositeResponse(
-                        responseCode, nodes, null, null, coapResponse, compositeObservation
-                );
+                return new ObserveCompositeResponse(responseCode, nodes, null, null, coapResponse,
+                        compositeObservation);
             }
 
             return null;

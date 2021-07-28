@@ -112,8 +112,8 @@ public class RedisRegistrationStoreTest {
         );
         assertNotNull(leshanObservation);
         assertTrue(leshanObservation instanceof CompositeObservation);
-        CompositeObservation compositeObservation = (CompositeObservation) leshanObservation;
-        assertEquals(examplePaths, compositeObservation.getPaths());
+        CompositeObservation observation = (CompositeObservation) leshanObservation;
+        assertEquals(examplePaths, observation.getPaths());
     }
 
     private void givenASimpleRegistration(Long lifetime) {

@@ -21,7 +21,7 @@
  *                                                     EndpointContext
  *     Achim Kraus (Bosch Software Innovations GmbH) - update to modified 
  *                                                     ObservationStore API
- *     Michał Wadowski (Orange)            - Add Observe-Composite feature.
+ *     Michał Wadowski (Orange)                      - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.registration;
 

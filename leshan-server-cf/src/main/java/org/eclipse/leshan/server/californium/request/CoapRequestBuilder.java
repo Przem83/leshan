@@ -15,7 +15,7 @@
  *     Achim Kraus (Bosch Software Innovations GmbH) - use Identity as destination
  *                                                     and transform them to 
  *                                                     EndpointContext for requests
- *     Michał Wadowski (Orange)            - Add Observe-Composite feature.
+ *     Michał Wadowski (Orange)                      - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.request;
 

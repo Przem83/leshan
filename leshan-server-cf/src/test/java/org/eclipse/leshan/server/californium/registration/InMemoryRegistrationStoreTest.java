@@ -163,8 +163,8 @@ public class InMemoryRegistrationStoreTest {
         AbstractObservation leshanObservation = store.getObservation(registrationId, exampleToken.getBytes());
         assertNotNull(leshanObservation);
         assertTrue(leshanObservation instanceof CompositeObservation);
-        CompositeObservation compositeObservation = (CompositeObservation) leshanObservation;
-        assertEquals(examplePaths, compositeObservation.getPaths());
+        CompositeObservation observation = (CompositeObservation) leshanObservation;
+        assertEquals(examplePaths, observation.getPaths());
     }
 
     private org.eclipse.californium.core.observe.Observation prepareCoapObservation() {
