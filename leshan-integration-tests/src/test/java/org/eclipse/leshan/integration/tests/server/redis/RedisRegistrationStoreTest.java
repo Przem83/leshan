@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Orange Polska SA.
+ * Copyright (c) 2021 Orange.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -11,7 +11,7 @@
  *    http://www.eclipse.org/org/documents/edl-v10.html.
  *
  * Contributors:
- *     Michał Wadowski (Orange Polska SA) - Add Observe-Composite feature.
+ *     Michał Wadowski (Orange) - Add Observe-Composite feature.
  *******************************************************************************/
 package org.eclipse.leshan.integration.tests.server.redis;
 
