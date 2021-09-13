@@ -23,11 +23,10 @@ import org.eclipse.californium.core.observe.ObservationStore;
 import org.eclipse.californium.elements.Connector;
 import org.eclipse.californium.elements.EndpointContextMatcher;
 import org.eclipse.californium.elements.PrincipalEndpointContextMatcher;
-import org.eclipse.californium.elements.tcp.netty.TcpClientConnector;
-import org.eclipse.californium.elements.tcp.netty.TcpServerConnector;
-import org.eclipse.californium.elements.tcp.netty.TlsClientConnector;
-import org.eclipse.californium.elements.tcp.netty.TlsServerConnector;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
+import org.eclipse.leshan.FileConnector;
+import org.eclipse.leshan.FileParser;
+import org.eclipse.leshan.FileSerializer;
 import org.eclipse.leshan.core.californium.EndpointFactory;
 import org.eclipse.leshan.core.californium.Lwm2mEndpointContextMatcher;
 
@@ -43,18 +42,18 @@ import java.security.Principal;
  * <p>
  * E.g. This could be useful if you need to use a custom {@link Connector}.
  */
-public class TCPEndpointFactory implements EndpointFactory {
+public class FileEndpointFactory implements EndpointFactory {
 
     protected EndpointContextMatcher securedContextMatcher;
     protected EndpointContextMatcher unsecuredContextMatcher;
     protected String loggingTag;
     protected boolean isClient = false;
 
-    public TCPEndpointFactory() {
+    public FileEndpointFactory() {
         this(null);
     }
 
-    public TCPEndpointFactory(String loggingTag) {
+    public FileEndpointFactory(String loggingTag) {
         this(loggingTag, false);
     }
 
@@ -62,7 +61,7 @@ public class TCPEndpointFactory implements EndpointFactory {
      * @param loggingTag Logging tag
      * @param isClient Indication whether this factory is for client or for server.
      */
-    public TCPEndpointFactory(String loggingTag, boolean isClient) {
+    public FileEndpointFactory(String loggingTag, boolean isClient) {
         this.isClient = isClient;
         securedContextMatcher = createSecuredContextMatcher(isClient);
         unsecuredContextMatcher = createUnsecuredContextMatcher();
@@ -126,6 +125,7 @@ public class TCPEndpointFactory implements EndpointFactory {
             ObservationStore store) {
         Builder builder = new Builder();
         builder.setConnector(createUnsecuredConnector(address));
+        builder.setDataSerializerAndParser(new FileSerializer(), new FileParser());
 
         builder.setNetworkConfig(coapConfig);
         if (loggingTag != null) {
@@ -143,7 +143,7 @@ public class TCPEndpointFactory implements EndpointFactory {
     }
 
     /**
-     * By default create an {@link TcpClientConnector} or {@link TcpServerConnector}.
+     * By default create an {@link FileConnector}.
      * <p>
      * This method is intended to be overridden.
      * 
@@ -153,9 +153,9 @@ public class TCPEndpointFactory implements EndpointFactory {
      */
     protected Connector createUnsecuredConnector(InetSocketAddress address) {
         if (isClient) {
-            return new TcpClientConnector(1, 1000, 1000);
+            return new FileConnector(false);
         } else {
-            return new TcpServerConnector(address, 1, 1000);
+            return new FileConnector(true);
         }
     }
 
@@ -177,6 +177,7 @@ public class TCPEndpointFactory implements EndpointFactory {
             NetworkConfig coapConfig, ObservationStore store) {
         Builder builder = new Builder();
         builder.setConnector(createSecuredConnector(dtlsConfig));
+        builder.setDataSerializerAndParser(new FileSerializer(), new FileParser());
         builder.setNetworkConfig(coapConfig);
         if (loggingTag != null) {
             builder.setLoggingTag("[" + loggingTag + "-coaps://]");
@@ -193,7 +194,7 @@ public class TCPEndpointFactory implements EndpointFactory {
     }
 
     /**
-     * By default create a {@link TlsClientConnector} or {@link TlsServerConnector}.
+     * By default create a {@link FileConnector}.
      * <p>
      * This method is intended to be overridden.
      * 
@@ -205,9 +206,9 @@ public class TCPEndpointFactory implements EndpointFactory {
             SSLContext sslContext = SSLContext.getDefault();
 
             if (isClient) {
-                return new TlsClientConnector(sslContext, 1, 1000, 1000);
+                return new FileConnector(false);
             } else {
-                return new TlsServerConnector(sslContext, dtlsConfig.getAddress(), 1, 1000);
+                return new FileConnector(true);
             }
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);

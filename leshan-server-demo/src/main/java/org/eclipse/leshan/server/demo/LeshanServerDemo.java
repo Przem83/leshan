@@ -56,13 +56,14 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.leshan.core.LwM2m;
 import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
+import org.eclipse.leshan.core.californium.EndpointFactory;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.util.SecurityUtil;
-import org.eclipse.leshan.demo.TCPEndpointFactory;
+import org.eclipse.leshan.demo.FileEndpointFactory;
 import org.eclipse.leshan.server.californium.LeshanServerBuilder;
 import org.eclipse.leshan.server.demo.servlet.ClientServlet;
 import org.eclipse.leshan.server.demo.servlet.EventServlet;
@@ -417,8 +418,8 @@ public class LeshanServerDemo {
         LeshanMultiConnectionServerBuilder builder = new LeshanMultiConnectionServerBuilder();
         builder.setEncoder(new DefaultLwM2mEncoder());
         builder.setEndpointFactoryList(Arrays.asList(
-                new TCPEndpointFactory(),
-                new DefaultEndpointFactory()
+                (EndpointFactory)new FileEndpointFactory()//,
+//                (EndpointFactory) new DefaultEndpointFactory()
         ));
         LwM2mDecoder decoder = new DefaultLwM2mDecoder();
         builder.setDecoder(decoder);
@@ -611,7 +612,7 @@ public class LeshanServerDemo {
         /* **************************************************************** */
 
         // Create Servlet
-        EventServlet eventServlet = new EventServlet(lwServer, lwServer.getFirstAddress().getPort());
+        EventServlet eventServlet = new EventServlet(lwServer, -1);
         ServletHolder eventServletHolder = new ServletHolder(eventServlet);
         root.addServlet(eventServletHolder, "/event/*"); // Temporary code to be able to serve both UI
         root.addServlet(eventServletHolder, "/api/event/*");

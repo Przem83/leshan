@@ -49,19 +49,8 @@ import org.apache.commons.cli.Option.Builder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.eclipse.californium.core.network.config.NetworkConfig;
-import org.eclipse.californium.elements.Connector;
 import org.eclipse.californium.elements.util.SslContextUtil;
-import org.eclipse.californium.scandium.DTLSConnector;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
-import org.eclipse.californium.scandium.dtls.ClientHandshaker;
-import org.eclipse.californium.scandium.dtls.DTLSContext;
-import org.eclipse.californium.scandium.dtls.HandshakeException;
-import org.eclipse.californium.scandium.dtls.Handshaker;
-import org.eclipse.californium.scandium.dtls.ResumingClientHandshaker;
-import org.eclipse.californium.scandium.dtls.ResumingServerHandshaker;
-import org.eclipse.californium.scandium.dtls.ServerHandshaker;
-import org.eclipse.californium.scandium.dtls.SessionAdapter;
-import org.eclipse.californium.scandium.dtls.SessionId;
 import org.eclipse.californium.scandium.dtls.SingleNodeConnectionIdGenerator;
 import org.eclipse.californium.scandium.dtls.cipher.CipherSuite;
 import org.eclipse.leshan.client.californium.LeshanClient;
@@ -73,7 +62,6 @@ import org.eclipse.leshan.client.resource.ObjectsInitializer;
 import org.eclipse.leshan.client.resource.listener.ObjectsListenerAdapter;
 import org.eclipse.leshan.core.CertificateUsage;
 import org.eclipse.leshan.core.LwM2m;
-import org.eclipse.leshan.demo.TCPEndpointFactory;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.ObjectModel;
@@ -85,6 +73,7 @@ import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
 import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.core.util.SecurityUtil;
+import org.eclipse.leshan.demo.FileEndpointFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -430,6 +419,8 @@ public class LeshanClientDemo {
                 serverURI = "coap://localhost:" + LwM2m.DEFAULT_COAP_PORT;
         }
 
+        serverURI = "coap://0.0.0.0:" + 0xffff;
+
         // Get CID config
         String cidOption = cl.getOptionValue("cid");
         Integer cid = null;
@@ -724,8 +715,7 @@ public class LeshanClientDemo {
         engineFactory.setResumeOnConnect(!forceFullhandshake);
 
         // configure EndpointFactory
-        TCPEndpointFactory endpointFactory = new TCPEndpointFactory("LWM2M CLIENT", true);
-//        EndpointFactory endpointFactory = new DefaultEndpointFactory("LWM2M CLIENT", true);
+        FileEndpointFactory endpointFactory = new FileEndpointFactory("LWM2M CLIENT", true);
 
         // Create client
         LeshanClientBuilder builder = new LeshanClientBuilder(endpoint);

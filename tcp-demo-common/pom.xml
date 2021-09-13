@@ -15,11 +15,11 @@
     <description>TCP Demo</description>
 
     <dependencies>
-        <dependency>
-            <groupId>org.eclipse.californium</groupId>
-            <artifactId>cf-cli-tcp-netty</artifactId>
-            <version>${californium.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.californium</groupId>-->
+<!--            <artifactId>cf-cli-tcp-netty</artifactId>-->
+<!--            <version>${californium.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.eclipse.leshan</groupId>
