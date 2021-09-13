@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 
+import org.eclipse.californium.elements.AddressEndpointContext;
 import org.eclipse.californium.elements.Connector;
 import org.eclipse.californium.elements.EndpointContextMatcher;
 import org.eclipse.californium.elements.RawData;
@@ -104,7 +105,7 @@ public class FileConnector implements Connector {
         public void run() {
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(theirFilename);
-                rawData.onContextEstablished(new FileContext());
+                rawData.onContextEstablished(new AddressEndpointContext(getAddress()));
                 fileOutputStream.write(rawData.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -125,7 +126,7 @@ public class FileConnector implements Connector {
                         byte[] msg = new byte[size];
                         System.arraycopy(buffer, 0, msg, 0, size);
 
-                        RawData inbound = RawData.inbound(msg, new FileContext(), false, ClockUtil.nanoRealtime(),
+                        RawData inbound = RawData.inbound(msg, new AddressEndpointContext(getAddress()), false, ClockUtil.nanoRealtime(),
                                 getAddress());
                         messageHandler.receiveData(inbound);
                     }
