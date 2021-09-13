@@ -1,8 +1,10 @@
 package org.eclipse.leshan;
 
-import java.nio.ByteBuffer;
+import static org.eclipse.californium.core.coap.CoAP.MessageFormat.*;
 
 import org.eclipse.californium.core.coap.CoAP;
+import org.eclipse.californium.core.coap.CoAPMessageFormatException;
+import org.eclipse.californium.core.coap.MessageFormatException;
 import org.eclipse.californium.core.coap.Token;
 import org.eclipse.californium.core.network.serialization.DataParser;
 import org.eclipse.californium.core.network.serialization.MessageHeader;
@@ -12,47 +14,26 @@ public class FileParser extends DataParser {
     @Override
     protected MessageHeader parseHeader(DatagramReader reader) {
 
-        byte[] headerSizeBytes = reader.readBytes(4);
-        int headerSize = ByteBuffer.wrap(headerSizeBytes).getInt();
+        if (!reader.bytesAvailable(4)) {
+            throw new MessageFormatException(
+                    "Message too short! " + (reader.bitsLeft() / Byte.SIZE) + " must be at least 4 bytes!");
+        }
+        int version = reader.read(VERSION_BITS);
+        int type = reader.read(TYPE_BITS);
+        int tokenLength = reader.read(TOKEN_LENGTH_BITS);
+        if (tokenLength > 8) {
+            // must be treated as a message format error according to CoAP spec
+            // https://tools.ietf.org/html/rfc7252#section-3
+            throw new MessageFormatException("Message has invalid token length (> 8) " + tokenLength);
+        }
+        int code = reader.read(CODE_BITS);
+        int mid = reader.read(MESSAGE_ID_BITS);
+        if (!reader.bytesAvailable(tokenLength)) {
+            throw new CoAPMessageFormatException("Message too short for token! " + (reader.bitsLeft() / Byte.SIZE)
+                    + " must be at least " + tokenLength + " bytes!", null, mid, code, CoAP.Type.CON.value == type);
+        }
+        Token token = Token.fromProvider(reader.readBytes(tokenLength));
 
-        byte[] headerBytes = reader.readBytes(headerSize - 4);
-
-        byte[] versionBytes = new byte[4];
-        System.arraycopy(headerBytes, 0, versionBytes, 0, versionBytes.length);
-
-
-        byte[] typeBytes = new byte[4];
-        System.arraycopy(headerBytes, 4, typeBytes, 0, typeBytes.length);
-
-
-        byte[] codeBytes = new byte[4];
-        System.arraycopy(headerBytes, 8, codeBytes, 0, codeBytes.length);
-        
-
-        byte[] midBytes = new byte[4];
-        System.arraycopy(headerBytes, 12, midBytes, 0, midBytes.length);
-        
-
-        byte[] lengthBytes = new byte[4];
-        System.arraycopy(headerBytes, 16, lengthBytes, 0, lengthBytes.length);
-
-
-        byte[] tokenBytes = new byte[headerBytes.length - 5*4];
-        System.arraycopy(headerBytes, 20, tokenBytes, 0, tokenBytes.length);
-
-        int version = ByteBuffer.wrap(versionBytes).getInt();
-
-        CoAP.Type type = CoAP.Type.valueOf(ByteBuffer.wrap(typeBytes).getInt());
-        Token token = new Token(tokenBytes);
-
-
-        int code = ByteBuffer.wrap(codeBytes).getInt();
-        int mid = ByteBuffer.wrap(midBytes).getInt();
-        int length = ByteBuffer.wrap(lengthBytes).getInt();
-
-
-        return new MessageHeader(version,
-                type, token, code, mid, length
-        );
+        return new MessageHeader(version, CoAP.Type.valueOf(type), token, code, mid, 0);
     }
 }
