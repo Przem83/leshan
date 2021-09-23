@@ -13,6 +13,7 @@
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *     Achim Kraus (Bosch Software Innovations GmbH) - use CoapEndpointBuilder
+ *     Michał Wadowski (Orange) - Improved compliance with rfc6690
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.bootstrap;
 
@@ -35,6 +36,8 @@ import org.eclipse.californium.scandium.dtls.x509.StaticNewAdvancedCertificateVe
 import org.eclipse.leshan.core.LwM2m;
 import org.eclipse.leshan.core.californium.DefaultEndpointFactory;
 import org.eclipse.leshan.core.californium.EndpointFactory;
+import org.eclipse.leshan.core.link.DefaultLinkParser;
+import org.eclipse.leshan.core.link.LinkParser;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
@@ -90,6 +93,8 @@ public class LeshanBootstrapServerBuilder {
     private EndpointFactory endpointFactory;
     private boolean noSecuredEndpoint;
     private boolean noUnsecuredEndpoint;
+
+    private LinkParser linkParser;
 
     /**
      * Set the address/port for unsecured CoAP communication (<code>coap://</code>).
@@ -356,6 +361,15 @@ public class LeshanBootstrapServerBuilder {
     }
 
     /**
+     * Set CoRE Link parser.
+     *
+     * @param linkParser a parser {@link LinkParser} used to parse a CoRE Link.
+     */
+    public void setLinkParser(LinkParser linkParser) {
+        this.linkParser = linkParser;
+    }
+
+    /**
      * Deactivate unsecured CoAP endpoint, meaning that <code>coap://</code> communication will be impossible.
      * 
      * @return the builder for fluent Bootstrap Server creation.
@@ -433,6 +447,8 @@ public class LeshanBootstrapServerBuilder {
             encoder = new DefaultLwM2mEncoder();
         if (decoder == null)
             decoder = new DefaultLwM2mDecoder();
+        if (linkParser == null)
+            linkParser = new DefaultLinkParser();
 
         // handle dtlsConfig
         DtlsConnectorConfig dtlsConfig = null;
@@ -579,6 +595,6 @@ public class LeshanBootstrapServerBuilder {
             BootstrapSessionManager bsSessionManager, BootstrapHandlerFactory bsHandlerFactory,
             NetworkConfig coapConfig, LwM2mEncoder encoder, LwM2mDecoder decoder) {
         return new LeshanBootstrapServer(unsecuredEndpoint, securedEndpoint, bsSessionManager, bsHandlerFactory,
-                coapConfig, encoder, decoder);
+                coapConfig, encoder, decoder, linkParser);
     }
 }
