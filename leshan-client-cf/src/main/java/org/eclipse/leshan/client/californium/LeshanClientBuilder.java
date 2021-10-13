@@ -152,6 +152,8 @@ public class LeshanClientBuilder {
 
     /**
      * Set the CoRE Link serializer {@link LinkSerializer}.
+     * <p>
+     * By default the {@link DefaultLinkSerializer} is used.
      */
     public void setLinkSerializer(LinkSerializer linkSerializer) {
         this.linkSerializer = linkSerializer;

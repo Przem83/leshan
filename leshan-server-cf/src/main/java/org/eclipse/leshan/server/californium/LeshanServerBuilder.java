@@ -281,7 +281,9 @@ public class LeshanServerBuilder {
     }
 
     /**
-     * Set tje CoRE Link parser {@link LinkParser}
+     * Set the CoRE Link parser {@link LinkParser}
+     * <p>
+     * By default the {@link DefaultLinkParser} is used.
      */
     public void setLinkParser(LinkParser linkParser) {
         this.linkParser = linkParser;
