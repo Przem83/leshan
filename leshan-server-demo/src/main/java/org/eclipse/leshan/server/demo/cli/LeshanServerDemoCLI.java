@@ -54,7 +54,7 @@ public class LeshanServerDemoCLI implements Runnable {
     public ServerGeneralSection main = new ServerGeneralSection();
 
     public static class ServerGeneralSection extends GeneralSection {
-        @Option(names = { "-r", "--redis" },
+                @Option(names = { "-r", "--redis" },
                 description = { //
                         "Use redis to store registration and securityInfo.", //
                         "The URL of the redis server should be given using this format :", //
@@ -64,18 +64,24 @@ public class LeshanServerDemoCLI implements Runnable {
                         "Default: redis is not used." },
                 converter = JedisPoolConverter.class)
         public JedisPool redis;
+        public static String redisurl;
 
         private static class JedisPoolConverter implements ITypeConverter<JedisPool> {
             @Override
             public JedisPool convert(String value) throws Exception {
+                redisurl=value;
                 return new JedisPool(new URI(value));
+
             }
+
         }
+
 
         @Option(names = { "-mdns", "--publish-DNS-SD-services" },
                 description = { //
                         "Publish leshan's services to DNS Service discovery." })
         public Boolean mdns;
+
     }
 
     /* ********************************** DTLS Section ******************************** */

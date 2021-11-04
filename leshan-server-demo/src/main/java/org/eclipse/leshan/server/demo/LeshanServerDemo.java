@@ -56,12 +56,17 @@ import org.eclipse.leshan.server.model.LwM2mModelProvider;
 import org.eclipse.leshan.server.model.VersionedModelProvider;
 import org.eclipse.leshan.server.redis.RedisRegistrationStore;
 import org.eclipse.leshan.server.redis.RedisSecurityStore;
+import org.eclipse.leshan.server.redis.RedissonSessionStore;
+import org.eclipse.leshan.server.redis.RedisSessionStore;
 import org.eclipse.leshan.server.security.EditableSecurityStore;
 import org.eclipse.leshan.server.security.FileSecurityStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import picocli.CommandLine;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.*;
+
 
 public class LeshanServerDemo {
 
@@ -168,6 +173,11 @@ public class LeshanServerDemo {
         if (cli.dtls.cid != null) {
             dtlsConfig.set(DtlsConfig.DTLS_CONNECTION_ID_LENGTH, cli.dtls.cid);
         }
+        if (cli.main.redis != null) {
+            //dtlsConfig.setSessionStore(new RedissonSessionStore(cli.main.redisurl ));
+            dtlsConfig.setSessionStore(new RedisSessionStore(cli.main.redis));
+        }
+
 
         if (cli.identity.isx509()) {
             // use X.509 mode (+ RPK)
@@ -219,8 +229,10 @@ public class LeshanServerDemo {
             // use Redis Store
             securityStore = new RedisSecurityStore(cli.main.redis);
             builder.setRegistrationStore(new RedisRegistrationStore(cli.main.redis));
+
         }
         builder.setSecurityStore(securityStore);
+
 
         // Create LWM2M server
         return builder.build();
