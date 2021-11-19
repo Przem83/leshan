@@ -35,9 +35,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Warning : this version only support PSK.
  *
  */
-public class RedisSessionStore implements SessionStore {
+public class RedisSessionStore2 implements SessionStore {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RedisSessionStore.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RedisSessionStore2.class);
 
     private static final byte[] SESSION_ID_PREFIX = "SS:SID:SES:".getBytes(UTF_8); // session ID => session
     private static final byte[] IDENTITY_PREFIX = "SS:CLID:SID:".getBytes(UTF_8); // client identity => session ID
@@ -47,7 +47,7 @@ public class RedisSessionStore implements SessionStore {
 
     private final Pool<Jedis> pool;
 
-    public RedisSessionStore(Pool<Jedis> pool) {
+    public RedisSessionStore2(Pool<Jedis> pool) {
         this.pool = pool;
     }
 
@@ -72,7 +72,7 @@ public class RedisSessionStore implements SessionStore {
         try (Jedis j = pool.getResource()) {
             DatagramWriter writer = new DatagramWriter();
             session.writeTo(writer);
-            byte[] sessionId = session.getSessionIdentifier().getBytes();
+            byte[] sessionId = session.getSessionIdentifier().getAsString().getBytes();
             j.setex(toSessionIdKey(sessionId), REDIS_EXP_SECONDS, writer.toByteArray());
 
             // Add an index by peer identity to try to keep a single session per device.
@@ -97,7 +97,7 @@ public class RedisSessionStore implements SessionStore {
         
         try (Jedis j = pool.getResource()) {
             
-            byte[] sessionIdKey = toSessionIdKey(id.getBytes());
+            byte[] sessionIdKey = toSessionIdKey(id.getAsString().getBytes());
             j.expire(sessionIdKey, REDIS_EXP_SECONDS); // refresh expiration if the key exists
 
             byte[] st = j.get(sessionIdKey);
@@ -120,7 +120,7 @@ public class RedisSessionStore implements SessionStore {
         LOG.debug("Remove DTLSSession id: {}", id.getAsString());
         
         try (Jedis j = pool.getResource()) {
-            j.del(toSessionIdKey(id.getBytes()));
+            j.del(toSessionIdKey(id.getAsString().getBytes()));
 
             // We don't care about clearing the index here.
             // It will be overridden with the next session or removed by the TTL

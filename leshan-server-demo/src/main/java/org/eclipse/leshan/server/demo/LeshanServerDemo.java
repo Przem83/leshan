@@ -56,8 +56,7 @@ import org.eclipse.leshan.server.model.LwM2mModelProvider;
 import org.eclipse.leshan.server.model.VersionedModelProvider;
 import org.eclipse.leshan.server.redis.RedisRegistrationStore;
 import org.eclipse.leshan.server.redis.RedisSecurityStore;
-import org.eclipse.leshan.server.redis.RedissonSessionStore;
-import org.eclipse.leshan.server.redis.RedisSessionStore;
+import org.eclipse.leshan.server.redis.RedisSessionStore2;
 import org.eclipse.leshan.server.security.EditableSecurityStore;
 import org.eclipse.leshan.server.security.FileSecurityStore;
 import org.slf4j.Logger;
@@ -175,7 +174,7 @@ public class LeshanServerDemo {
         }
         if (cli.main.redis != null) {
             //dtlsConfig.setSessionStore(new RedissonSessionStore(cli.main.redisurl ));
-            dtlsConfig.setSessionStore(new RedisSessionStore(cli.main.redis));
+            dtlsConfig.setSessionStore(new RedisSessionStore2(cli.main.redis));
         }
 
 

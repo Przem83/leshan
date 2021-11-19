@@ -43,12 +43,6 @@ Contributors:
             <groupId>com.eclipsesource.minimal-json</groupId>
             <artifactId>minimal-json</artifactId>
         </dependency>
-        <!-- redisson -->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <version>3.16.3</version>
-         </dependency>
         <!-- test dependencies -->
         <dependency>
             <groupId>junit</groupId>
