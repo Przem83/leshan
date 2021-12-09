@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.request.SendRequest;
+import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.SendResponse;
 import org.eclipse.leshan.core.response.SendableResponse;
 import org.eclipse.leshan.server.registration.Registration;
@@ -59,13 +60,35 @@ public class SendHandler implements SendService {
     }
 
     protected void fireDataReceived(Registration registration, Map<LwM2mPath, LwM2mNode> data, SendRequest request) {
+
+        boolean SendDataisValid = false;
         HashMap<String, LwM2mNode> nodes = new HashMap<>();
+
         for (Entry<LwM2mPath, LwM2mNode> entry : data.entrySet()) {
+
+            // validation if send Object is compatible with registered data model
+            if (registration.getSupportedObject().containsKey(entry.getKey().getObjectId())) {
+
+                // alternatively the ObjectId and InstanceId can ve validated
+                //registration.getAvailableInstances().contains(LwM2mPath.parse( "/"+entry.getKey().getObjectId()+"/"+entry.getKey().getObjectInstanceId(),"/"));
+
+                SendDataisValid=true;
             nodes.put(entry.getKey().toString(), entry.getValue());
+            }
+            else{
+                SendDataisValid=false;
+            }
         }
 
         for (SendListener listener : listeners) {
+            if (SendDataisValid)
+            {
             listener.dataReceived(registration, Collections.unmodifiableMap(nodes), request);
+        }
+            else {
+
+                listener.OnError(registration,Collections.unmodifiableMap(nodes),request, new InvalidRequestException("Send Data contains unsupported object"));
+            }
         }
     }
 }
