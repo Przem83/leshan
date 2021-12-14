@@ -106,6 +106,20 @@ public class SendTest {
     }
 
     @Test
+    public void can_send_resources_with_codec_error() throws InterruptedException {
+        // Define send listener
+        SynchronousSendListener listener = new SynchronousSendListener();
+        helper.server.getSendService().addListener(listener);
+
+        // Send Data
+        helper.waitForRegistrationAtClientSide(1);
+        ServerIdentity server = helper.client.getRegisteredServers().values().iterator().next();
+        SendResponse response = helper.client.sendData(server, contentformat, Arrays.asList("/3/0/1", "/3/0/2"), 1000);
+        assertTrue(response.isFailure());
+        assertNotNull(response.getErrorMessage());
+    }
+
+    @Test
     public void can_send_resources_asynchronously() throws InterruptedException, TimeoutException {
         // Define send listener
         SynchronousSendListener listener = new SynchronousSendListener();
