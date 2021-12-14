@@ -20,6 +20,7 @@ import static org.eclipse.leshan.core.californium.ResponseCodeUtil.toCoapRespons
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.server.resources.CoapExchange;
@@ -27,6 +28,7 @@ import org.eclipse.leshan.core.californium.LwM2mCoapResource;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
+import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.Identity;
@@ -78,8 +80,16 @@ public class SendResource extends LwM2mCoapResource {
             exchange.respond(ResponseCode.BAD_REQUEST, "Unsupported content format");
             return;
         }
-        Map<LwM2mPath, LwM2mNode> data = decoder.decodeNodes(payload, contentFormat, (List<LwM2mPath>) null, model);
+        Map<LwM2mPath, LwM2mNode> data;
 
+        try {
+             data = decoder.decodeNodes(payload, contentFormat, (List<LwM2mPath>) null, model);
+        }
+        catch (
+         CodecException e) {
+
+        throw new CodecException("Data decoding exception",e);
+    }
         // Handle "send op request
         SendRequest sendRequest = new SendRequest(contentFormat, data, coapRequest);
         SendableResponse<SendResponse> sendableResponse = sendHandler.handleSend(registration, sendRequest);
