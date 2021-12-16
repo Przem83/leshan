@@ -38,6 +38,7 @@ import org.eclipse.leshan.server.registration.Registration;
 public class SendHandler implements SendService {
 
     private final List<SendListener> listeners = new CopyOnWriteArrayList<>();;
+    public boolean SendDataisValid = true;
 
     @Override
     public void addListener(SendListener listener) {
@@ -61,31 +62,32 @@ public class SendHandler implements SendService {
 
     protected void fireDataReceived(Registration registration, Map<LwM2mPath, LwM2mNode> data, SendRequest request) {
 
-        boolean SendDataisValid = true;
+
         HashMap<String, LwM2mNode> nodes = new HashMap<>();
 
         for (Entry<LwM2mPath, LwM2mNode> entry : data.entrySet()) {
 
-            // validation if send Object is compatible with registered data model
-            if (registration.getSupportedObject().containsKey(entry.getKey().getObjectId())) {
-
-                // alternatively the ObjectId and InstanceId can ve validated
-                //registration.getAvailableInstances().contains(LwM2mPath.parse( "/"+entry.getKey().getObjectId()+"/"+entry.getKey().getObjectInstanceId(),"/"));
-
-                nodes.put(entry.getKey().toString(), entry.getValue());
-            }
-            else{
-                SendDataisValid=false;
-            }
+                     nodes.put(entry.getKey().toString(), entry.getValue());
         }
 
         for (SendListener listener : listeners) {
-            if (SendDataisValid) {
+
                 listener.dataReceived(registration, Collections.unmodifiableMap(nodes), request);
-            }
-            else {
-                listener.OnError(registration,Collections.unmodifiableMap(nodes),request, new InvalidRequestException("Send Data contains unsupported object"));
-            }
+
         }
     }
+    public void OnError(Registration registration, InvalidRequestException e)
+    {
+        for (SendListener listener : listeners) {
+
+            listener.OnError(registration, new InvalidRequestException("Send Data contains wrong data",e));
+
+        }
+
+
+    }
+
+
+
+
 }

@@ -26,9 +26,12 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.leshan.client.resource.ObjectsInitializer;
 import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mResource;
+import org.eclipse.leshan.core.node.*;
+import org.eclipse.leshan.core.node.codec.LwM2mValueChecker;
+import org.eclipse.leshan.core.node.codec.json.LwM2mNodeJsonEncoder;
 import org.eclipse.leshan.core.request.ContentFormat;
+import org.eclipse.leshan.core.request.WriteRequest;
+import org.eclipse.leshan.core.response.LwM2mResponse;
 import org.eclipse.leshan.core.response.SendResponse;
 import org.eclipse.leshan.integration.tests.util.Callback;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
@@ -144,5 +147,45 @@ public class SendTest {
         LwM2mResource serialnumber = (LwM2mResource) data.get("/3/0/2");
         assertEquals(serialnumber.getId(), 2);
         assertEquals(serialnumber.getValue(), "12345");
+    }
+    @Test
+    public void can_send_resources_with_payload_error() throws InterruptedException {
+        // Define send listener
+        SynchronousSendListener listener = new SynchronousSendListener();
+        helper.server.getSendService().addListener(listener);
+
+        // Send Data
+        helper.waitForRegistrationAtClientSide(1);
+        ServerIdentity server = helper.client.getRegisteredServers().values().iterator().next();
+       SendResponse response1 = helper.client.sendData(server, contentformat, Arrays.asList("/3/0/2"), 1000);
+
+        byte[] payload = new LwM2mNodeJsonEncoder().encode(LwM2mSingleResource.newStringResource(15, "Paris"),
+                new LwM2mPath("/3/0/15"), new StaticModel(helper.createObjectModels()), new LwM2mValueChecker());
+        helper.client.sendData()
+
+
+
+                Map<String, LwM2mNode> data = listener.getData();
+
+
+        StringBuilder b = new StringBuilder();
+        b.append(1);
+        LwM2mPath p =new LwM2mPath("/3/0/2");
+
+        LwM2mNode node = data.get("/3/0/2");
+
+        node.appendPrettyNode(b,p);
+
+
+
+
+        data.put("/3/0/2",node);
+
+
+       //helper.client.coap().getEndpoint(server).sendRequest(request);
+
+        SendResponse response = helper.client.sendData(server, contentformat, Arrays.asList("/3303/0/5601"), 1000);
+        assertTrue(response.isFailure());
+        assertNotNull(response.getErrorMessage());
     }
 }

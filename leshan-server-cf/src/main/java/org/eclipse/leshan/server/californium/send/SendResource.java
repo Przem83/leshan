@@ -51,6 +51,7 @@ public class SendResource extends LwM2mCoapResource {
     private LwM2mModelProvider modelProvider;
     private SendHandler sendHandler;
 
+
     public SendResource(SendHandler sendHandler, LwM2mModelProvider modelProvider, LwM2mDecoder decoder,
             RegistrationStore registrationStore) {
         super("dp");
@@ -74,20 +75,28 @@ public class SendResource extends LwM2mCoapResource {
 
         // Decode payload
         LwM2mModel model = modelProvider.getObjectModel(registration);
-//        byte[] payload = exchange.getRequestPayload();
-        byte[] payload = new byte[] {0x00, 0x10};
+          byte[] payload = exchange.getRequestPayload();
+        //byte[] payload = new byte[]{0x00, 0x10};
         ContentFormat contentFormat = ContentFormat.fromCode(exchange.getRequestOptions().getContentFormat());
         if (!decoder.isSupported(contentFormat)) {
             exchange.respond(ResponseCode.BAD_REQUEST, "Unsupported content format");
             return;
         }
-        Map<LwM2mPath, LwM2mNode> data;
+        Map<LwM2mPath, LwM2mNode> data = null;
+
+        InvalidRequestException invalidreqexception = null;
 
         try {
             data = decoder.decodeNodes(payload, contentFormat, (List<LwM2mPath>) null, model);
         } catch (CodecException e) {
-            throw new InvalidRequestException(e);
+            throw invalidreqexception=new InvalidRequestException(e);
         }
+        finally {
+            if (invalidreqexception != null) {
+                sendHandler.OnError(registration, invalidreqexception);
+            }
+        }
+
         // Handle "send op request
         SendRequest sendRequest = new SendRequest(contentFormat, data, coapRequest);
         SendableResponse<SendResponse> sendableResponse = sendHandler.handleSend(registration, sendRequest);

@@ -250,7 +250,7 @@ public class EventServlet extends EventSourceServlet {
         }
 
         @Override
-        public void OnError(Registration registration, Map<String, LwM2mNode> data, SendRequest request, InvalidRequestException e) {
+        public void OnError(Registration registration, InvalidRequestException e) {
 
         }
     };

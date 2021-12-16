@@ -40,5 +40,5 @@ public interface SendListener {
 
     // TODO should we add a listener, if called if something wrong happened when we handle SendRequest ?
 
-    void OnError(Registration registration, Map<String, LwM2mNode> data, SendRequest request, InvalidRequestException e);
+    void OnError(Registration registration, InvalidRequestException e);
 }
