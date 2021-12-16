@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.request.SendRequest;
+import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.SendResponse;
 import org.eclipse.leshan.core.response.SendableResponse;
 import org.eclipse.leshan.server.registration.Registration;
@@ -67,5 +68,16 @@ public class SendHandler implements SendService {
         for (SendListener listener : listeners) {
             listener.dataReceived(registration, Collections.unmodifiableMap(nodes), request);
         }
+    }
+
+    public void OnError(Registration registration, InvalidRequestException e)
+    {
+        for (SendListener listener : listeners) {
+
+            listener.OnError(registration, new InvalidRequestException("Send Data contains wrong data",e));
+
+        }
+
+
     }
 }

@@ -27,10 +27,12 @@ import org.eclipse.leshan.core.californium.LwM2mCoapResource;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
+import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.request.SendRequest;
+import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.SendResponse;
 import org.eclipse.leshan.core.response.SendableResponse;
 import org.eclipse.leshan.server.model.LwM2mModelProvider;
@@ -73,12 +75,26 @@ public class SendResource extends LwM2mCoapResource {
         // Decode payload
         LwM2mModel model = modelProvider.getObjectModel(registration);
         byte[] payload = exchange.getRequestPayload();
+        //byte[] payload = new byte[]{0x00, 0x10};
         ContentFormat contentFormat = ContentFormat.fromCode(exchange.getRequestOptions().getContentFormat());
         if (!decoder.isSupported(contentFormat)) {
             exchange.respond(ResponseCode.BAD_REQUEST, "Unsupported content format");
             return;
         }
-        Map<LwM2mPath, LwM2mNode> data = decoder.decodeNodes(payload, contentFormat, (List<LwM2mPath>) null, model);
+        Map<LwM2mPath, LwM2mNode> data = null;
+
+        InvalidRequestException invalidreqexception = null;
+
+        try {
+            data = decoder.decodeNodes(payload, contentFormat, (List<LwM2mPath>) null, model);
+        } catch (CodecException e) {
+            throw invalidreqexception=new InvalidRequestException(e);
+        }
+        finally {
+            if (invalidreqexception != null) {
+                sendHandler.OnError(registration, invalidreqexception);
+            }
+        }
 
         // Handle "send op request
         SendRequest sendRequest = new SendRequest(contentFormat, data, coapRequest);
