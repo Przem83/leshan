@@ -29,6 +29,7 @@ import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
+import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
@@ -215,7 +216,7 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
             Type expectedType = rSpec != null ? rSpec.type : resourceInstance.getType();
 
             // Using request path as base name, and record doesn't have name
-            addSenMLRecord(null, resourceInstance.getType(), expectedType, resourceInstance.getValue());
+            addSenMLRecord(null, resourceInstance.getType(), expectedType, resourceInstance.getValue(), null);
         }
 
         private void lwM2mResourceToSenMLRecord(String recordName, LwM2mResource resource) {
@@ -235,14 +236,18 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
                     }
 
                     addSenMLRecord(resourceInstanceRecordName, resource.getType(), expectedType,
-                            entry.getValue().getValue());
+                            entry.getValue().getValue(), null);
                 }
             } else {
-                addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue());
+                Long timestamp = null;
+                if (resource instanceof LwM2mSingleResource) {
+                    timestamp = ((LwM2mSingleResource) resource).getTimestamp();
+                }
+                addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue(), timestamp);
             }
         }
 
-        private void addSenMLRecord(String recordName, Type valueType, Type expectedType, Object value) {
+        private void addSenMLRecord(String recordName, Type valueType, Type expectedType, Object value, Long timestamp) {
             // Create SenML record
             SenMLRecord record = new SenMLRecord();
 
@@ -265,6 +270,10 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
             LwM2mPath lwM2mResourcePath = new LwM2mPath(bn + n);
             Object convertedValue = converter.convertValue(value, valueType, expectedType, lwM2mResourcePath);
             setResourceValue(convertedValue, expectedType, lwM2mResourcePath, record);
+
+            if (timestamp != null) {
+                record.setBaseTime(timestamp);
+            }
 
             // Add record to the List
             records.add(record);

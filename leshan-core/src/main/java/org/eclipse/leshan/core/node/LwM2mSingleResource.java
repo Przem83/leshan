@@ -34,6 +34,8 @@ public class LwM2mSingleResource implements LwM2mResource {
 
     private final Type type;
 
+    private Long timestamp = null;
+
     protected LwM2mSingleResource(int id, Object value, Type type) {
         LwM2mNodeUtil.validateNotNull(value, "value MUST NOT be null");
         LwM2mNodeUtil.validateResourceId(id);
@@ -167,6 +169,14 @@ public class LwM2mSingleResource implements LwM2mResource {
             throw new LwM2mNodeException("Invalid value : positive value expected for UNSIGNED_INTEGER");
     }
 
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -271,8 +281,8 @@ public class LwM2mSingleResource implements LwM2mResource {
     public String toString() {
         // We don't print OPAQUE value as this could be credentials one.
         // Not ideal but didn't find better way for now.
-        return String.format("LwM2mSingleResource [id=%s, value=%s, type=%s]", id,
-                type == Type.OPAQUE ? ((byte[]) value).length + "Bytes" : value, type);
+        return String.format("LwM2mSingleResource [id=%s, value=%s, type=%s, timestamp=%s]", id,
+                type == Type.OPAQUE ? ((byte[]) value).length + "Bytes" : value, type, timestamp);
     }
 
     @Override
