@@ -14,12 +14,12 @@
 package org.eclipse.leshan.core.node.codec.senml;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,6 +39,7 @@ import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeList;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.MultiNodeDecoder;
@@ -134,11 +135,22 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
             } else {
                 // Paths are not given so we given so we can not regroup by path
                 // let's assume that each path refer to a single resource or single resource instances.
+
                 LwM2mSenMLResolver resolver = new LwM2mSenMLResolver();
+                Map<LwM2mPath, List<LwM2mResolvedSenMLRecord>> recordsMap = new HashMap<>();
                 for (SenMLRecord record : pack.getRecords()) {
                     LwM2mResolvedSenMLRecord resolvedRecord = resolver.resolve(record);
                     LwM2mPath path = resolvedRecord.getPath();
-                    LwM2mNode node = parseRecords(Arrays.asList(resolvedRecord), path, model,
+                    if (!recordsMap.containsKey(path)) {
+                        recordsMap.put(path, new ArrayList<>());
+                    }
+                    recordsMap.get(path).add(resolvedRecord);
+                }
+
+                for (Entry<LwM2mPath, List<LwM2mResolvedSenMLRecord>> record : recordsMap.entrySet()) {
+                    LwM2mPath path = record.getKey();
+                    List<LwM2mResolvedSenMLRecord> resolvedRecords = record.getValue();
+                    LwM2mNode node = parseRecords(resolvedRecords, path, model,
                             DefaultLwM2mDecoder.nodeClassFromPath(path));
                     nodes.put(path, node);
                 }
@@ -428,11 +440,25 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
                 Object resourceValue = parseResourceValue(record.getResourceValue(), expectedType, nodePath);
                 LwM2mResource res = LwM2mSingleResource.newResource(nodePath.getResourceId(), resourceValue,
                         expectedType);
-                LwM2mResource previousRes = lwM2mResourceMap.put(nodePath.getResourceId(), res);
-                if (previousRes != null) {
-                    throw new CodecException("2 RESOURCE nodes (%s,%s) with the same identifier %d for path %s",
-                            previousRes, res, res.getId(), nodePath);
+
+                if (record.getBaseTime() != null) {
+                    Map<Long, LwM2mNode> timestampedNodes = new LinkedHashMap<>();
+
+                    LwM2mResource previousRes = lwM2mResourceMap.get(nodePath.getResourceId());
+                    if (previousRes != null) {
+                        if (previousRes instanceof TimestampedLwM2mNodeList) {
+                            Map<Long, LwM2mNode> prevNodes = ((TimestampedLwM2mNodeList) previousRes).getTimestampedNodes();
+                            timestampedNodes.putAll(prevNodes);
+                        } else {
+                            throw new CodecException("Mixed node types");
+                        }
+                    }
+
+                    timestampedNodes.put(record.getBaseTime(), res);
+                    res = new TimestampedLwM2mNodeList(timestampedNodes);
                 }
+
+                lwM2mResourceMap.put(nodePath.getResourceId(), res);
             } else {
                 throw new CodecException(
                         "Invalid path [%s] for resource, it should be a resource or a resource instance path",

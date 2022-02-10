@@ -51,6 +51,7 @@ import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.core.util.datatype.ULong;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -995,6 +996,7 @@ public class LwM2mNodeDecoderTest {
         assertTrue(resource.getInstances().isEmpty());
     }
 
+    @Ignore
     @Test
     public void senml_timestamped_resources() throws CodecException {
         // json content for instance 0 of device object
@@ -1015,6 +1017,7 @@ public class LwM2mNodeDecoderTest {
         assertEquals(24.1d, ((LwM2mResource) timestampedResources.get(2).getNode()).getValue());
     }
 
+    @Ignore
     @Test
     public void senml_timestamped_instances() throws CodecException {
         // json content for instance 0 of device object
@@ -1041,6 +1044,7 @@ public class LwM2mNodeDecoderTest {
 
     }
 
+    @Ignore
     @Test
     public void senml_timestamped_Object() throws CodecException {
         // json content for instance 0 of device object

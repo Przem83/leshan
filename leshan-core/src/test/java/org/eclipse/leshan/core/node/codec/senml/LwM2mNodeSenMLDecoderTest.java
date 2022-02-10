@@ -15,27 +15,44 @@ import org.eclipse.leshan.senml.SenMLDecoder;
 import org.eclipse.leshan.senml.SenMLPack;
 import org.eclipse.leshan.senml.SenMLRecord;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class LwM2mNodeSenMLDecoderTest {
 
     @Test
-    public void should_decode_multiple_timestamped_values() {
+    public void should_decode_single_timestamped_value() {
         // given
-        LwM2mNodeSenMLDecoder nodeDecoder = new LwM2mNodeSenMLDecoder(fakeDecoder(), true);
+        LwM2mNodeSenMLDecoder nodeDecoder = new LwM2mNodeSenMLDecoder(fakeDecoder(false), true);
 
         // when
         Map<LwM2mPath, LwM2mNode> nodeMap = nodeDecoder.decodeNodes(new byte[] {},null, getFakeModel());
 
         // then
-        Assert.assertEquals(2, nodeMap.size());
+        Assert.assertEquals(1, nodeMap.size());
         Assert.assertTrue(nodeMap.containsKey(new LwM2mPath("/2000/2/3")));
         LwM2mNode node = nodeMap.get(new LwM2mPath("/2000/2/3"));
         Assert.assertTrue(node instanceof TimestampedLwM2mNodeList);
         TimestampedLwM2mNodeList timestampedNodes = (TimestampedLwM2mNodeList) node;
         Assert.assertEquals(3, timestampedNodes.getId());
-        Assert.assertEquals(getExampleTimestampedNodes(), timestampedNodes.getTimestampedNodes());
+        Assert.assertEquals(getExampleTimestampedNodes(false), timestampedNodes.getTimestampedNodes());
+    }
+
+    @Test
+    public void should_decode_multiple_timestamped_values() {
+        // given
+        LwM2mNodeSenMLDecoder nodeDecoder = new LwM2mNodeSenMLDecoder(fakeDecoder(true), true);
+
+        // when
+        Map<LwM2mPath, LwM2mNode> nodeMap = nodeDecoder.decodeNodes(new byte[] {},null, getFakeModel());
+
+        // then
+        Assert.assertEquals(1, nodeMap.size());
+        Assert.assertTrue(nodeMap.containsKey(new LwM2mPath("/2000/2/3")));
+        LwM2mNode node = nodeMap.get(new LwM2mPath("/2000/2/3"));
+        Assert.assertTrue(node instanceof TimestampedLwM2mNodeList);
+        TimestampedLwM2mNodeList timestampedNodes = (TimestampedLwM2mNodeList) node;
+        Assert.assertEquals(3, timestampedNodes.getId());
+        Assert.assertEquals(getExampleTimestampedNodes(true), timestampedNodes.getTimestampedNodes());
     }
 
     private LwM2mModel getFakeModel() {
@@ -58,29 +75,34 @@ public class LwM2mNodeSenMLDecoderTest {
         };
     }
 
-    private SenMLDecoder fakeDecoder() {
+    private SenMLDecoder fakeDecoder(boolean multiple) {
         return encodedSenML -> {
             SenMLPack pack = new SenMLPack();
             SenMLRecord record = new SenMLRecord();
             record.setBaseTime(2222L);
-            record.setBaseName("/2000/2/3");
+            record.setBaseName("/2000/2");
+            record.setName("/3");
             record.setStringValue("12345");
             pack.addRecord(record);
 
-            record = new SenMLRecord();
-            record.setBaseTime(4444L);
-            record.setBaseName("/2000/2/3");
-            record.setStringValue("67890");
-            pack.addRecord(record);
+            if (multiple) {
+                record = new SenMLRecord();
+                record.setBaseTime(4444L);
+                record.setName("/3");
+                record.setStringValue("67890");
+                pack.addRecord(record);
+            }
 
             return pack;
         };
     }
 
-    private Map<Long, LwM2mNode> getExampleTimestampedNodes() {
+    private Map<Long, LwM2mNode> getExampleTimestampedNodes(boolean multiple) {
         Map<Long, LwM2mNode> timestampedNodes = new HashMap<>();
-        timestampedNodes.put(2222L, LwM2mSingleResource.newIntegerResource(3, 12345));
-        timestampedNodes.put(4444L, LwM2mSingleResource.newIntegerResource(3, 67890));
+        timestampedNodes.put(2222L, LwM2mSingleResource.newStringResource(3, "12345"));
+        if (multiple) {
+            timestampedNodes.put(4444L, LwM2mSingleResource.newStringResource(3, "67890"));
+        }
         return timestampedNodes;
     }
 }
