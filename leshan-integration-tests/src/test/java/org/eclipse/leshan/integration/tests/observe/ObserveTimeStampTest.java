@@ -45,6 +45,7 @@ import org.eclipse.leshan.core.response.ObserveResponse;
 import org.eclipse.leshan.integration.tests.util.IntegrationTestHelper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -87,6 +88,7 @@ public class ObserveTimeStampTest {
         helper.dispose();
     }
 
+    @Ignore
     @Test
     public void can_observe_timestamped_resource() throws InterruptedException {
         TestObservationListener listener = new TestObservationListener();
@@ -131,6 +133,7 @@ public class ObserveTimeStampTest {
         assertContentFormat(contentFormat, listener.getObserveResponse());
     }
 
+    @Ignore
     @Test
     public void can_observe_timestamped_instance() throws InterruptedException {
         TestObservationListener listener = new TestObservationListener();
@@ -174,6 +177,7 @@ public class ObserveTimeStampTest {
         assertContentFormat(contentFormat, listener.getObserveResponse());
     }
 
+    @Ignore
     @Test
     public void can_observe_timestamped_object() throws InterruptedException {
         TestObservationListener listener = new TestObservationListener();
