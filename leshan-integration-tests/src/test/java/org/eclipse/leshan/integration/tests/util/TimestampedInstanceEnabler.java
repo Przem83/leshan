@@ -20,15 +20,7 @@ public class TimestampedInstanceEnabler extends BaseInstanceEnabler {
 
     @Override
     public ReadResponse read(ServerIdentity identity, int resourceid) {
-//        List<TimestampedLwM2mNode> timestampedLwM2mNodes = Arrays.asList(
-//                new TimestampedLwM2mNode(123L, LwM2mSingleResource.newFloatResource(resourceid, 111.0)),
-//                new TimestampedLwM2mNode(456L, LwM2mSingleResource.newFloatResource(resourceid, 222.0)));
-//
-//        return ReadResponse.success(timestampedLwM2mNodes);
-
         LwM2mSingleResource lwM2mSingleResource = LwM2mSingleResource.newFloatResource(resourceid, 111.1);
-        lwM2mSingleResource.setTimestamp(123L);
-
         return ReadResponse.success(lwM2mSingleResource);
     }
 }

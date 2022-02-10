@@ -221,7 +221,7 @@ public class IntegrationTestHelper {
         setupServerMonitoring();
     }
 
-    protected LeshanServerBuilder createServerBuilder() {
+    public LeshanServerBuilder createServerBuilder() {
         LeshanServerBuilder builder = new LeshanServerBuilder();
         builder.setDecoder(new DefaultLwM2mDecoder(true));
         builder.setEncoder(new DefaultLwM2mEncoder(true));
@@ -245,7 +245,7 @@ public class IntegrationTestHelper {
         return new InMemorySecurityStore();
     }
 
-    protected void setupServerMonitoring() {
+    public void setupServerMonitoring() {
         server.getRegistrationService().addListener(registrationListener);
     }
 

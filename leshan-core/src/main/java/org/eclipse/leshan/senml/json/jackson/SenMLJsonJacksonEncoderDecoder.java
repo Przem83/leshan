@@ -15,6 +15,7 @@
 package org.eclipse.leshan.senml.json.jackson;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.leshan.core.util.json.JsonException;
 import org.eclipse.leshan.senml.SenMLDecoder;

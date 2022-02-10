@@ -428,9 +428,6 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
                 Object resourceValue = parseResourceValue(record.getResourceValue(), expectedType, nodePath);
                 LwM2mResource res = LwM2mSingleResource.newResource(nodePath.getResourceId(), resourceValue,
                         expectedType);
-                if (record.getBaseTime() != null && res instanceof LwM2mSingleResource) {
-                    ((LwM2mSingleResource) res).setTimestamp(record.getBaseTime());
-                }
                 LwM2mResource previousRes = lwM2mResourceMap.put(nodePath.getResourceId(), res);
                 if (previousRes != null) {
                     throw new CodecException("2 RESOURCE nodes (%s,%s) with the same identifier %d for path %s",

@@ -28,7 +28,6 @@ import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.StaticModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mResource;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.response.SendResponse;
 import org.eclipse.leshan.integration.tests.util.Callback;
@@ -104,29 +103,6 @@ public class SendTest {
         LwM2mResource serialnumber = (LwM2mResource) data.get("/3/0/2");
         assertEquals(serialnumber.getId(), 2);
         assertEquals(serialnumber.getValue(), "12345");
-    }
-
-    @Test
-    public void can_send_timestamped_resources() throws InterruptedException, TimeoutException {
-        // Define send listener
-        SynchronousSendListener listener = new SynchronousSendListener();
-        helper.server.getSendService().addListener(listener);
-
-        // Send Data
-        helper.waitForRegistrationAtClientSide(1);
-        ServerIdentity server = helper.client.getRegisteredServers().values().iterator().next();
-        SendResponse response = helper.client.sendData(server, contentformat, Arrays.asList("/2000/2/3"), 1000);
-
-        listener.waitForData(1, TimeUnit.SECONDS);
-        assertNotNull(listener.getRegistration());
-        Map<String, LwM2mNode> data = listener.getData();
-
-        LwM2mNode lwM2mNode = data.get("/2000/2/3");
-        assertTrue(lwM2mNode instanceof LwM2mSingleResource);
-        LwM2mSingleResource resource = (LwM2mSingleResource) lwM2mNode;
-        assertEquals(resource.getId(), 3);
-        assertEquals(resource.getValue(), 111.1);
-        assertEquals((long)resource.getTimestamp(), 123L);
     }
 
     @Test

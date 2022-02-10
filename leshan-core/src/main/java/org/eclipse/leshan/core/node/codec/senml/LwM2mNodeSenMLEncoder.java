@@ -239,11 +239,7 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
                             entry.getValue().getValue(), null);
                 }
             } else {
-                Long timestamp = null;
-                if (resource instanceof LwM2mSingleResource) {
-                    timestamp = ((LwM2mSingleResource) resource).getTimestamp();
-                }
-                addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue(), timestamp);
+                addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue(), null);
             }
         }
 

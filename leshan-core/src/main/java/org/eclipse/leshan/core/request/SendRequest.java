@@ -24,6 +24,7 @@ import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeList;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.SendResponse;
 import org.eclipse.leshan.core.util.Validate;
@@ -76,7 +77,7 @@ public class SendRequest implements UplinkRequest<SendResponse> {
                 return;
             if (path.isObjectInstance() && node instanceof LwM2mObjectInstance)
                 return;
-            if (path.isResource() && node instanceof LwM2mSingleResource)
+            if (path.isResource() && (node instanceof LwM2mSingleResource || node instanceof TimestampedLwM2mNodeList) )
                 return;
             if (path.isResourceInstance() && node instanceof LwM2mResourceInstance)
                 return;

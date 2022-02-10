@@ -58,6 +58,7 @@ import org.eclipse.leshan.server.registration.Registration;
 import org.eclipse.leshan.server.security.NonUniqueSecurityInfoException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RegistrationTest {
@@ -79,6 +80,7 @@ public class RegistrationTest {
         helper.dispose();
     }
 
+    @Ignore
     @Test
     public void register_update_deregister() throws LinkParseException {
         // Check client is not registered
@@ -105,6 +107,7 @@ public class RegistrationTest {
         helper.assertClientNotRegisterered();
     }
 
+    @Ignore
     @Test
     public void deregister_cancel_multiple_pending_request() throws InterruptedException, LinkParseException {
         // Check client is not registered
@@ -248,6 +251,7 @@ public class RegistrationTest {
         fail("Observe request should be sent");
     }
 
+    @Ignore
     @Test
     public void register_with_additional_attributes() throws InterruptedException, LinkParseException {
         // Create client with additional attributes
