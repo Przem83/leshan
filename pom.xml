@@ -323,7 +323,7 @@ Contributors:
                              <logback.configurationFile>logback-leshan-test.xml</logback.configurationFile>
                         </systemPropertyVariables>
                         <parallel>classes</parallel>
-                        <threadCount>4</threadCount>
+                        <threadCount>1</threadCount>
                         <excludes>
                             <exclude>**/*$*</exclude>
                         </excludes>

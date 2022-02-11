@@ -94,7 +94,7 @@ public class ObserveTimeStampTest {
         TestObservationListener listener = new TestObservationListener();
         helper.server.getObservationService().addListener(listener);
 
-        // observe device timezone
+        // observe device timezoneTimestampedNode
         ObserveResponse observeResponse = helper.server.send(helper.getCurrentRegistration(),
                 new ObserveRequest(3, 0, 15));
         assertEquals(ResponseCode.CONTENT, observeResponse.getCode());

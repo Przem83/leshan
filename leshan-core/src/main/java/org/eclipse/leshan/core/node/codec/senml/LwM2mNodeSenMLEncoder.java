@@ -32,6 +32,7 @@ import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeList;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mValueConverter;
 import org.eclipse.leshan.core.node.codec.MultiNodeEncoder;
@@ -239,7 +240,11 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
                             entry.getValue().getValue(), null);
                 }
             } else {
-                addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue(), null);
+                Long timestamp = null;
+                if (resource instanceof TimestampedLwM2mNodeList) {
+                    timestamp = ((TimestampedLwM2mNodeList)resource).getTimestamp();
+                }
+                addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue(), timestamp);
             }
         }
 

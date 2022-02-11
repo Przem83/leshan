@@ -15,6 +15,11 @@
  *******************************************************************************/
 package org.eclipse.leshan.core.model;
 
+import java.util.Date;
+
+import org.eclipse.leshan.core.node.ObjectLink;
+import org.eclipse.leshan.core.util.datatype.ULong;
+
 /**
  * A resource description
  * 
@@ -40,7 +45,35 @@ public class ResourceModel {
     }
 
     public enum Type {
-        NONE, STRING, INTEGER, FLOAT, BOOLEAN, OPAQUE, TIME, OBJLNK, UNSIGNED_INTEGER, CORELINK
+        NONE, STRING, INTEGER, FLOAT, BOOLEAN, OPAQUE, TIME, OBJLNK, UNSIGNED_INTEGER, CORELINK;
+
+        public static Type getObjectType(Object value) {
+            if (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long) {
+                return Type.INTEGER;
+            }
+            if (value instanceof Float || value instanceof Double) {
+                return Type.FLOAT;
+            }
+            if (value instanceof Boolean) {
+                return Type.BOOLEAN;
+            }
+            if (value instanceof byte[]) {
+                return Type.OPAQUE;
+            }
+            if (value instanceof String) {
+                return Type.STRING;
+            }
+            if (value instanceof Date) {
+                return Type.TIME;
+            }
+            if (value instanceof ObjectLink) {
+                return Type.OBJLNK;
+            }
+            if (value instanceof ULong) {
+                return Type.UNSIGNED_INTEGER;
+            }
+            return null;
+        }
     }
 
     public final Integer id;

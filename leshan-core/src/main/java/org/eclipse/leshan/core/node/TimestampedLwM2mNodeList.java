@@ -8,12 +8,14 @@ import org.eclipse.leshan.core.model.ResourceModel;
 public class TimestampedLwM2mNodeList implements LwM2mResource {
 
     private final Map<Long, LwM2mNode> timestampedNodes;
-    private final int id;
 
     public TimestampedLwM2mNodeList(Map<Long, LwM2mNode> timestampedNodes) {
         validate(timestampedNodes);
-        this.id = timestampedNodes.entrySet().iterator().next().getValue().getId();
         this.timestampedNodes = timestampedNodes;
+    }
+
+    private LwM2mNode getFirstNode() {
+        return this.timestampedNodes.entrySet().iterator().next().getValue();
     }
 
     private void validate(Map<Long, LwM2mNode> timestampedNodes) {
@@ -24,12 +26,12 @@ public class TimestampedLwM2mNodeList implements LwM2mResource {
 
     @Override
     public int getId() {
-        return id;
+        return getFirstNode().getId();
     }
 
     @Override
     public void accept(LwM2mNodeVisitor visitor) {
-
+        visitor.visit(this);
     }
 
     @Override
@@ -48,6 +50,10 @@ public class TimestampedLwM2mNodeList implements LwM2mResource {
 
     @Override
     public ResourceModel.Type getType() {
+        LwM2mNode firstNode = getFirstNode();
+        if (firstNode instanceof LwM2mSingleResource) {
+            return ((LwM2mSingleResource)firstNode).getType();
+        }
         return null;
     }
 
@@ -58,6 +64,10 @@ public class TimestampedLwM2mNodeList implements LwM2mResource {
 
     @Override
     public Object getValue() {
+        LwM2mNode firstNode = getFirstNode();
+        if (firstNode instanceof LwM2mSingleResource) {
+            return ((LwM2mSingleResource)firstNode).getValue();
+        }
         return null;
     }
 
@@ -83,5 +93,9 @@ public class TimestampedLwM2mNodeList implements LwM2mResource {
     @Override
     public Map<Integer, LwM2mResourceInstance> getInstances() {
         throw new NoSuchElementException("There is no 'instances' on single resources, use getValue() instead.");
+    }
+
+    public Long getTimestamp() {
+        return timestampedNodes.entrySet().iterator().next().getKey();
     }
 }
