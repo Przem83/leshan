@@ -24,7 +24,7 @@ import org.junit.Test;
 public class LwM2mNodeSenMLEncoderTest {
 
     @Test
-    public void should_encode_timestamped_node() {
+    public void should_encode_single_timestamped_node() {
         // given
 
         FakeSenMLEncoder fakeEncoder = new FakeSenMLEncoder();
@@ -38,6 +38,27 @@ public class LwM2mNodeSenMLEncoderTest {
         SenMLRecord record = fakeEncoder.receivedPack.getRecords().get(0);
         assertEquals("12345", record.getStringValue());
         assertEquals(Long.valueOf(2222L), record.getBaseTime());
+    }
+
+    @Test
+    public void should_encode_multiple_timestamped_nodes() {
+        // given
+
+        FakeSenMLEncoder fakeEncoder = new FakeSenMLEncoder();
+        LwM2mNodeSenMLEncoder nodeEncoder = new LwM2mNodeSenMLEncoder(fakeEncoder);
+
+        // when
+        nodeEncoder.encodeNodes(getExampleTimestampedNodes(true), getFakeModel(), new LwM2mValueChecker());
+
+        // then
+        assertEquals(2, fakeEncoder.receivedPack.getRecords().size());
+        SenMLRecord record = fakeEncoder.receivedPack.getRecords().get(0);
+        assertEquals("12345", record.getStringValue());
+        assertEquals(Long.valueOf(2222L), record.getBaseTime());
+
+        record = fakeEncoder.receivedPack.getRecords().get(1);
+        assertEquals("67890", record.getStringValue());
+        assertEquals(Long.valueOf(4444L), record.getBaseTime());
     }
 
     private Map<LwM2mPath, LwM2mNode> getExampleTimestampedNodes(boolean multiple) {

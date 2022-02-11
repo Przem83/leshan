@@ -240,11 +240,22 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
                             entry.getValue().getValue(), null);
                 }
             } else {
-                Long timestamp = null;
                 if (resource instanceof TimestampedLwM2mNodeList) {
-                    timestamp = ((TimestampedLwM2mNodeList)resource).getTimestamp();
+                    TimestampedLwM2mNodeList timestampedResource = (TimestampedLwM2mNodeList) resource;
+                    Map<Long, LwM2mNode> timestampedNodes = timestampedResource.getTimestampedNodes();
+                    for (Entry<Long, LwM2mNode> nodeEntry : timestampedNodes.entrySet()) {
+                        LwM2mNode node = nodeEntry.getValue();
+                        if (node instanceof LwM2mSingleResource) {
+                            Object value = ((LwM2mSingleResource) node).getValue();
+                            addSenMLRecord(recordName, resource.getType(), expectedType, value, nodeEntry.getKey());
+                        } else {
+                            throw new CodecException("only LwM2mSingleResource node is supported");
+                        }
+                    }
+                } else {
+                    addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue(), null);
                 }
-                addSenMLRecord(recordName, resource.getType(), expectedType, resource.getValue(), timestamp);
+
             }
         }
 
