@@ -19,11 +19,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mObject;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.SendResponse;
 import org.eclipse.leshan.core.util.Validate;
@@ -72,11 +72,11 @@ public class SendRequest implements UplinkRequest<SendResponse> {
             Validate.notNull(path);
             Validate.notNull(node);
 
-            if (path.isObject() && node instanceof LwM2mObject)
+            if (path.isObject() && node instanceof LwM2mObjectImpl)
                 return;
-            if (path.isObjectInstance() && node instanceof LwM2mObjectInstance)
+            if (path.isObjectInstance() && node instanceof LwM2mObjectInstanceImpl)
                 return;
-            if (path.isResource() && node instanceof LwM2mSingleResource)
+            if (path.isResource() && node instanceof LwM2mSingleResourceImpl)
                 return;
             if (path.isResourceInstance() && node instanceof LwM2mResourceInstance)
                 return;

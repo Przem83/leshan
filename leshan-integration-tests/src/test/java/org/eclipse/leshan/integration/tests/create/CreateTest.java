@@ -31,8 +31,9 @@ import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mObject;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mResource;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.CreateRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
@@ -88,7 +89,7 @@ public class CreateTest {
         try {
             // create ACL instance
             CreateResponse response = helper.server.send(helper.getCurrentRegistration(),
-                    new CreateRequest(contentFormat, 2, LwM2mSingleResource.newIntegerResource(3, 33)));
+                    new CreateRequest(contentFormat, 2, LwM2mSingleResourceImpl.newIntegerResource(3, 33)));
 
             // verify result
             assertEquals(ResponseCode.CREATED, response.getCode());
@@ -98,7 +99,7 @@ public class CreateTest {
 
             // create a second ACL instance
             response = helper.server.send(helper.getCurrentRegistration(),
-                    new CreateRequest(contentFormat, 2, LwM2mSingleResource.newIntegerResource(3, 34)));
+                    new CreateRequest(contentFormat, 2, LwM2mSingleResourceImpl.newIntegerResource(3, 34)));
 
             // verify result
             assertEquals(ResponseCode.CREATED, response.getCode());
@@ -121,7 +122,7 @@ public class CreateTest {
     @Test
     public void can_create_instance_with_id() throws InterruptedException {
         // create ACL instance
-        LwM2mObjectInstance instance = new LwM2mObjectInstance(12, LwM2mSingleResource.newIntegerResource(3, 123));
+        LwM2mObjectInstance instance = new LwM2mObjectInstanceImpl(12, LwM2mSingleResourceImpl.newIntegerResource(3, 123));
         CreateResponse response = helper.server.send(helper.getCurrentRegistration(),
                 new CreateRequest(contentFormat, 2, instance));
 
@@ -141,8 +142,8 @@ public class CreateTest {
     @Test
     public void can_create_2_instances_of_object() throws InterruptedException {
         // create ACL instance
-        LwM2mObjectInstance instance1 = new LwM2mObjectInstance(12, LwM2mSingleResource.newIntegerResource(3, 123));
-        LwM2mObjectInstance instance2 = new LwM2mObjectInstance(13, LwM2mSingleResource.newIntegerResource(3, 124));
+        LwM2mObjectInstance instance1 = new LwM2mObjectInstanceImpl(12, LwM2mSingleResourceImpl.newIntegerResource(3, 123));
+        LwM2mObjectInstance instance2 = new LwM2mObjectInstanceImpl(13, LwM2mSingleResourceImpl.newIntegerResource(3, 124));
         CreateResponse response = helper.server.send(helper.getCurrentRegistration(),
                 new CreateRequest(contentFormat, 2, instance1, instance2));
 
@@ -164,7 +165,7 @@ public class CreateTest {
     public void cannot_create_instance_without_all_required_resources() throws InterruptedException {
         // create ACL instance without any resources
         CreateResponse response = helper.server.send(helper.getCurrentRegistration(),
-                new CreateRequest(contentFormat, TEST_OBJECT_ID, new LwM2mObjectInstance(0, new LwM2mResource[0])));
+                new CreateRequest(contentFormat, TEST_OBJECT_ID, new LwM2mObjectInstanceImpl(0, new LwM2mResource[0])));
 
         // verify result
         assertEquals(ResponseCode.BAD_REQUEST, response.getCode());
@@ -174,17 +175,17 @@ public class CreateTest {
         // create ACL instance with only 1 mandatory resources (1 missing)
         CreateResponse response2 = helper.server.send(helper.getCurrentRegistration(), new CreateRequest(contentFormat,
                 TEST_OBJECT_ID,
-                new LwM2mObjectInstance(0, LwM2mSingleResource.newIntegerResource(INTEGER_MANDATORY_RESOURCE_ID, 12))));
+                new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newIntegerResource(INTEGER_MANDATORY_RESOURCE_ID, 12))));
 
         // verify result
         assertEquals(ResponseCode.BAD_REQUEST, response2.getCode());
 
         // create ACL instance
-        LwM2mObjectInstance instance0 = new LwM2mObjectInstance(0,
-                LwM2mSingleResource.newIntegerResource(INTEGER_MANDATORY_RESOURCE_ID, 22),
-                LwM2mSingleResource.newStringResource(STRING_MANDATORY_RESOURCE_ID, "string"));
-        LwM2mObjectInstance instance1 = new LwM2mObjectInstance(1,
-                LwM2mSingleResource.newIntegerResource(INTEGER_MANDATORY_RESOURCE_ID, 22));
+        LwM2mObjectInstance instance0 = new LwM2mObjectInstanceImpl(0,
+                LwM2mSingleResourceImpl.newIntegerResource(INTEGER_MANDATORY_RESOURCE_ID, 22),
+                LwM2mSingleResourceImpl.newStringResource(STRING_MANDATORY_RESOURCE_ID, "string"));
+        LwM2mObjectInstance instance1 = new LwM2mObjectInstanceImpl(1,
+                LwM2mSingleResourceImpl.newIntegerResource(INTEGER_MANDATORY_RESOURCE_ID, 22));
 
         CreateResponse response3 = helper.server.send(helper.getCurrentRegistration(),
                 new CreateRequest(contentFormat, TEST_OBJECT_ID, instance0, instance1));

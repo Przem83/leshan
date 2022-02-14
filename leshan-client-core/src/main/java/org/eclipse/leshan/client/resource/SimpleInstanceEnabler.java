@@ -32,10 +32,12 @@ import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.request.argument.Arguments;
 import org.eclipse.leshan.core.response.ExecuteResponse;
 import org.eclipse.leshan.core.response.ReadResponse;
@@ -87,7 +89,7 @@ public class SimpleInstanceEnabler extends BaseInstanceEnabler {
         // define new Value
         LwM2mResource newValue;
         List<LwM2mPath> newInstances = new ArrayList<>();
-        if (value instanceof LwM2mMultipleResource && !replace) {
+        if (value instanceof LwM2mMultipleResourceImpl && !replace) {
             // This is the special case of multiple instance resource where we do not replace the resource instances but
             // we
             // merge it.
@@ -102,7 +104,7 @@ public class SimpleInstanceEnabler extends BaseInstanceEnabler {
                         newInstances.add(getResourceInstancePath(resourceid, entry.getKey()));
                     }
                 }
-                newValue = new LwM2mMultipleResource(resourceid, value.getType(), mergedInstances.values());
+                newValue = new LwM2mMultipleResourceImpl(resourceid, value.getType(), mergedInstances.values());
             } else {
                 newValue = value;
             }
@@ -158,17 +160,17 @@ public class SimpleInstanceEnabler extends BaseInstanceEnabler {
                     if (resourceModel.multiple) {
                         // handle multi instances
                         if (value instanceof LwM2mResourceInstance) {
-                            newResource = new LwM2mMultipleResource(resourceModel.id, resourceModel.type,
+                            newResource = new LwM2mMultipleResourceImpl(resourceModel.id, resourceModel.type,
                                     (LwM2mResourceInstance) value);
                             changingResources.add(getResourcePath(resourceModel.id));
                         } else if (value instanceof Map) {
                             @SuppressWarnings("unchecked")
                             Map<Integer, ?> val = (Map<Integer, ?>) value;
-                            newResource = LwM2mMultipleResource.newResource(resourceModel.id, val, resourceModel.type);
+                            newResource = LwM2mMultipleResourceImpl.newResource(resourceModel.id, val, resourceModel.type);
                         }
                     } else {
                         // handle single instances
-                        newResource = LwM2mSingleResource.newResource(resourceModel.id, value, resourceModel.type);
+                        newResource = LwM2mSingleResourceImpl.newResource(resourceModel.id, value, resourceModel.type);
                     }
                 }
                 // add the resource
@@ -206,26 +208,26 @@ public class SimpleInstanceEnabler extends BaseInstanceEnabler {
             Object initialValue = initialValues.get(resourceModel.id);
             if (initialValue == null)
                 return null;
-            return LwM2mSingleResource.newResource(resourceModel.id, initialValue, resourceModel.type);
+            return LwM2mSingleResourceImpl.newResource(resourceModel.id, initialValue, resourceModel.type);
         } else {
             switch (resourceModel.type) {
             case STRING:
-                return LwM2mSingleResource.newStringResource(resourceModel.id,
+                return LwM2mSingleResourceImpl.newStringResource(resourceModel.id,
                         createDefaultStringValueFor(objectModel, resourceModel));
             case BOOLEAN:
-                return LwM2mSingleResource.newBooleanResource(resourceModel.id,
+                return LwM2mSingleResourceImpl.newBooleanResource(resourceModel.id,
                         createDefaultBooleanValueFor(objectModel, resourceModel));
             case INTEGER:
-                return LwM2mSingleResource.newIntegerResource(resourceModel.id,
+                return LwM2mSingleResourceImpl.newIntegerResource(resourceModel.id,
                         createDefaultIntegerValueFor(objectModel, resourceModel));
             case FLOAT:
-                return LwM2mSingleResource.newFloatResource(resourceModel.id,
+                return LwM2mSingleResourceImpl.newFloatResource(resourceModel.id,
                         createDefaultFloatValueFor(objectModel, resourceModel));
             case TIME:
-                return LwM2mSingleResource.newDateResource(resourceModel.id,
+                return LwM2mSingleResourceImpl.newDateResource(resourceModel.id,
                         createDefaultDateValueFor(objectModel, resourceModel));
             case OPAQUE:
-                return LwM2mSingleResource.newBinaryResource(resourceModel.id,
+                return LwM2mSingleResourceImpl.newBinaryResource(resourceModel.id,
                         createDefaultOpaqueValueFor(objectModel, resourceModel));
             default:
                 // this should not happened
@@ -241,18 +243,18 @@ public class SimpleInstanceEnabler extends BaseInstanceEnabler {
                 return null;
 
             if (initialValue instanceof LwM2mResourceInstance) {
-                return new LwM2mMultipleResource(resourceModel.id, resourceModel.type,
+                return new LwM2mMultipleResourceImpl(resourceModel.id, resourceModel.type,
                         (LwM2mResourceInstance) initialValue);
             } else if (initialValue instanceof Map) {
                 @SuppressWarnings("unchecked")
                 Map<Integer, ?> val = (Map<Integer, ?>) initialValue;
-                return LwM2mMultipleResource.newResource(resourceModel.id, val, resourceModel.type);
+                return LwM2mMultipleResourceImpl.newResource(resourceModel.id, val, resourceModel.type);
             }
             return null;
         } else {
             // no default value
             Map<Integer, ?> emptyMap = Collections.emptyMap();
-            return LwM2mMultipleResource.newResource(resourceModel.id, emptyMap, resourceModel.type);
+            return LwM2mMultipleResourceImpl.newResource(resourceModel.id, emptyMap, resourceModel.type);
         }
     }
 

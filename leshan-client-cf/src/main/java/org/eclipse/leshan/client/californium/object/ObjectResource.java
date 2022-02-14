@@ -42,6 +42,7 @@ import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.StaticModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.InvalidLwM2mPathException;
@@ -362,7 +363,7 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
         try {
             // decode the payload as an instance
             LwM2mObject object = decoder.decode(exchange.getRequestPayload(), contentFormat,
-                    new LwM2mPath(path.getObjectId()), model, LwM2mObject.class);
+                    new LwM2mPath(path.getObjectId()), model, LwM2mObjectImpl.class);
 
             CreateRequest createRequest;
             // check if this is the "special" case where instance ID is not defined ...

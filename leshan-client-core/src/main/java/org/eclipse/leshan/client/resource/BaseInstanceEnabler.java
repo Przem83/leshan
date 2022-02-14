@@ -29,7 +29,9 @@ import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -155,7 +157,7 @@ public class BaseInstanceEnabler implements LwM2mInstanceEnabler {
                     resources.add((LwM2mResource) response.getContent());
             }
         }
-        return ReadResponse.success(new LwM2mObjectInstance(id, resources));
+        return ReadResponse.success(new LwM2mObjectInstanceImpl(id, resources));
     }
 
     @Override
@@ -234,7 +236,7 @@ public class BaseInstanceEnabler implements LwM2mInstanceEnabler {
                 return WriteResponse.notFound();
             }
         }
-        return write(identity, false, resourceid, new LwM2mMultipleResource(resourceid, value.getType(), value));
+        return write(identity, false, resourceid, new LwM2mMultipleResourceImpl(resourceid, value.getType(), value));
     }
 
     @Override

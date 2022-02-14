@@ -28,6 +28,7 @@ import org.eclipse.leshan.core.Startable;
 import org.eclipse.leshan.core.Stoppable;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.request.WriteRequest.Mode;
@@ -107,7 +108,7 @@ public interface LwM2mInstanceEnabler {
      * @param identity the identity of the requester. This could be an internal call in this case
      *        <code> identity == ServerIdentity.SYSTEM</code>.
      * 
-     * @return a success response with an {@link LwM2mObjectInstance} as content or a failure response with optional
+     * @return a success response with an {@link LwM2mObjectInstanceImpl} as content or a failure response with optional
      *         explanation message.
      */
     ReadResponse read(ServerIdentity identity);
@@ -200,7 +201,7 @@ public interface LwM2mInstanceEnabler {
      * 
      * @param identity the identity of the requester. This could be an internal call in this case
      *        <code> identity == ServerIdentity.SYSTEM</code>.
-     * @return a success response with an {@link LwM2mObjectInstance} as content or a failure response with optional
+     * @return a success response with an {@link LwM2mObjectInstanceImpl} as content or a failure response with optional
      *         explanation message.
      */
     ObserveResponse observe(ServerIdentity identity);

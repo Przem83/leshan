@@ -34,8 +34,8 @@ import org.eclipse.leshan.core.link.LinkParamValue;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.request.ContentFormat;
@@ -161,7 +161,7 @@ public class CoapRequestBuilderTest {
         // test
         CoapRequestBuilder builder = new CoapRequestBuilder(reg.getIdentity(), reg.getRootPath(), reg.getId(),
                 reg.getEndpoint(), model, encoder, false, null);
-        WriteRequest request = new WriteRequest(Mode.UPDATE, 3, 0, LwM2mSingleResource.newStringResource(15, "value"));
+        WriteRequest request = new WriteRequest(Mode.UPDATE, 3, 0, LwM2mSingleResourceImpl.newStringResource(15, "value"));
         builder.visit(request);
 
         // verify
@@ -259,7 +259,7 @@ public class CoapRequestBuilderTest {
         // test
         CoapRequestBuilder builder = new CoapRequestBuilder(reg.getIdentity(), reg.getRootPath(), reg.getId(),
                 reg.getEndpoint(), model, encoder, false, null);
-        CreateRequest request = new CreateRequest(12, LwM2mSingleResource.newStringResource(0, "value"));
+        CreateRequest request = new CreateRequest(12, LwM2mSingleResourceImpl.newStringResource(0, "value"));
         builder.visit(request);
 
         // verify
@@ -283,7 +283,7 @@ public class CoapRequestBuilderTest {
         CoapRequestBuilder builder = new CoapRequestBuilder(reg.getIdentity(), reg.getRootPath(), reg.getId(),
                 reg.getEndpoint(), model, encoder, false, null);
         CreateRequest request = new CreateRequest(12,
-                new LwM2mObjectInstance(26, LwM2mSingleResource.newStringResource(0, "value")));
+                new LwM2mObjectInstanceImpl(26, LwM2mSingleResourceImpl.newStringResource(0, "value")));
         builder.visit(request);
 
         // verify

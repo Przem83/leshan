@@ -24,7 +24,7 @@ import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.NodeDecoder;
@@ -49,12 +49,12 @@ public class LwM2mNodeTextDecoder implements NodeDecoder {
 
         if (path.isResource()) {
             if (rDesc != null) {
-                return (T) LwM2mSingleResource.newResource(path.getResourceId(),
+                return (T) LwM2mSingleResourceImpl.newResource(path.getResourceId(),
                         parseTextValue(strValue, rDesc.type, path), rDesc.type);
             }
 
             // unknown resource, returning a default string value
-            return (T) LwM2mSingleResource.newStringResource(path.getResourceId(), strValue);
+            return (T) LwM2mSingleResourceImpl.newStringResource(path.getResourceId(), strValue);
         }
 
         if (rDesc != null) {

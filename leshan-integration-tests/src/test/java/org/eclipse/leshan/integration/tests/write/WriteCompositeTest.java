@@ -30,9 +30,11 @@ import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.observation.SingleObservation;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.ObserveRequest;
@@ -110,7 +112,7 @@ public class WriteCompositeTest {
     @Test
     public void can_write_resource_and_instance() throws InterruptedException {
         // create value
-        LwM2mSingleResource utcOffset = LwM2mSingleResource.newStringResource(14, "+02");
+        LwM2mSingleResource utcOffset = LwM2mSingleResourceImpl.newStringResource(14, "+02");
         LwM2mPath resourceInstancePath = new LwM2mPath(IntegrationTestHelper.TEST_OBJECT_ID, 0,
                 IntegrationTestHelper.STRING_RESOURCE_INSTANCE_ID, 100);
         LwM2mResourceInstance testStringResourceInstance = LwM2mResourceInstance
@@ -194,7 +196,7 @@ public class WriteCompositeTest {
         listener.waitForNotification(1000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(listener.getObserveResponse().getContent() instanceof LwM2mObjectInstance);
+        assertTrue(listener.getObserveResponse().getContent() instanceof LwM2mObjectInstanceImpl);
         assertNotNull(listener.getObserveResponse().getCoapResponse());
         assertThat(listener.getObserveResponse().getCoapResponse(), is(instanceOf(Response.class)));
 

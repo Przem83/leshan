@@ -26,7 +26,7 @@ import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.InvalidLwM2mPathException;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.WriteCompositeResponse;
@@ -63,7 +63,7 @@ public class WriteCompositeRequest extends AbstractLwM2mRequest<WriteCompositeRe
         for (Entry<String, Object> entry : values.entrySet()) {
             LwM2mPath path = newPath(entry.getKey());
             if (path.isResource()) {
-                internalNodes.put(path, LwM2mSingleResource.newResource(path.getResourceId(), entry.getValue()));
+                internalNodes.put(path, LwM2mSingleResourceImpl.newResource(path.getResourceId(), entry.getValue()));
             } else if (path.isResourceInstance()) {
                 internalNodes.put(path, LwM2mResourceInstance.newInstance(path.getResourceId(), entry.getValue()));
             } else {
@@ -80,7 +80,7 @@ public class WriteCompositeRequest extends AbstractLwM2mRequest<WriteCompositeRe
      * This constructor is more for internal usage.
      * 
      * @param nodes The {@link LwM2mNode} to write as a the Map of {@link LwM2mPath} to {@link LwM2mNode}. Value can not
-     *        be <code>null</code>. LwM2mNode MUST be {@link LwM2mSingleResource} or {@link LwM2mResourceInstance}.
+     *        be <code>null</code>. LwM2mNode MUST be {@link LwM2mSingleResourceImpl} or {@link LwM2mResourceInstance}.
      * @param contentFormat The {@link ContentFormat} used to encode the Map of {@link LwM2mNode}
      * @param coapRequest the underlying request.
      * 
@@ -101,7 +101,7 @@ public class WriteCompositeRequest extends AbstractLwM2mRequest<WriteCompositeRe
             Validate.notNull(path);
             Validate.notNull(node);
 
-            if (path.isResource() && node instanceof LwM2mSingleResource)
+            if (path.isResource() && node instanceof LwM2mSingleResourceImpl)
                 return;
             if (path.isResourceInstance() && node instanceof LwM2mResourceInstance)
                 return;

@@ -16,7 +16,7 @@
 package org.eclipse.leshan.core.response;
 
 import static org.eclipse.leshan.core.ResponseCode.*;
-import static org.eclipse.leshan.core.node.LwM2mSingleResource.newResource;
+import static org.eclipse.leshan.core.node.LwM2mSingleResourceImpl.newResource;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;

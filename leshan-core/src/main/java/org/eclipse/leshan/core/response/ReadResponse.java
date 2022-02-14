@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.eclipse.leshan.core.util.datatype.ULong;
@@ -90,40 +90,40 @@ public class ReadResponse extends AbstractLwM2mResponse {
     }
 
     public static ReadResponse success(int resourceId, String value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newStringResource(resourceId, value), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newStringResource(resourceId, value), null);
     }
 
     public static ReadResponse success(int resourceId, Date value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newDateResource(resourceId, value), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newDateResource(resourceId, value), null);
     }
 
     public static ReadResponse success(int resourceId, long value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newIntegerResource(resourceId, value), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newIntegerResource(resourceId, value), null);
     }
 
     public static ReadResponse success(int resourceId, ULong value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newUnsignedIntegerResource(resourceId, value), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newUnsignedIntegerResource(resourceId, value), null);
     }
 
     public static ReadResponse success(int resourceId, ObjectLink value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newObjectLinkResource(resourceId, value),
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newObjectLinkResource(resourceId, value),
                 null);
     }
 
     public static ReadResponse success(int resourceId, double value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newFloatResource(resourceId, value), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newFloatResource(resourceId, value), null);
     }
 
     public static ReadResponse success(int resourceId, boolean value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newBooleanResource(resourceId, value), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newBooleanResource(resourceId, value), null);
     }
 
     public static ReadResponse success(int resourceId, byte[] value) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResource.newBinaryResource(resourceId, value), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mSingleResourceImpl.newBinaryResource(resourceId, value), null);
     }
 
     public static ReadResponse success(int resourceId, Map<Integer, ?> value, Type type) {
-        return new ReadResponse(ResponseCode.CONTENT, LwM2mMultipleResource.newResource(resourceId, value, type), null);
+        return new ReadResponse(ResponseCode.CONTENT, LwM2mMultipleResourceImpl.newResource(resourceId, value, type), null);
     }
 
     public static ReadResponse notFound() {

@@ -26,6 +26,7 @@ import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.request.argument.Arguments;
@@ -123,7 +124,7 @@ public class DummyInstanceEnabler extends SimpleInstanceEnabler {
             break;
         }
         if (values != null)
-            return LwM2mMultipleResource.newResource(resourceModel.id, values, resourceModel.type);
+            return LwM2mMultipleResourceImpl.newResource(resourceModel.id, values, resourceModel.type);
         else
             return null;
     }

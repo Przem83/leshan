@@ -29,14 +29,16 @@ import java.util.Map;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.senml.LwM2mNodeSenMLEncoder;
 import org.eclipse.leshan.core.request.ContentFormat;
@@ -70,7 +72,7 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void text_encode_single_resource_float() {
 
-        byte[] encoded = encoder.encode(LwM2mSingleResource.newFloatResource(15, 56.4D), ContentFormat.TEXT,
+        byte[] encoded = encoder.encode(LwM2mSingleResourceImpl.newFloatResource(15, 56.4D), ContentFormat.TEXT,
                 new LwM2mPath("/323/0/15"), model);
 
         Assert.assertEquals("56.4", new String(encoded, StandardCharsets.UTF_8));
@@ -79,7 +81,7 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void text_encode_single_resource_date() {
 
-        byte[] encoded = encoder.encode(LwM2mSingleResource.newDateResource(13, new Date(1367491215000L)),
+        byte[] encoded = encoder.encode(LwM2mSingleResourceImpl.newDateResource(13, new Date(1367491215000L)),
                 ContentFormat.TEXT, new LwM2mPath("/3/0/13"), model);
 
         Assert.assertEquals("1367491215", new String(encoded, StandardCharsets.UTF_8));
@@ -90,14 +92,14 @@ public class LwM2mNodeEncoderTest {
         Map<Integer, Long> values = new HashMap<>();
         values.put(0, 1L);
         values.put(1, 5L);
-        encoder.encode(LwM2mMultipleResource.newIntegerResource(6, values), ContentFormat.TEXT, new LwM2mPath("/3/0/6"),
+        encoder.encode(LwM2mMultipleResourceImpl.newIntegerResource(6, values), ContentFormat.TEXT, new LwM2mPath("/3/0/6"),
                 model);
     }
 
     @Test
     public void text_encode_opaque_as_base64_string() {
         byte[] opaqueValue = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5 };
-        byte[] encoded = encoder.encode(LwM2mSingleResource.newBinaryResource(0, opaqueValue), ContentFormat.TEXT,
+        byte[] encoded = encoder.encode(LwM2mSingleResourceImpl.newBinaryResource(0, opaqueValue), ContentFormat.TEXT,
                 new LwM2mPath("/5/0/0"), model);
 
         Assert.assertEquals("AQIDBAU=", new String(encoded, StandardCharsets.UTF_8));
@@ -118,43 +120,43 @@ public class LwM2mNodeEncoderTest {
     private Collection<LwM2mResource> getDeviceResources() {
         Collection<LwM2mResource> resources = new ArrayList<>();
 
-        resources.add(LwM2mSingleResource.newStringResource(0, "Open Mobile Alliance"));
-        resources.add(LwM2mSingleResource.newStringResource(1, "Lightweight M2M Client"));
-        resources.add(LwM2mSingleResource.newStringResource(2, "345000123"));
-        resources.add(LwM2mSingleResource.newStringResource(3, "1.0"));
+        resources.add(LwM2mSingleResourceImpl.newStringResource(0, "Open Mobile Alliance"));
+        resources.add(LwM2mSingleResourceImpl.newStringResource(1, "Lightweight M2M Client"));
+        resources.add(LwM2mSingleResourceImpl.newStringResource(2, "345000123"));
+        resources.add(LwM2mSingleResourceImpl.newStringResource(3, "1.0"));
 
         Map<Integer, Long> values = new HashMap<>();
         values.put(0, 1L);
         values.put(1, 5L);
-        resources.add(LwM2mMultipleResource.newIntegerResource(6, values));
+        resources.add(LwM2mMultipleResourceImpl.newIntegerResource(6, values));
 
         values = new HashMap<>();
         values.put(0, 3800L);
         values.put(1, 5000L);
-        resources.add(LwM2mMultipleResource.newIntegerResource(7, values));
+        resources.add(LwM2mMultipleResourceImpl.newIntegerResource(7, values));
 
         values = new HashMap<>();
         values.put(0, 125L);
         values.put(1, 900L);
-        resources.add(LwM2mMultipleResource.newIntegerResource(8, values));
+        resources.add(LwM2mMultipleResourceImpl.newIntegerResource(8, values));
 
-        resources.add(LwM2mSingleResource.newIntegerResource(9, 100));
-        resources.add(LwM2mSingleResource.newIntegerResource(10, 15));
+        resources.add(LwM2mSingleResourceImpl.newIntegerResource(9, 100));
+        resources.add(LwM2mSingleResourceImpl.newIntegerResource(10, 15));
 
         values = new HashMap<>();
         values.put(0, 0L);
-        resources.add(LwM2mMultipleResource.newIntegerResource(11, values));
+        resources.add(LwM2mMultipleResourceImpl.newIntegerResource(11, values));
 
-        resources.add(LwM2mSingleResource.newDateResource(13, new Date(1367491215000L)));
-        resources.add(LwM2mSingleResource.newStringResource(14, "+02:00"));
-        resources.add(LwM2mSingleResource.newStringResource(16, "U"));
+        resources.add(LwM2mSingleResourceImpl.newDateResource(13, new Date(1367491215000L)));
+        resources.add(LwM2mSingleResourceImpl.newStringResource(14, "+02:00"));
+        resources.add(LwM2mSingleResourceImpl.newStringResource(16, "U"));
 
         return resources;
     }
 
     @Test
     public void tlv_encode_device_object_instance_as_resources_array() {
-        LwM2mObjectInstance oInstance = new LwM2mObjectInstance(0, getDeviceResources());
+        LwM2mObjectInstance oInstance = new LwM2mObjectInstanceImpl(0, getDeviceResources());
         byte[] encoded = encoder.encode(oInstance, ContentFormat.TLV, new LwM2mPath("/3/0"), model);
 
         Assert.assertArrayEquals(ENCODED_DEVICE_WITHOUT_INSTANCE, encoded);
@@ -162,7 +164,7 @@ public class LwM2mNodeEncoderTest {
 
     @Test
     public void tlv_encode_device_object_instance_as_resources_array__undefined_instance_id() {
-        LwM2mObjectInstance oInstance = new LwM2mObjectInstance(getDeviceResources());
+        LwM2mObjectInstance oInstance = new LwM2mObjectInstanceImpl(getDeviceResources());
         byte[] encoded = encoder.encode(oInstance, ContentFormat.TLV, new LwM2mPath("/3"), model);
 
         Assert.assertArrayEquals(ENCODED_DEVICE_WITHOUT_INSTANCE, encoded);
@@ -170,7 +172,7 @@ public class LwM2mNodeEncoderTest {
 
     @Test
     public void tlv_encode_device_object_instance_as_instance() {
-        LwM2mObjectInstance oInstance = new LwM2mObjectInstance(0, getDeviceResources());
+        LwM2mObjectInstance oInstance = new LwM2mObjectInstanceImpl(0, getDeviceResources());
         byte[] encoded = encoder.encode(oInstance, ContentFormat.TLV, new LwM2mPath("/3"), model);
 
         Assert.assertArrayEquals(ENCODED_DEVICE_WITH_INSTANCE, encoded);
@@ -179,7 +181,7 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void tlv_encode_device_object() {
 
-        LwM2mObject object = new LwM2mObject(3, new LwM2mObjectInstance(0, getDeviceResources()));
+        LwM2mObject object = new LwM2mObjectImpl(3, new LwM2mObjectInstanceImpl(0, getDeviceResources()));
         byte[] encoded = encoder.encode(object, ContentFormat.TLV, new LwM2mPath("/3"), model);
 
         // encoded as an array of resource TLVs
@@ -189,7 +191,7 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void json_encode_device_object_instance() {
 
-        LwM2mObjectInstance oInstance = new LwM2mObjectInstance(0, getDeviceResources());
+        LwM2mObjectInstance oInstance = new LwM2mObjectInstanceImpl(0, getDeviceResources());
         byte[] encoded = encoder.encode(oInstance, ContentFormat.JSON, new LwM2mPath("/3/0"), model);
 
         StringBuilder b = new StringBuilder();
@@ -218,9 +220,9 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void json_encode_timestamped_resources() throws CodecException {
         List<TimestampedLwM2mNode> data = new ArrayList<>();
-        data.add(new TimestampedLwM2mNode(500L, LwM2mSingleResource.newFloatResource(1, 22.9)));
-        data.add(new TimestampedLwM2mNode(510L, LwM2mSingleResource.newFloatResource(1, 22.4)));
-        data.add(new TimestampedLwM2mNode(520L, LwM2mSingleResource.newFloatResource(1, 24.1)));
+        data.add(new TimestampedLwM2mNode(500L, LwM2mSingleResourceImpl.newFloatResource(1, 22.9)));
+        data.add(new TimestampedLwM2mNode(510L, LwM2mSingleResourceImpl.newFloatResource(1, 22.4)));
+        data.add(new TimestampedLwM2mNode(520L, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
 
         byte[] encoded = encoder.encodeTimestampedData(data, ContentFormat.JSON, new LwM2mPath(1024, 0, 1), model);
 
@@ -257,10 +259,10 @@ public class LwM2mNodeEncoderTest {
     public void json_encode_timestamped_instances() throws CodecException {
         List<TimestampedLwM2mNode> data = new ArrayList<>();
 
-        LwM2mObjectInstance instanceAt110 = new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(1, 22.9));
-        LwM2mObjectInstance instanceAt120 = new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(1, 22.4),
-                LwM2mSingleResource.newStringResource(0, "a string"));
-        LwM2mObjectInstance instanceAt130 = new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(1, 24.1));
+        LwM2mObjectInstance instanceAt110 = new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 22.9));
+        LwM2mObjectInstance instanceAt120 = new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 22.4),
+                LwM2mSingleResourceImpl.newStringResource(0, "a string"));
+        LwM2mObjectInstance instanceAt130 = new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 24.1));
 
         data.add(new TimestampedLwM2mNode(110L, instanceAt110));
         data.add(new TimestampedLwM2mNode(120L, instanceAt120));
@@ -283,16 +285,16 @@ public class LwM2mNodeEncoderTest {
     public void json_encode_timestamped_Object() throws CodecException {
         List<TimestampedLwM2mNode> data = new ArrayList<>();
 
-        LwM2mObject objectAt210 = new LwM2mObject(1204,
-                new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(1, 22.9)));
+        LwM2mObject objectAt210 = new LwM2mObjectImpl(1204,
+                new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 22.9)));
 
-        LwM2mObject objectAt220 = new LwM2mObject(1204,
-                new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(1, 22.4),
-                        LwM2mSingleResource.newStringResource(0, "a string")),
-                new LwM2mObjectInstance(1, LwM2mSingleResource.newFloatResource(1, 23)));
+        LwM2mObject objectAt220 = new LwM2mObjectImpl(1204,
+                new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 22.4),
+                        LwM2mSingleResourceImpl.newStringResource(0, "a string")),
+                new LwM2mObjectInstanceImpl(1, LwM2mSingleResourceImpl.newFloatResource(1, 23)));
 
-        LwM2mObject objetAt230 = new LwM2mObject(1204,
-                new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(1, 24.1)));
+        LwM2mObject objetAt230 = new LwM2mObjectImpl(1204,
+                new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
 
         data.add(new TimestampedLwM2mNode(210L, objectAt210));
         data.add(new TimestampedLwM2mNode(220L, objectAt220));
@@ -314,7 +316,7 @@ public class LwM2mNodeEncoderTest {
 
     @Test
     public void senml_json_encode_device_object_instance() {
-        LwM2mObjectInstance oInstance = new LwM2mObjectInstance(0, getDeviceResources());
+        LwM2mObjectInstance oInstance = new LwM2mObjectInstanceImpl(0, getDeviceResources());
         byte[] encoded = encoder.encode(oInstance, ContentFormat.SENML_JSON, new LwM2mPath("/3/0"), model);
 
         StringBuilder b = new StringBuilder();
@@ -341,7 +343,7 @@ public class LwM2mNodeEncoderTest {
 
     @Test
     public void senml_json_encode_single_resource() {
-        LwM2mResource oResource = LwM2mSingleResource.newStringResource(0, "Open Mobile Alliance");
+        LwM2mResource oResource = LwM2mSingleResourceImpl.newStringResource(0, "Open Mobile Alliance");
         byte[] encoded = encoder.encode(oResource, ContentFormat.SENML_JSON, new LwM2mPath("/3/0/0"), model);
 
         String expected = "[{\"bn\":\"/3/0/0\",\"vs\":\"Open Mobile Alliance\"}]";
@@ -353,7 +355,7 @@ public class LwM2mNodeEncoderTest {
         Map<Integer, Long> values = new HashMap<>();
         values.put(0, 3800L);
         values.put(1, 5000L);
-        LwM2mResource oResource = LwM2mMultipleResource.newIntegerResource(7, values);
+        LwM2mResource oResource = LwM2mMultipleResourceImpl.newIntegerResource(7, values);
         byte[] encoded = encoder.encode(oResource, ContentFormat.SENML_JSON, new LwM2mPath("/3/0/7"), model);
 
         String expected = "[{\"bn\":\"/3/0/7/\",\"n\":\"0\",\"v\":3800},{\"n\":\"1\",\"v\":5000}]";
@@ -363,9 +365,9 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void senml_encode_timestamped_resources() throws CodecException {
         List<TimestampedLwM2mNode> data = new ArrayList<>();
-        data.add(new TimestampedLwM2mNode(268_500_000L, LwM2mSingleResource.newFloatResource(1, 22.9)));
-        data.add(new TimestampedLwM2mNode(268_500_010L, LwM2mSingleResource.newFloatResource(1, 22.4)));
-        data.add(new TimestampedLwM2mNode(268_500_020L, LwM2mSingleResource.newFloatResource(1, 24.1)));
+        data.add(new TimestampedLwM2mNode(268_500_000L, LwM2mSingleResourceImpl.newFloatResource(1, 22.9)));
+        data.add(new TimestampedLwM2mNode(268_500_010L, LwM2mSingleResourceImpl.newFloatResource(1, 22.4)));
+        data.add(new TimestampedLwM2mNode(268_500_020L, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
 
         byte[] encoded = encoder.encodeTimestampedData(data, ContentFormat.SENML_JSON, new LwM2mPath(1024, 0, 1),
                 model);
@@ -383,9 +385,9 @@ public class LwM2mNodeEncoderTest {
     public void senml_json_encode_resources() {
         // Nodes to encode
         Map<LwM2mPath, LwM2mNode> nodes = new LinkedHashMap<>();
-        nodes.put(new LwM2mPath("3/0/0"), LwM2mSingleResource.newStringResource(0, "Open Mobile Alliance"));
-        nodes.put(new LwM2mPath("3/0/9"), LwM2mSingleResource.newIntegerResource(9, 95));
-        nodes.put(new LwM2mPath("1/0/1"), LwM2mSingleResource.newIntegerResource(1, 86400));
+        nodes.put(new LwM2mPath("3/0/0"), LwM2mSingleResourceImpl.newStringResource(0, "Open Mobile Alliance"));
+        nodes.put(new LwM2mPath("3/0/9"), LwM2mSingleResourceImpl.newIntegerResource(9, 95));
+        nodes.put(new LwM2mPath("1/0/1"), LwM2mSingleResourceImpl.newIntegerResource(1, 86400));
 
         // Encode
         byte[] encoded = encoder.encodeNodes(nodes, ContentFormat.SENML_JSON, model);
@@ -404,11 +406,11 @@ public class LwM2mNodeEncoderTest {
     public void senml_json_encode_mixed_resource_and_instance() {
         // Nodes to encode
         Map<LwM2mPath, LwM2mNode> nodes = new LinkedHashMap<>();
-        nodes.put(new LwM2mPath("4/0/0"), LwM2mSingleResource.newIntegerResource(0, 45));
-        nodes.put(new LwM2mPath("4/0/1"), LwM2mSingleResource.newIntegerResource(1, 30));
-        nodes.put(new LwM2mPath("4/0/2"), LwM2mSingleResource.newIntegerResource(2, 100));
-        nodes.put(new LwM2mPath("6/0"), new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(0, 43.918998),
-                LwM2mSingleResource.newFloatResource(1, 2.351149)));
+        nodes.put(new LwM2mPath("4/0/0"), LwM2mSingleResourceImpl.newIntegerResource(0, 45));
+        nodes.put(new LwM2mPath("4/0/1"), LwM2mSingleResourceImpl.newIntegerResource(1, 30));
+        nodes.put(new LwM2mPath("4/0/2"), LwM2mSingleResourceImpl.newIntegerResource(2, 100));
+        nodes.put(new LwM2mPath("6/0"), new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(0, 43.918998),
+                LwM2mSingleResourceImpl.newFloatResource(1, 2.351149)));
 
         // Encode
         byte[] encoded = encoder.encodeNodes(nodes, ContentFormat.SENML_JSON, model);
@@ -447,7 +449,7 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void senml_json_encode_opaque_resource() {
         byte[] bytes = Hex.decodeHex("ABCDEF".toCharArray());
-        LwM2mResource oResource = LwM2mSingleResource.newBinaryResource(3, bytes);
+        LwM2mResource oResource = LwM2mSingleResourceImpl.newBinaryResource(3, bytes);
         byte[] json = encoder.encode(oResource, ContentFormat.SENML_JSON, new LwM2mPath("/0/0/3"), model);
 
         String expected = "[{\"bn\":\"/0/0/3\",\"vd\":\"q83v\"}]"; // q83v is base64 of ABCDE
@@ -457,7 +459,7 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void senml_cbor_encode_opaque_resource() {
         byte[] bytes = Hex.decodeHex("ABCDEF".toCharArray());
-        LwM2mResource oResource = LwM2mSingleResource.newBinaryResource(3, bytes);
+        LwM2mResource oResource = LwM2mSingleResourceImpl.newBinaryResource(3, bytes);
         byte[] cbor = encoder.encode(oResource, ContentFormat.SENML_CBOR, new LwM2mPath("/0/0/3"), model);
         // value : [{-2: "/0/0/3", 8: h'ABCDEF'}]
         String expected = "81a221662f302f302f330843abcdef";

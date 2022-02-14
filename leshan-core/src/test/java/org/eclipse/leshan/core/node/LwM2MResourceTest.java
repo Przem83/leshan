@@ -27,36 +27,36 @@ public class LwM2MResourceTest {
 
     @Test
     public void two_identical_strings_are_equal() {
-        assertEquals(LwM2mSingleResource.newStringResource(10, "hello"),
-                LwM2mSingleResource.newStringResource(10, "hello"));
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(10, "hello"),
+                LwM2mSingleResourceImpl.newStringResource(10, "hello"));
     }
 
     @Test
     public void two_non_identical_strings_are_not_equal() {
-        assertNotEquals(LwM2mSingleResource.newStringResource(10, "hello"),
-                LwM2mSingleResource.newStringResource(10, "world"));
-        assertNotEquals(LwM2mSingleResource.newStringResource(11, "hello"),
-                LwM2mSingleResource.newStringResource(10, "hello"));
+        assertNotEquals(LwM2mSingleResourceImpl.newStringResource(10, "hello"),
+                LwM2mSingleResourceImpl.newStringResource(10, "world"));
+        assertNotEquals(LwM2mSingleResourceImpl.newStringResource(11, "hello"),
+                LwM2mSingleResourceImpl.newStringResource(10, "hello"));
     }
 
     @Test
     public void two_identical_opaques_are_equal() {
-        assertEquals(LwM2mSingleResource.newBinaryResource(10, "hello".getBytes()),
-                LwM2mSingleResource.newBinaryResource(10, "hello".getBytes()));
+        assertEquals(LwM2mSingleResourceImpl.newBinaryResource(10, "hello".getBytes()),
+                LwM2mSingleResourceImpl.newBinaryResource(10, "hello".getBytes()));
     }
 
     @Test
     public void two_non_identical_opaques_are_not_equal() {
-        assertNotEquals(LwM2mSingleResource.newBinaryResource(10, "hello".getBytes()),
-                LwM2mSingleResource.newBinaryResource(10, "world".getBytes()));
-        assertNotEquals(LwM2mSingleResource.newBinaryResource(11, "hello".getBytes()),
-                LwM2mSingleResource.newBinaryResource(10, "hello".getBytes()));
+        assertNotEquals(LwM2mSingleResourceImpl.newBinaryResource(10, "hello".getBytes()),
+                LwM2mSingleResourceImpl.newBinaryResource(10, "world".getBytes()));
+        assertNotEquals(LwM2mSingleResourceImpl.newBinaryResource(11, "hello".getBytes()),
+                LwM2mSingleResourceImpl.newBinaryResource(10, "hello".getBytes()));
     }
 
     @Test
     public void two_string_and_binary_are_not_equal() {
-        assertNotEquals(LwM2mSingleResource.newStringResource(10, "hello"),
-                LwM2mSingleResource.newBinaryResource(10, "hello".getBytes()));
+        assertNotEquals(LwM2mSingleResourceImpl.newStringResource(10, "hello"),
+                LwM2mSingleResourceImpl.newBinaryResource(10, "hello".getBytes()));
     }
 
     @Test
@@ -66,8 +66,8 @@ public class LwM2MResourceTest {
         Map<Integer, String> values2 = new HashMap<>();
         values2.put(0, "hello");
 
-        assertEquals(LwM2mMultipleResource.newStringResource(10, values1),
-                LwM2mMultipleResource.newStringResource(10, values2));
+        assertEquals(LwM2mMultipleResourceImpl.newStringResource(10, values1),
+                LwM2mMultipleResourceImpl.newStringResource(10, values2));
     }
 
     @Test
@@ -77,10 +77,10 @@ public class LwM2MResourceTest {
         Map<Integer, String> values2 = new HashMap<>();
         values2.put(0, "world");
 
-        assertNotEquals(LwM2mMultipleResource.newStringResource(10, values1),
-                LwM2mMultipleResource.newStringResource(10, values2));
-        assertNotEquals(LwM2mMultipleResource.newStringResource(11, values1),
-                LwM2mMultipleResource.newStringResource(10, values1));
+        assertNotEquals(LwM2mMultipleResourceImpl.newStringResource(10, values1),
+                LwM2mMultipleResourceImpl.newStringResource(10, values2));
+        assertNotEquals(LwM2mMultipleResourceImpl.newStringResource(11, values1),
+                LwM2mMultipleResourceImpl.newStringResource(10, values1));
     }
 
     @Test
@@ -90,8 +90,8 @@ public class LwM2MResourceTest {
         Map<Integer, byte[]> values2 = new HashMap<>();
         values2.put(0, "hello".getBytes());
 
-        assertEquals(LwM2mMultipleResource.newBinaryResource(10, values1),
-                LwM2mMultipleResource.newBinaryResource(10, values2));
+        assertEquals(LwM2mMultipleResourceImpl.newBinaryResource(10, values1),
+                LwM2mMultipleResourceImpl.newBinaryResource(10, values2));
     }
 
     @Test
@@ -101,10 +101,10 @@ public class LwM2MResourceTest {
         Map<Integer, byte[]> values2 = new HashMap<>();
         values2.put(0, "world".getBytes());
 
-        assertNotEquals(LwM2mMultipleResource.newBinaryResource(10, values1),
-                LwM2mMultipleResource.newBinaryResource(10, values2));
-        assertNotEquals(LwM2mMultipleResource.newBinaryResource(11, values1),
-                LwM2mMultipleResource.newBinaryResource(10, values1));
+        assertNotEquals(LwM2mMultipleResourceImpl.newBinaryResource(10, values1),
+                LwM2mMultipleResourceImpl.newBinaryResource(10, values2));
+        assertNotEquals(LwM2mMultipleResourceImpl.newBinaryResource(11, values1),
+                LwM2mMultipleResourceImpl.newBinaryResource(10, values1));
     }
 
     @Test
@@ -114,23 +114,23 @@ public class LwM2MResourceTest {
         Map<Integer, byte[]> values2 = new HashMap<>();
         values2.put(0, "hello".getBytes());
 
-        assertNotEquals(LwM2mMultipleResource.newStringResource(10, values1),
-                LwM2mMultipleResource.newBinaryResource(10, values2));
+        assertNotEquals(LwM2mMultipleResourceImpl.newStringResource(10, values1),
+                LwM2mMultipleResourceImpl.newBinaryResource(10, values2));
     }
 
     @Test(expected = LwM2mNodeException.class)
     public void string_resource_with_null_value() {
-        LwM2mSingleResource.newStringResource(1, null);
+        LwM2mSingleResourceImpl.newStringResource(1, null);
     }
 
     @Test(expected = LwM2mNodeException.class)
     public void generic_resource_with_null_value() {
-        LwM2mSingleResource.newResource(1, null, Type.INTEGER);
+        LwM2mSingleResourceImpl.newResource(1, null, Type.INTEGER);
     }
 
     @Test(expected = LwM2mNodeException.class)
     public void generic_instance_with_incompatible_value_and_type() {
-        LwM2mSingleResource.newResource(0, "a string", Type.BOOLEAN);
+        LwM2mSingleResourceImpl.newResource(0, "a string", Type.BOOLEAN);
     }
 
     @Test(expected = LwM2mNodeException.class)
@@ -138,7 +138,7 @@ public class LwM2MResourceTest {
         Map<Integer, Long> values = new HashMap<>();
         values.put(2, 2L);
         values.put(3, null);
-        LwM2mMultipleResource.newIntegerResource(0, values);
+        LwM2mMultipleResourceImpl.newIntegerResource(0, values);
     }
 
     @Test(expected = LwM2mNodeException.class)
@@ -146,7 +146,7 @@ public class LwM2MResourceTest {
         Map<Integer, String> values = new HashMap<>();
         values.put(2, "value");
         values.put(3, null);
-        LwM2mMultipleResource.newResource(0, values, Type.STRING);
+        LwM2mMultipleResourceImpl.newResource(0, values, Type.STRING);
     }
 
     @Test(expected = LwM2mNodeException.class)
@@ -154,6 +154,6 @@ public class LwM2MResourceTest {
         Map<Integer, String> values = new HashMap<>();
         values.put(2, "value");
         values.put(3, null);
-        LwM2mMultipleResource.newResource(0, values, Type.BOOLEAN);
+        LwM2mMultipleResourceImpl.newResource(0, values, Type.BOOLEAN);
     }
 }

@@ -21,7 +21,7 @@ import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.NodeDecoder;
 
@@ -43,7 +43,7 @@ public class LwM2mNodeOpaqueDecoder implements NodeDecoder {
         }
 
         if (path.isResource()) {
-            return (T) LwM2mSingleResource.newBinaryResource(path.getResourceId(),
+            return (T) LwM2mSingleResourceImpl.newBinaryResource(path.getResourceId(),
                     content != null ? content : new byte[0]);
         } else {
             return (T) LwM2mResourceInstance.newBinaryInstance(path.getResourceInstanceId(),

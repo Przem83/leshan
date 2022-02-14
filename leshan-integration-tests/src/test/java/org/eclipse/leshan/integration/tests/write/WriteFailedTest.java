@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mResource;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.request.WriteRequest;
 import org.eclipse.leshan.core.request.WriteRequest.Mode;
 import org.eclipse.leshan.core.response.WriteResponse;
@@ -80,8 +80,8 @@ public class WriteFailedTest {
     @Test
     public void cannot_write_replacing_incomplete_object_instance() throws InterruptedException {
         // write server object
-        LwM2mResource lifetime = LwM2mSingleResource.newIntegerResource(1, 120);
-        LwM2mResource defaultMinPeriod = LwM2mSingleResource.newIntegerResource(2, 10);
+        LwM2mResource lifetime = LwM2mSingleResourceImpl.newIntegerResource(1, 120);
+        LwM2mResource defaultMinPeriod = LwM2mSingleResourceImpl.newIntegerResource(2, 10);
         WriteResponse response = helper.server.send(helper.getCurrentRegistration(),
                 new WriteRequest(Mode.REPLACE, 1, 0, lifetime, defaultMinPeriod));
 

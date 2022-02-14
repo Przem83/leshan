@@ -35,7 +35,9 @@ import org.eclipse.leshan.core.Startable;
 import org.eclipse.leshan.core.Stoppable;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -210,7 +212,7 @@ public class ObjectEnabler extends BaseObjectEnabler implements Destroyable, Sta
                     lwM2mObjectInstances.add((LwM2mObjectInstance) response.getContent());
                 }
             }
-            return ReadResponse.success(new LwM2mObject(getId(), lwM2mObjectInstances));
+            return ReadResponse.success(new LwM2mObjectImpl(getId(), lwM2mObjectInstances));
         }
 
         // Manage Instance case
@@ -252,7 +254,7 @@ public class ObjectEnabler extends BaseObjectEnabler implements Destroyable, Sta
                     lwM2mObjectInstances.add((LwM2mObjectInstance) response.getContent());
                 }
             }
-            return ObserveResponse.success(new LwM2mObject(getId(), lwM2mObjectInstances));
+            return ObserveResponse.success(new LwM2mObjectImpl(getId(), lwM2mObjectInstances));
         }
 
         // Manage Instance case
@@ -333,7 +335,7 @@ public class ObjectEnabler extends BaseObjectEnabler implements Destroyable, Sta
         LwM2mInstanceEnabler instanceEnabler = instances.get(path.getObjectInstanceId());
         if (instanceEnabler == null) {
             doCreate(identity, new CreateRequest(path.getObjectId(),
-                    new LwM2mObjectInstance(path.getObjectInstanceId(), resource)));
+                    new LwM2mObjectInstanceImpl(path.getObjectInstanceId(), resource)));
         } else {
             instanceEnabler.write(identity, true, path.getResourceId(), resource);
         }

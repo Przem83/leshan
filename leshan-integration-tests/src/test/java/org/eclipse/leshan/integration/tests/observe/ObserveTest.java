@@ -30,11 +30,12 @@ import java.util.Set;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mObject;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.codec.LwM2mValueChecker;
 import org.eclipse.leshan.core.node.codec.json.LwM2mNodeJsonEncoder;
 import org.eclipse.leshan.core.observation.Observation;
@@ -104,7 +105,7 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(15, "Europe/Paris"),
                 (listener.getObserveResponse()).getContent());
         assertNotNull(listener.getObserveResponse().getCoapResponse());
         assertThat(listener.getObserveResponse().getCoapResponse(), is(instanceOf(Response.class)));
@@ -282,7 +283,7 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(15, "Europe/Paris"),
                 listener.getObserveResponse().getContent());
         assertNotNull(listener.getObserveResponse().getCoapResponse());
         assertThat(listener.getObserveResponse().getCoapResponse(), is(instanceOf(Response.class)));
@@ -332,7 +333,7 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"),
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(15, "Europe/Paris"),
                 listener.getObserveResponse().getContent());
         assertNotNull(listener.getObserveResponse().getCoapResponse());
         assertThat(listener.getObserveResponse().getCoapResponse(), is(instanceOf(Response.class)));
@@ -388,7 +389,7 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(listener.getObserveResponse().getContent() instanceof LwM2mObjectInstance);
+        assertTrue(listener.getObserveResponse().getContent() instanceof LwM2mObjectInstanceImpl);
         assertNotNull(listener.getObserveResponse().getCoapResponse());
         assertThat(listener.getObserveResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
@@ -426,7 +427,7 @@ public class ObserveTest {
         listener.waitForNotification(2000);
         assertEquals(ResponseCode.CHANGED, writeResponse.getCode());
         assertTrue(listener.receivedNotify().get());
-        assertTrue(listener.getObserveResponse().getContent() instanceof LwM2mObject);
+        assertTrue(listener.getObserveResponse().getContent() instanceof LwM2mObjectImpl);
         assertNotNull(listener.getObserveResponse().getCoapResponse());
         assertThat(listener.getObserveResponse().getCoapResponse(), is(instanceOf(Response.class)));
 
@@ -458,7 +459,7 @@ public class ObserveTest {
         assertTrue("New observation is not there", observations.contains(observation));
 
         // *** HACK send a notification with unsupported content format *** //
-        byte[] payload = new LwM2mNodeJsonEncoder().encode(LwM2mSingleResource.newStringResource(15, "Paris"),
+        byte[] payload = new LwM2mNodeJsonEncoder().encode(LwM2mSingleResourceImpl.newStringResource(15, "Paris"),
                 new LwM2mPath("/3/0/15"), new StaticModel(helper.createObjectModels()), new LwM2mValueChecker());
         Response firstCoapResponse = (Response) observeResponse.getCoapResponse();
         // 666 is not a supported content format.

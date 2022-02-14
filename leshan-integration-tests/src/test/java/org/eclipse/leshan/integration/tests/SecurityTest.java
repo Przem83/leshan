@@ -56,8 +56,10 @@ import org.eclipse.leshan.server.security.NonUniqueSecurityInfoException;
 import org.eclipse.leshan.server.security.SecurityInfo;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class SecurityTest {
 
     protected SecureIntegrationTestHelper helper = new SecureIntegrationTestHelper();

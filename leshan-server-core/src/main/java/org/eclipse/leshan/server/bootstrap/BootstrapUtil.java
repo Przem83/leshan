@@ -22,12 +22,13 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.leshan.core.LwM2mId;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.request.BindingMode;
 import org.eclipse.leshan.core.request.BootstrapDeleteRequest;
@@ -45,45 +46,45 @@ public class BootstrapUtil {
 
         // resources since v1.0
         if (securityConfig.uri != null)
-            resources.add(LwM2mSingleResource.newStringResource(0, securityConfig.uri));
-        resources.add(LwM2mSingleResource.newBooleanResource(1, securityConfig.bootstrapServer));
+            resources.add(LwM2mSingleResourceImpl.newStringResource(0, securityConfig.uri));
+        resources.add(LwM2mSingleResourceImpl.newBooleanResource(1, securityConfig.bootstrapServer));
         if (securityConfig.securityMode != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(2, securityConfig.securityMode.code));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(2, securityConfig.securityMode.code));
         if (securityConfig.publicKeyOrId != null)
-            resources.add(LwM2mSingleResource.newBinaryResource(3, securityConfig.publicKeyOrId));
+            resources.add(LwM2mSingleResourceImpl.newBinaryResource(3, securityConfig.publicKeyOrId));
         if (securityConfig.serverPublicKey != null)
-            resources.add(LwM2mSingleResource.newBinaryResource(4, securityConfig.serverPublicKey));
+            resources.add(LwM2mSingleResourceImpl.newBinaryResource(4, securityConfig.serverPublicKey));
         if (securityConfig.secretKey != null)
-            resources.add(LwM2mSingleResource.newBinaryResource(5, securityConfig.secretKey));
+            resources.add(LwM2mSingleResourceImpl.newBinaryResource(5, securityConfig.secretKey));
         if (securityConfig.smsSecurityMode != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(6, securityConfig.smsSecurityMode.code));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(6, securityConfig.smsSecurityMode.code));
         if (securityConfig.smsBindingKeyParam != null)
-            resources.add(LwM2mSingleResource.newBinaryResource(7, securityConfig.smsBindingKeyParam));
+            resources.add(LwM2mSingleResourceImpl.newBinaryResource(7, securityConfig.smsBindingKeyParam));
         if (securityConfig.smsBindingKeySecret != null)
-            resources.add(LwM2mSingleResource.newBinaryResource(8, securityConfig.smsBindingKeySecret));
+            resources.add(LwM2mSingleResourceImpl.newBinaryResource(8, securityConfig.smsBindingKeySecret));
         if (securityConfig.serverSmsNumber != null)
-            resources.add(LwM2mSingleResource.newStringResource(9, securityConfig.serverSmsNumber));
+            resources.add(LwM2mSingleResourceImpl.newStringResource(9, securityConfig.serverSmsNumber));
         if (securityConfig.serverId != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(10, securityConfig.serverId));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(10, securityConfig.serverId));
         if (securityConfig.clientOldOffTime != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(11, securityConfig.clientOldOffTime));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(11, securityConfig.clientOldOffTime));
         if (securityConfig.bootstrapServerAccountTimeout != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(12, securityConfig.bootstrapServerAccountTimeout));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(12, securityConfig.bootstrapServerAccountTimeout));
 
         // resources since v1.1
         if (securityConfig.matchingType != null)
-            resources.add(LwM2mSingleResource.newUnsignedIntegerResource(13, securityConfig.matchingType.code));
+            resources.add(LwM2mSingleResourceImpl.newUnsignedIntegerResource(13, securityConfig.matchingType.code));
         if (securityConfig.sni != null)
-            resources.add(LwM2mSingleResource.newStringResource(14, securityConfig.sni));
+            resources.add(LwM2mSingleResourceImpl.newStringResource(14, securityConfig.sni));
         if (securityConfig.certificateUsage != null)
-            resources.add(LwM2mSingleResource.newUnsignedIntegerResource(15, securityConfig.certificateUsage.code));
+            resources.add(LwM2mSingleResourceImpl.newUnsignedIntegerResource(15, securityConfig.certificateUsage.code));
         if (securityConfig.cipherSuite != null)
-            resources.add(LwM2mSingleResource.newUnsignedIntegerResource(16, securityConfig.cipherSuite));
+            resources.add(LwM2mSingleResourceImpl.newUnsignedIntegerResource(16, securityConfig.cipherSuite));
         if (securityConfig.oscoreSecurityMode != null) {
-            resources.add(LwM2mSingleResource.newObjectLinkResource(17,
+            resources.add(LwM2mSingleResourceImpl.newObjectLinkResource(17,
                     new ObjectLink(21, securityConfig.oscoreSecurityMode)));
         }
-        return new LwM2mObjectInstance(instanceId, resources);
+        return new LwM2mObjectInstanceImpl(instanceId, resources);
     }
 
     public static BootstrapWriteRequest toWriteRequest(int instanceId, ServerSecurity securityConfig,
@@ -97,29 +98,29 @@ public class BootstrapUtil {
         Collection<LwM2mResource> resources = new ArrayList<>();
 
         // resources since v1.0
-        resources.add(LwM2mSingleResource.newIntegerResource(0, serverConfig.shortId));
-        resources.add(LwM2mSingleResource.newIntegerResource(1, serverConfig.lifetime));
+        resources.add(LwM2mSingleResourceImpl.newIntegerResource(0, serverConfig.shortId));
+        resources.add(LwM2mSingleResourceImpl.newIntegerResource(1, serverConfig.lifetime));
         if (serverConfig.defaultMinPeriod != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(2, serverConfig.defaultMinPeriod));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(2, serverConfig.defaultMinPeriod));
         if (serverConfig.defaultMaxPeriod != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(3, serverConfig.defaultMaxPeriod));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(3, serverConfig.defaultMaxPeriod));
         if (serverConfig.disableTimeout != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(5, serverConfig.disableTimeout));
-        resources.add(LwM2mSingleResource.newBooleanResource(6, serverConfig.notifIfDisabled));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(5, serverConfig.disableTimeout));
+        resources.add(LwM2mSingleResourceImpl.newBooleanResource(6, serverConfig.notifIfDisabled));
         if (serverConfig.binding != null)
-            resources.add(LwM2mSingleResource.newStringResource(7, BindingMode.toString(serverConfig.binding)));
+            resources.add(LwM2mSingleResourceImpl.newStringResource(7, BindingMode.toString(serverConfig.binding)));
 
         // resources since v1.1
         if (serverConfig.apnLink != null)
-            resources.add(LwM2mSingleResource.newObjectLinkResource(10, new ObjectLink(11, serverConfig.apnLink)));
+            resources.add(LwM2mSingleResourceImpl.newObjectLinkResource(10, new ObjectLink(11, serverConfig.apnLink)));
         if (serverConfig.trigger != null)
-            resources.add(LwM2mSingleResource.newBooleanResource(21, serverConfig.trigger));
+            resources.add(LwM2mSingleResourceImpl.newBooleanResource(21, serverConfig.trigger));
         if (serverConfig.preferredTransport != null)
-            resources.add(LwM2mSingleResource.newStringResource(22, serverConfig.preferredTransport.toString()));
+            resources.add(LwM2mSingleResourceImpl.newStringResource(22, serverConfig.preferredTransport.toString()));
         if (serverConfig.muteSend != null)
-            resources.add(LwM2mSingleResource.newBooleanResource(23, serverConfig.muteSend));
+            resources.add(LwM2mSingleResourceImpl.newBooleanResource(23, serverConfig.muteSend));
 
-        return new LwM2mObjectInstance(instanceId, resources);
+        return new LwM2mObjectInstanceImpl(instanceId, resources);
     }
 
     public static BootstrapWriteRequest toWriteRequest(int instanceId, ServerConfig serverConfig,
@@ -132,14 +133,14 @@ public class BootstrapUtil {
     public static LwM2mObjectInstance toAclInstance(int instanceId, ACLConfig aclConfig) {
         Collection<LwM2mResource> resources = new ArrayList<>();
 
-        resources.add(LwM2mSingleResource.newIntegerResource(0, aclConfig.objectId));
-        resources.add(LwM2mSingleResource.newIntegerResource(1, aclConfig.objectInstanceId));
+        resources.add(LwM2mSingleResourceImpl.newIntegerResource(0, aclConfig.objectId));
+        resources.add(LwM2mSingleResourceImpl.newIntegerResource(1, aclConfig.objectInstanceId));
         if (aclConfig.acls != null)
-            resources.add(LwM2mMultipleResource.newIntegerResource(2, aclConfig.acls));
+            resources.add(LwM2mMultipleResourceImpl.newIntegerResource(2, aclConfig.acls));
         if (aclConfig.AccessControlOwner != null)
-            resources.add(LwM2mSingleResource.newIntegerResource(3, aclConfig.AccessControlOwner));
+            resources.add(LwM2mSingleResourceImpl.newIntegerResource(3, aclConfig.AccessControlOwner));
 
-        return new LwM2mObjectInstance(instanceId, resources);
+        return new LwM2mObjectInstanceImpl(instanceId, resources);
     }
 
     public static BootstrapWriteRequest toWriteRequest(int instanceId, ACLConfig aclConfig,

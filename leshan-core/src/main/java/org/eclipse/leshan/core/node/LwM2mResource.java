@@ -24,7 +24,7 @@ import org.eclipse.leshan.core.util.datatype.ULong;
 /**
  * A resource is an information made available by the LWM2M Client.
  * <p>
- * A resource could be a {@link LwM2mSingleResource} or a {@link LwM2mMultipleResource}.
+ * A resource could be a {@link LwM2mSingleResourceImpl} or a {@link LwM2mMultipleResourceImpl}.
  * </p>
  */
 public interface LwM2mResource extends LwM2mNode {

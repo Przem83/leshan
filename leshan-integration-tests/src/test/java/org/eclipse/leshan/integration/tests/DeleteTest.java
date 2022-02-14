@@ -27,8 +27,8 @@ import static org.junit.Assert.*;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.request.CreateRequest;
 import org.eclipse.leshan.core.request.DeleteRequest;
 import org.eclipse.leshan.core.response.DeleteResponse;
@@ -62,7 +62,7 @@ public class DeleteTest {
     public void delete_created_object_instance() throws InterruptedException {
         // create ACL instance
         helper.server.send(helper.getCurrentRegistration(),
-                new CreateRequest(2, new LwM2mObjectInstance(0, LwM2mSingleResource.newIntegerResource(3, 33))));
+                new CreateRequest(2, new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newIntegerResource(3, 33))));
 
         // try to delete this instance
         DeleteResponse response = helper.server.send(helper.getCurrentRegistration(), new DeleteRequest(2, 0));
@@ -77,7 +77,7 @@ public class DeleteTest {
     public void cannot_delete_resource() throws InterruptedException {
         // create ACL instance
         helper.server.send(helper.getCurrentRegistration(),
-                new CreateRequest(2, new LwM2mObjectInstance(0, LwM2mSingleResource.newIntegerResource(0, 123))));
+                new CreateRequest(2, new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newIntegerResource(0, 123))));
 
         // try to delete this resource using coap API as lwm2m API does not allow it.
         Request delete = Request.newDelete();

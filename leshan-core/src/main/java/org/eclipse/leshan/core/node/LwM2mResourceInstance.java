@@ -22,7 +22,7 @@ import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.util.datatype.ULong;
 
 /**
- * An instance of {@link LwM2mMultipleResource}.
+ * An instance of {@link LwM2mMultipleResourceImpl}.
  */
 public class LwM2mResourceInstance implements LwM2mNode {
 

@@ -17,11 +17,13 @@ package org.eclipse.leshan.integration.tests.util;
 
 import org.eclipse.leshan.server.redis.RedisSecurityStore;
 import org.eclipse.leshan.server.security.SecurityStore;
+import org.junit.Ignore;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.Pool;
 
+@Ignore
 public class RedisSecureIntegrationTestHelper extends SecureIntegrationTestHelper {
 
     @Override

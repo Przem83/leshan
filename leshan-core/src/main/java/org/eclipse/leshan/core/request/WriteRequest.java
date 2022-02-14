@@ -20,13 +20,13 @@ import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.leshan.core.model.ResourceModel.Type;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
 import org.eclipse.leshan.core.response.WriteResponse;
@@ -72,7 +72,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
      */
     public WriteRequest(Mode mode, ContentFormat contentFormat, int objectId, int objectInstanceId,
             Collection<LwM2mResource> resources) throws InvalidRequestException {
-        this(mode, contentFormat, newPath(objectId, objectInstanceId), new LwM2mObjectInstance(objectId, resources),
+        this(mode, contentFormat, newPath(objectId, objectInstanceId), new LwM2mObjectInstanceImpl(objectId, resources),
                 null);
     }
 
@@ -85,7 +85,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
      * @param resources the list of resources to write.
      */
     public WriteRequest(Mode mode, int objectId, int objectInstanceId, Collection<LwM2mResource> resources) {
-        this(mode, ContentFormat.TLV, newPath(objectId, objectInstanceId), new LwM2mObjectInstance(objectId, resources),
+        this(mode, ContentFormat.TLV, newPath(objectId, objectInstanceId), new LwM2mObjectInstanceImpl(objectId, resources),
                 null);
     }
 
@@ -101,7 +101,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
      */
     public WriteRequest(Mode mode, ContentFormat contentFormat, int objectId, int objectInstanceId,
             LwM2mResource... resources) throws InvalidRequestException {
-        this(mode, contentFormat, newPath(objectId, objectInstanceId), new LwM2mObjectInstance(objectId, resources),
+        this(mode, contentFormat, newPath(objectId, objectInstanceId), new LwM2mObjectInstanceImpl(objectId, resources),
                 null);
     }
 
@@ -114,7 +114,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
      * @param resources the list of resources to write.
      */
     public WriteRequest(Mode mode, int objectId, int objectInstanceId, LwM2mResource... resources) {
-        this(mode, ContentFormat.TLV, newPath(objectId, objectInstanceId), new LwM2mObjectInstance(objectId, resources),
+        this(mode, ContentFormat.TLV, newPath(objectId, objectInstanceId), new LwM2mObjectInstanceImpl(objectId, resources),
                 null);
     }
 
@@ -134,7 +134,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId, String value)
             throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newStringResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newStringResource(resourceId, value), null);
     }
 
     /**
@@ -152,7 +152,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId, boolean value)
             throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newBooleanResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newBooleanResource(resourceId, value), null);
     }
 
     /**
@@ -170,7 +170,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId, long value)
             throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newIntegerResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newIntegerResource(resourceId, value), null);
     }
 
     /**
@@ -188,7 +188,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId, ULong value)
             throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newUnsignedIntegerResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newUnsignedIntegerResource(resourceId, value), null);
     }
 
     /**
@@ -206,7 +206,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId, double value)
             throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newFloatResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newFloatResource(resourceId, value), null);
     }
 
     /**
@@ -224,7 +224,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId, Date value)
             throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newDateResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newDateResource(resourceId, value), null);
     }
 
     /**
@@ -242,7 +242,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId, byte[] value)
             throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newBinaryResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newBinaryResource(resourceId, value), null);
     }
 
     /**
@@ -260,7 +260,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId,
             ObjectLink value) throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mSingleResource.newObjectLinkResource(resourceId, value), null);
+                LwM2mSingleResourceImpl.newObjectLinkResource(resourceId, value), null);
     }
 
     // ***************** write multi instance resource ****************** //
@@ -279,7 +279,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId,
             Map<Integer, ?> values, Type type) throws InvalidRequestException {
         this(Mode.REPLACE, contentFormat, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mMultipleResource.newResource(resourceId, values, type), null);
+                LwM2mMultipleResourceImpl.newResource(resourceId, values, type), null);
     }
 
     /**
@@ -295,7 +295,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(int objectId, int objectInstanceId, int resourceId, Map<Integer, ?> values, Type type)
             throws InvalidRequestException {
         this(Mode.REPLACE, ContentFormat.TLV, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mMultipleResource.newResource(resourceId, values, type), null);
+                LwM2mMultipleResourceImpl.newResource(resourceId, values, type), null);
     }
 
     /**
@@ -313,7 +313,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
     public WriteRequest(Mode mode, ContentFormat contentFormat, int objectId, int objectInstanceId, int resourceId,
             Map<Integer, ?> values, Type type) throws InvalidRequestException {
         this(mode, ContentFormat.TLV, newPath(objectId, objectInstanceId, resourceId),
-                LwM2mMultipleResource.newResource(resourceId, values, type), null);
+                LwM2mMultipleResourceImpl.newResource(resourceId, values, type), null);
     }
 
     // ***************** write resource instance****************** //
@@ -390,7 +390,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
 
         // Validate Mode
         if (mode == Mode.UPDATE) {
-            if (target.isResource() && node instanceof LwM2mSingleResource || target.isResourceInstance())
+            if (target.isResource() && node instanceof LwM2mSingleResourceImpl || target.isResourceInstance())
                 throw new InvalidRequestException("Invalid mode for '%s': update is not allowed on %s", target,
                         target.isResource() ? "single resource" : "resource instance");
         }
@@ -407,7 +407,7 @@ public class WriteRequest extends AbstractSimpleDownlinkRequest<WriteResponse> {
                         node.getClass().getSimpleName());
             }
         } else if (getPath().isObjectInstance()) {
-            if (!(node instanceof LwM2mObjectInstance)) {
+            if (!(node instanceof LwM2mObjectInstanceImpl)) {
                 throw new InvalidRequestException("path '%s' and node type '%s' do not match", target,
                         node.getClass().getSimpleName());
             }

@@ -33,6 +33,7 @@ import org.eclipse.leshan.core.LwM2mId;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.SecurityMode;
 import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.request.BootstrapDiscoverRequest;
 import org.eclipse.leshan.core.request.BootstrapReadRequest;
@@ -344,7 +345,7 @@ public class BootstrapTest {
         assertTrue(helper.lastCustomResponse instanceof BootstrapReadResponse);
         BootstrapReadResponse lastReadResponse = (BootstrapReadResponse) helper.lastCustomResponse;
         assertEquals(ResponseCode.CONTENT, lastReadResponse.getCode());
-        assertEquals(new LwM2mObject(1), lastReadResponse.getContent());
+        assertEquals(new LwM2mObjectImpl(1), lastReadResponse.getContent());
 
         // re-bootstrap
         try {

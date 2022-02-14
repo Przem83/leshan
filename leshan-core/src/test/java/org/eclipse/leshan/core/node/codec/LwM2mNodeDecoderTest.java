@@ -34,13 +34,16 @@ import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Operations;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.request.ContentFormat;
@@ -279,7 +282,7 @@ public class LwM2mNodeDecoderTest {
     public void tlv_device_object_instance0_from_resources_tlv__instance_expected() throws CodecException {
 
         LwM2mObjectInstance oInstance = decoder.decode(ENCODED_DEVICE_WITHOUT_INSTANCE, ContentFormat.TLV,
-                new LwM2mPath(3), model, LwM2mObjectInstance.class);
+                new LwM2mPath(3), model, LwM2mObjectInstanceImpl.class);
         assertDeviceInstance(oInstance);
     }
 
@@ -450,7 +453,7 @@ public class LwM2mNodeDecoderTest {
                 model);
 
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
     }
@@ -746,7 +749,7 @@ public class LwM2mNodeDecoderTest {
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(3, 0, 6),
                 model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
 
@@ -756,7 +759,7 @@ public class LwM2mNodeDecoderTest {
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(3, 0, 6),
                 model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
     }
@@ -809,7 +812,7 @@ public class LwM2mNodeDecoderTest {
         LwM2mResource resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.JSON,
                 new LwM2mPath(3, 0, 11), model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(11, resource.getId());
         assertTrue(resource.getInstances().size() == 2);
     }
@@ -825,7 +828,7 @@ public class LwM2mNodeDecoderTest {
         payload.append("{\"n\":\"3\",\"v\":124}]");
 
         LwM2mObject object = decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
-                new LwM2mPath("/2"), model, LwM2mObject.class);
+                new LwM2mPath("/2"), model, LwM2mObjectImpl.class);
 
         assertNotNull(object);
         assertEquals(2, object.getId());
@@ -860,7 +863,7 @@ public class LwM2mNodeDecoderTest {
         payload.append("{\"n\":\"16\",\"vs\":\"U\"}]");
 
         LwM2mObjectInstance instance = decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
-                new LwM2mPath("/3/0"), model, LwM2mObjectInstance.class);
+                new LwM2mPath("/3/0"), model, LwM2mObjectInstanceImpl.class);
 
         assertNotNull(instance);
         assertEquals(0, instance.getId());
@@ -969,7 +972,7 @@ public class LwM2mNodeDecoderTest {
         LwM2mResource resource = null;
         resource = (LwM2mResource) decoder.decode(new byte[0], ContentFormat.SENML_JSON, new LwM2mPath(3, 0, 6), model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
 
@@ -980,7 +983,7 @@ public class LwM2mNodeDecoderTest {
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.SENML_JSON,
                 new LwM2mPath(3, 0, 6), model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
 
@@ -990,7 +993,7 @@ public class LwM2mNodeDecoderTest {
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.SENML_JSON,
                 new LwM2mPath(3, 0, 6), model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
     }
@@ -1084,9 +1087,9 @@ public class LwM2mNodeDecoderTest {
 
         // Expected result
         Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
-        nodes.put(new LwM2mPath("3/0/0"), LwM2mSingleResource.newStringResource(0, "Open Mobile Alliance"));
-        nodes.put(new LwM2mPath("3/0/9"), LwM2mSingleResource.newIntegerResource(9, 95));
-        nodes.put(new LwM2mPath("1/0/1"), LwM2mSingleResource.newIntegerResource(1, 86400));
+        nodes.put(new LwM2mPath("3/0/0"), LwM2mSingleResourceImpl.newStringResource(0, "Open Mobile Alliance"));
+        nodes.put(new LwM2mPath("3/0/9"), LwM2mSingleResourceImpl.newIntegerResource(9, 95));
+        nodes.put(new LwM2mPath("1/0/1"), LwM2mSingleResourceImpl.newIntegerResource(1, 86400));
 
         Assert.assertEquals(nodes, res);
     }
@@ -1111,13 +1114,13 @@ public class LwM2mNodeDecoderTest {
 
         // Expected result
         Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
-        nodes.put(new LwM2mPath("4/0/0"), LwM2mSingleResource.newIntegerResource(0, 45));
-        nodes.put(new LwM2mPath("4/0/1"), LwM2mSingleResource.newIntegerResource(1, 30));
-        nodes.put(new LwM2mPath("4/0/2"), LwM2mSingleResource.newIntegerResource(2, 100));
+        nodes.put(new LwM2mPath("4/0/0"), LwM2mSingleResourceImpl.newIntegerResource(0, 45));
+        nodes.put(new LwM2mPath("4/0/1"), LwM2mSingleResourceImpl.newIntegerResource(1, 30));
+        nodes.put(new LwM2mPath("4/0/2"), LwM2mSingleResourceImpl.newIntegerResource(2, 100));
         nodes.put(new LwM2mPath("6/0"),
-                new LwM2mObjectInstance(0, LwM2mSingleResource.newFloatResource(0, 43.918998),
-                        LwM2mSingleResource.newFloatResource(1, 2.351149),
-                        LwM2mSingleResource.newDateResource(5, new Date(1610029880000l))));
+                new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(0, 43.918998),
+                        LwM2mSingleResourceImpl.newFloatResource(1, 2.351149),
+                        LwM2mSingleResourceImpl.newDateResource(5, new Date(1610029880000l))));
 
         Assert.assertEquals(nodes, res);
     }
@@ -1139,12 +1142,12 @@ public class LwM2mNodeDecoderTest {
 
         // Expected result
         Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
-        nodes.put(new LwM2mPath("4/0/0"), LwM2mSingleResource.newIntegerResource(0, 45));
-        nodes.put(new LwM2mPath("4/0/1"), LwM2mSingleResource.newIntegerResource(1, 30));
-        nodes.put(new LwM2mPath("4/0/2"), LwM2mSingleResource.newIntegerResource(2, 100));
-        nodes.put(new LwM2mPath("6/0/0"), LwM2mSingleResource.newFloatResource(0, 43.918998));
-        nodes.put(new LwM2mPath("6/0/1"), LwM2mSingleResource.newFloatResource(1, 2.351149));
-        nodes.put(new LwM2mPath("6/0/5"), LwM2mSingleResource.newDateResource(5, new Date(1610029880000l)));
+        nodes.put(new LwM2mPath("4/0/0"), LwM2mSingleResourceImpl.newIntegerResource(0, 45));
+        nodes.put(new LwM2mPath("4/0/1"), LwM2mSingleResourceImpl.newIntegerResource(1, 30));
+        nodes.put(new LwM2mPath("4/0/2"), LwM2mSingleResourceImpl.newIntegerResource(2, 100));
+        nodes.put(new LwM2mPath("6/0/0"), LwM2mSingleResourceImpl.newFloatResource(0, 43.918998));
+        nodes.put(new LwM2mPath("6/0/1"), LwM2mSingleResourceImpl.newFloatResource(1, 2.351149));
+        nodes.put(new LwM2mPath("6/0/5"), LwM2mSingleResourceImpl.newDateResource(5, new Date(1610029880000l)));
 
         Assert.assertEquals(nodes, res);
     }
@@ -1220,7 +1223,7 @@ public class LwM2mNodeDecoderTest {
                 new LwM2mPath("/0/0/3"), model);
 
         byte[] bytes = Hex.decodeHex("ABCDEF".toCharArray());
-        LwM2mResource expected = LwM2mSingleResource.newBinaryResource(3, bytes);
+        LwM2mResource expected = LwM2mSingleResourceImpl.newBinaryResource(3, bytes);
 
         Assert.assertEquals(expected, oResource);
     }
@@ -1233,7 +1236,7 @@ public class LwM2mNodeDecoderTest {
                 new LwM2mPath("/0/0/3"), model);
 
         byte[] bytes = Hex.decodeHex("ABCDEF".toCharArray());
-        LwM2mResource expected = LwM2mSingleResource.newBinaryResource(3, bytes);
+        LwM2mResource expected = LwM2mSingleResourceImpl.newBinaryResource(3, bytes);
 
         Assert.assertEquals(expected, oResource);
     }
@@ -1246,7 +1249,7 @@ public class LwM2mNodeDecoderTest {
         LwM2mResource resource = null;
         resource = (LwM2mResource) decoder.decode(new byte[0], ContentFormat.SENML_CBOR, new LwM2mPath(3, 0, 6), model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
 
@@ -1255,7 +1258,7 @@ public class LwM2mNodeDecoderTest {
         byte[] cbor = Hex.decodeHex("80".toCharArray());
         resource = (LwM2mResource) decoder.decode(cbor, ContentFormat.SENML_CBOR, new LwM2mPath(3, 0, 6), model);
         assertNotNull(resource);
-        assertTrue(resource instanceof LwM2mMultipleResource);
+        assertTrue(resource instanceof LwM2mMultipleResourceImpl);
         assertEquals(6, resource.getId());
         assertTrue(resource.getInstances().isEmpty());
     }

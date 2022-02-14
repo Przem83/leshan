@@ -25,15 +25,17 @@ import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mIncompletePath;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mNodeException;
-import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.InvalidLwM2mPathException;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.NodeDecoder;
 import org.eclipse.leshan.core.tlv.Tlv;
@@ -66,7 +68,7 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
         LOG.trace("Parsing TLV content for path {}: {}", path, tlvs);
 
         // Object
-        if (nodeClass == LwM2mObject.class) {
+        if (nodeClass == LwM2mObjectImpl.class) {
             Map<Integer, LwM2mObjectInstance> instances = new HashMap<>(tlvs.length);
 
             // is it an array of TLV resources?
@@ -101,11 +103,11 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
                     }
                 }
             }
-            return (T) new LwM2mObject(path.getObjectId(), instances.values());
+            return (T) new LwM2mObjectImpl(path.getObjectId(), instances.values());
         }
 
         // Object instance
-        else if (nodeClass == LwM2mObjectInstance.class) {
+        else if (nodeClass == LwM2mObjectInstanceImpl.class) {
 
             if (tlvs.length == 1 && tlvs[0].getType() == TlvType.OBJECT_INSTANCE) {
                 if (path.isObjectInstance() && tlvs[0].getIdentifier() != path.getObjectInstanceId()) {
@@ -199,7 +201,7 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
                         previousResource, resource, resource.getId(), resourcePath);
             }
         }
-        return new LwM2mObjectInstance(instanceId, resources.values());
+        return new LwM2mObjectInstanceImpl(instanceId, resources.values());
 
     }
 
@@ -215,7 +217,7 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
                         previousResource, resource, resource.getId(), resourcePath);
             }
         }
-        return new LwM2mObjectInstance(resources.values());
+        return new LwM2mObjectInstanceImpl(resources.values());
     }
 
     private LwM2mResource parseResourceTlv(Tlv tlv, LwM2mPath resourcePath, LwM2mModel model) throws CodecException {
@@ -225,7 +227,7 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
         case MULTIPLE_RESOURCE:
             return parseResourceInstancesTlv(tlv.getChildren(), resourcePath, expectedType);
         case RESOURCE_VALUE:
-            return LwM2mSingleResource.newResource(resourceId,
+            return LwM2mSingleResourceImpl.newResource(resourceId,
                     parseTlvValue(tlv.getValue(), expectedType, resourcePath), expectedType);
         default:
             throw new CodecException("Invalid TLV type %s for resource %s", tlv.getType(), resourcePath);
@@ -248,7 +250,7 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
                         previousResourceInstance, resourceInstance, tlvChild.getIdentifier(), resourcePath);
             }
         }
-        return new LwM2mMultipleResource(resourcePath.getResourceId(), expectedType, instances.values());
+        return new LwM2mMultipleResourceImpl(resourcePath.getResourceId(), expectedType, instances.values());
     }
 
     private LwM2mResourceInstance parseResourceInstanceTlv(Tlv tlv, LwM2mPath resourceInstancePath, Type expectedType)

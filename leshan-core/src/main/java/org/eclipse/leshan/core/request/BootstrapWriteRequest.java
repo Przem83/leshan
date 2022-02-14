@@ -17,8 +17,8 @@ package org.eclipse.leshan.core.request;
 
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mObject;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.request.exception.InvalidRequestException;
@@ -57,12 +57,12 @@ public class BootstrapWriteRequest extends AbstractSimpleDownlinkRequest<Bootstr
                         node.getClass().getSimpleName());
             }
         } else if (getPath().isObjectInstance()) {
-            if (!(node instanceof LwM2mObjectInstance)) {
+            if (!(node instanceof LwM2mObjectInstanceImpl)) {
                 throw new InvalidRequestException("path '%s' and node type '%s' do not match", target,
                         node.getClass().getSimpleName());
             }
         } else if (getPath().isObject()) {
-            if (!(node instanceof LwM2mObject)) {
+            if (!(node instanceof LwM2mObjectImpl)) {
                 throw new InvalidRequestException("path '%s' and node type '%s' do not match", target,
                         node.getClass().getSimpleName());
             }

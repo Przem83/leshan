@@ -30,7 +30,7 @@ import org.eclipse.californium.core.config.CoapConfig;
 import org.eclipse.californium.elements.config.Configuration;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.request.BindingMode;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.RegisterRequest;
@@ -91,7 +91,7 @@ public class LockStepSendTest {
 
         // Send "Send Request" with invalid payload
         Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
-        nodes.put(new LwM2mPath("/3/0/1"), LwM2mSingleResource.newStringResource(1, "data"));
+        nodes.put(new LwM2mPath("/3/0/1"), LwM2mSingleResourceImpl.newStringResource(1, "data"));
         Request sendRequest = client.createCoapRequest(new SendRequest(ContentFormat.SENML_CBOR, nodes));
         sendRequest.setPayload(new byte[] { 0x00, 0x10 });
         client.sendCoapRequest(sendRequest);

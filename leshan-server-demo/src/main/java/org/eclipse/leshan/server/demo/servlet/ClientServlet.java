@@ -36,8 +36,9 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.leshan.core.attributes.AttributeSet;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.CreateRequest;
@@ -460,7 +461,7 @@ public class ClientServlet extends HttpServlet {
 
                     // create & process request
                     LwM2mNode node = extractLwM2mNode(target, req, new LwM2mPath(target));
-                    if (node instanceof LwM2mObjectInstance) {
+                    if (node instanceof LwM2mObjectInstanceImpl) {
                         CreateRequest request;
                         if (node.getId() == LwM2mObjectInstance.UNDEFINED) {
                             request = new CreateRequest(contentFormat, target,
@@ -574,7 +575,7 @@ public class ClientServlet extends HttpServlet {
         } else if ("text/plain".equals(contentType)) {
             String content = IOUtils.toString(req.getInputStream(), req.getCharacterEncoding());
             int rscId = Integer.valueOf(target.substring(target.lastIndexOf("/") + 1));
-            return LwM2mSingleResource.newStringResource(rscId, content);
+            return LwM2mSingleResourceImpl.newStringResource(rscId, content);
         }
         throw new InvalidRequestException("content type %s not supported", req.getContentType());
     }

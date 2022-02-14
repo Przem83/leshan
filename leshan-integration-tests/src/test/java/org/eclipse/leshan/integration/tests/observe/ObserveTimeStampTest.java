@@ -30,10 +30,10 @@ import java.util.Set;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.model.StaticModel;
-import org.eclipse.leshan.core.node.LwM2mObject;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
@@ -111,11 +111,11 @@ public class ObserveTimeStampTest {
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
         // create time-stamped nodes
         TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNode(System.currentTimeMillis(),
-                LwM2mSingleResource.newStringResource(15, "Paris"));
+                LwM2mSingleResourceImpl.newStringResource(15, "Paris"));
         List<TimestampedLwM2mNode> timestampedNodes = new ArrayList<>();
         timestampedNodes.add(mostRecentNode);
         timestampedNodes.add(new TimestampedLwM2mNode(mostRecentNode.getTimestamp() - 2,
-                LwM2mSingleResource.newStringResource(15, "Londres")));
+                LwM2mSingleResourceImpl.newStringResource(15, "Londres")));
         byte[] payload = encoder.encodeTimestampedData(timestampedNodes, contentFormat, new LwM2mPath("/3/0/15"),
                 new StaticModel(helper.createObjectModels()));
         Response firstCoapResponse = (Response) observeResponse.getCoapResponse();
@@ -154,11 +154,11 @@ public class ObserveTimeStampTest {
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
         // create time-stamped nodes
         TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNode(System.currentTimeMillis(),
-                new LwM2mObjectInstance(0, LwM2mSingleResource.newStringResource(15, "Paris")));
+                new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Paris")));
         List<TimestampedLwM2mNode> timestampedNodes = new ArrayList<>();
         timestampedNodes.add(mostRecentNode);
         timestampedNodes.add(new TimestampedLwM2mNode(mostRecentNode.getTimestamp() - 2,
-                new LwM2mObjectInstance(0, LwM2mSingleResource.newStringResource(15, "Londres"))));
+                new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Londres"))));
         byte[] payload = encoder.encodeTimestampedData(timestampedNodes, contentFormat, new LwM2mPath("/3/0"),
                 new StaticModel(helper.createObjectModels()));
         Response firstCoapResponse = (Response) observeResponse.getCoapResponse();
@@ -197,11 +197,11 @@ public class ObserveTimeStampTest {
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
         // create time-stamped nodes
         TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNode(System.currentTimeMillis(),
-                new LwM2mObject(3, new LwM2mObjectInstance(0, LwM2mSingleResource.newStringResource(15, "Paris"))));
+                new LwM2mObjectImpl(3, new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Paris"))));
         List<TimestampedLwM2mNode> timestampedNodes = new ArrayList<>();
         timestampedNodes.add(mostRecentNode);
         timestampedNodes.add(new TimestampedLwM2mNode(mostRecentNode.getTimestamp() - 2,
-                new LwM2mObject(3, new LwM2mObjectInstance(0, LwM2mSingleResource.newStringResource(15, "Londres")))));
+                new LwM2mObjectImpl(3, new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Londres")))));
         byte[] payload = encoder.encodeTimestampedData(timestampedNodes, contentFormat, new LwM2mPath("/3"),
                 new StaticModel(helper.createObjectModels()));
 

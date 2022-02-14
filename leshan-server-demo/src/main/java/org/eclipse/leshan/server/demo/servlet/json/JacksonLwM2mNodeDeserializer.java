@@ -25,13 +25,14 @@ import java.util.Map;
 
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.util.Hex;
 import org.eclipse.leshan.core.util.datatype.ULong;
@@ -79,7 +80,7 @@ public class JacksonLwM2mNodeDeserializer extends JsonDeserializer<LwM2mNode> {
                 for (int i = 0; i < array.size(); i++) {
                     instances[i] = (LwM2mObjectInstance) om.treeToValue(array.get(i), LwM2mNode.class);
                 }
-                node = new LwM2mObject(id, instances);
+                node = new LwM2mObjectImpl(id, instances);
 
             } else if ("instance".equals(kind) || object.has("resources")) {
                 JsonNode array = object.get("resources");
@@ -89,9 +90,9 @@ public class JacksonLwM2mNodeDeserializer extends JsonDeserializer<LwM2mNode> {
                     resources[i] = (LwM2mResource) om.treeToValue(array.get(i), LwM2mNode.class);
                 }
                 if (id == null) {
-                    node = new LwM2mObjectInstance(Arrays.asList(resources));
+                    node = new LwM2mObjectInstanceImpl(Arrays.asList(resources));
                 } else {
-                    node = new LwM2mObjectInstance(id, resources);
+                    node = new LwM2mObjectInstanceImpl(id, resources);
                 }
             } else if ("multiResource".equals(kind) || object.has("values")) {
                 if (id == null) {
@@ -111,7 +112,7 @@ public class JacksonLwM2mNodeDeserializer extends JsonDeserializer<LwM2mNode> {
                     JsonNode nodeValue = valuesNode.get(nodeName);
                     values.put(Integer.valueOf(nodeName), deserializeValue(nodeValue, type));
                 }
-                node = LwM2mMultipleResource.newResource(id, values, type);
+                node = LwM2mMultipleResourceImpl.newResource(id, values, type);
             } else if (object.has("value")) {
                 if (id == null) {
                     throw new JsonParseException(p, "Missing id");
@@ -126,7 +127,7 @@ public class JacksonLwM2mNodeDeserializer extends JsonDeserializer<LwM2mNode> {
                     // single value resource
                     JsonNode val = object.get("value");
                     Type type = Type.valueOf(object.get("type").asText().toUpperCase());
-                    node = LwM2mSingleResource.newResource(id, deserializeValue(val, type), type);
+                    node = LwM2mSingleResourceImpl.newResource(id, deserializeValue(val, type), type);
                 }
             } else {
                 throw new JsonParseException(p, "Invalid node element");

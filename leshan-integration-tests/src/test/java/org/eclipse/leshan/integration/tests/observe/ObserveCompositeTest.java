@@ -28,7 +28,7 @@ import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.observation.CompositeObservation;
 import org.eclipse.leshan.core.observation.Observation;
 import org.eclipse.leshan.core.request.CancelCompositeObservationRequest;
@@ -113,7 +113,7 @@ public class ObserveCompositeTest {
         assertTrue(content.containsKey(new LwM2mPath("/3/0/15")));
 
         // Assert that listener response contains expected values
-        assertEquals(LwM2mSingleResource.newStringResource(15, "Europe/Paris"), content.get(new LwM2mPath("/3/0/15")));
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(15, "Europe/Paris"), content.get(new LwM2mPath("/3/0/15")));
 
         // Assert that listener has Response
         assertNotNull(listener.getObserveCompositeResponse().getCoapResponse());
@@ -197,7 +197,7 @@ public class ObserveCompositeTest {
         assertTrue(content.containsKey(new LwM2mPath("/3/0/14")));
 
         // Assert that listener response contains expected values
-        assertEquals(LwM2mSingleResource.newStringResource(new LwM2mPath("/3/0/15").getResourceId(), "Europe/Paris"),
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(new LwM2mPath("/3/0/15").getResourceId(), "Europe/Paris"),
                 content.get(new LwM2mPath("/3/0/15")));
         assertEquals(previousOffset, content.get(new LwM2mPath("/3/0/14")));
 
@@ -249,9 +249,9 @@ public class ObserveCompositeTest {
         assertTrue(content.containsKey(new LwM2mPath("/3/0/14")));
 
         // Assert that listener response contains expected values
-        assertEquals(LwM2mSingleResource.newStringResource(new LwM2mPath("/3/0/15").getResourceId(), "Europe/Paris"),
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(new LwM2mPath("/3/0/15").getResourceId(), "Europe/Paris"),
                 content.get(new LwM2mPath("/3/0/15")));
-        assertEquals(LwM2mSingleResource.newStringResource(new LwM2mPath("/3/0/14").getResourceId(), "+11"),
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(new LwM2mPath("/3/0/14").getResourceId(), "+11"),
                 content.get(new LwM2mPath("/3/0/14")));
 
         // Assert that listener has Response
@@ -404,7 +404,7 @@ public class ObserveCompositeTest {
         assertTrue(content.containsKey(new LwM2mPath("/3/0/15")));
 
         // Assert that listener response contains exact values
-        assertEquals(LwM2mSingleResource.newStringResource(new LwM2mPath("/3/0/15").getResourceId(), "Europe/Paris"),
+        assertEquals(LwM2mSingleResourceImpl.newStringResource(new LwM2mPath("/3/0/15").getResourceId(), "Europe/Paris"),
                 content.get(new LwM2mPath("/3/0/15")));
 
         // active cancellation does not remove observation from store : it should be done manually using

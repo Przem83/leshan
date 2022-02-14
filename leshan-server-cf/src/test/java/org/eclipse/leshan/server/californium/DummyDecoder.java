@@ -23,7 +23,7 @@ import java.util.Set;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
@@ -33,7 +33,7 @@ public class DummyDecoder implements LwM2mDecoder {
     @Override
     public LwM2mNode decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model)
             throws CodecException {
-        return LwM2mSingleResource.newResource(15, "Example");
+        return LwM2mSingleResourceImpl.newResource(15, "Example");
     }
 
     @Override

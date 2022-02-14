@@ -25,8 +25,8 @@ import java.util.Set;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.node.LwM2mNode;
-import org.eclipse.leshan.core.node.LwM2mObject;
-import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -231,9 +231,9 @@ public class DefaultLwM2mDecoder implements LwM2mDecoder {
 
     public static Class<? extends LwM2mNode> nodeClassFromPath(LwM2mPath path) {
         if (path.isObject()) {
-            return LwM2mObject.class;
+            return LwM2mObjectImpl.class;
         } else if (path.isObjectInstance()) {
-            return LwM2mObjectInstance.class;
+            return LwM2mObjectInstanceImpl.class;
         } else if (path.isResource()) {
             return LwM2mResource.class;
         } else if (path.isResourceInstance()) {

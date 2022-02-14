@@ -47,8 +47,10 @@ import org.eclipse.leshan.server.redis.RedisRegistrationStore;
 import org.eclipse.leshan.server.registration.Registration;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class RedisRegistrationStoreTest {
 
     private final String ep = "urn:endpoint";

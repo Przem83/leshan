@@ -26,13 +26,14 @@ import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.request.ObserveCompositeRequest;
 import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.request.ReadCompositeRequest;
@@ -149,7 +150,7 @@ public class RootEnabler implements LwM2mRootEnabler {
                 if (resourceModel.multiple) {
                     return WriteCompositeResponse.badRequest(String.format("resource %s is multi instance", path));
                 }
-                if (!(node instanceof LwM2mSingleResource)) {
+                if (!(node instanceof LwM2mSingleResourceImpl)) {
                     return WriteCompositeResponse
                             .badRequest(String.format("invalid path %s for %s", path, node.getClass().getSimpleName()));
                 }
@@ -183,10 +184,10 @@ public class RootEnabler implements LwM2mRootEnabler {
                 // So we create an instance from resource or resource instance.
                 LwM2mObjectInstance instance;
                 if (node instanceof LwM2mResource) {
-                    instance = new LwM2mObjectInstance(path.getObjectInstanceId(), (LwM2mResource) node);
+                    instance = new LwM2mObjectInstanceImpl(path.getObjectInstanceId(), (LwM2mResource) node);
                 } else if (node instanceof LwM2mResourceInstance) {
                     LwM2mResourceInstance resourceInstance = (LwM2mResourceInstance) node;
-                    instance = new LwM2mObjectInstance(path.getObjectInstanceId(), new LwM2mMultipleResource(
+                    instance = new LwM2mObjectInstanceImpl(path.getObjectInstanceId(), new LwM2mMultipleResourceImpl(
                             path.getResourceId(), resourceInstance.getType(), resourceInstance));
                 } else {
                     return WriteCompositeResponse.internalServerError(

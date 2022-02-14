@@ -24,7 +24,9 @@ import java.util.Map.Entry;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.util.Hex;
@@ -51,10 +53,10 @@ public class JacksonLwM2mNodeSerializer extends StdSerializer<LwM2mNode> {
 
         element.put("id", src.getId());
 
-        if (src instanceof LwM2mObject) {
+        if (src instanceof LwM2mObjectImpl) {
             element.put("kind", "obj");
             element.put("instances", ((LwM2mObject) src).getInstances().values());
-        } else if (src instanceof LwM2mObjectInstance) {
+        } else if (src instanceof LwM2mObjectInstanceImpl) {
             element.put("kind", "instance");
             element.put("resources", ((LwM2mObjectInstance) src).getResources().values());
         } else if (src instanceof LwM2mResource) {

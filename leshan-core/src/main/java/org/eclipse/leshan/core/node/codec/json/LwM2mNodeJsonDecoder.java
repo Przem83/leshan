@@ -36,15 +36,16 @@ import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.InvalidLwM2mPathException;
-import org.eclipse.leshan.core.node.LwM2mMultipleResource;
+import org.eclipse.leshan.core.node.LwM2mMultipleResourceImpl;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mNodeException;
-import org.eclipse.leshan.core.node.LwM2mObject;
+import org.eclipse.leshan.core.node.LwM2mObjectImpl;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
+import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.codec.CodecException;
@@ -121,17 +122,17 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
 
             // Create lwm2m node
             LwM2mNode node;
-            if (nodeClass == LwM2mObject.class) {
+            if (nodeClass == LwM2mObjectImpl.class) {
                 Collection<LwM2mObjectInstance> instances = new ArrayList<>();
                 for (Entry<Integer, Collection<JsonArrayEntry>> entryByInstanceId : jsonEntryByInstanceId.entrySet()) {
                     Map<Integer, LwM2mResource> resourcesMap = extractLwM2mResources(entryByInstanceId.getValue(),
                             baseName, model, requestPath);
 
-                    instances.add(new LwM2mObjectInstance(entryByInstanceId.getKey(), resourcesMap.values()));
+                    instances.add(new LwM2mObjectInstanceImpl(entryByInstanceId.getKey(), resourcesMap.values()));
                 }
 
-                node = new LwM2mObject(requestPath.getObjectId(), instances);
-            } else if (nodeClass == LwM2mObjectInstance.class) {
+                node = new LwM2mObjectImpl(requestPath.getObjectId(), instances);
+            } else if (nodeClass == LwM2mObjectInstanceImpl.class) {
                 // validate we have resources for only 1 instance
                 if (jsonEntryByInstanceId.size() != 1)
                     throw new CodecException("One instance expected in the payload [path:%s]", requestPath);
@@ -143,7 +144,7 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
                         model, requestPath);
 
                 // Create instance
-                node = new LwM2mObjectInstance(instanceEntry.getKey(), resourcesMap.values());
+                node = new LwM2mObjectInstanceImpl(instanceEntry.getKey(), resourcesMap.values());
             } else if (nodeClass == LwM2mResource.class) {
                 // validate we have resources for only 1 instance
                 if (jsonEntryByInstanceId.size() > 1)
@@ -372,7 +373,7 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
             } else if (nodePath.isResource()) {
                 // Single resource
                 Type expectedType = getResourceType(nodePath, model, resourceElt);
-                LwM2mResource res = LwM2mSingleResource.newResource(nodePath.getResourceId(),
+                LwM2mResource res = LwM2mSingleResourceImpl.newResource(nodePath.getResourceId(),
                         parseJsonValue(resourceElt.getResourceValue(), expectedType, nodePath), expectedType);
                 LwM2mResource previousRes = lwM2mResourceMap.put(nodePath.getResourceId(), res);
                 if (previousRes != null) {
@@ -399,7 +400,7 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
                     values.put(resourceInstanceId,
                             parseJsonValue(e.getValue().getResourceValue(), expectedType, resourcePath));
                 }
-                LwM2mResource resource = LwM2mMultipleResource.newResource(resourcePath.getResourceId(), values,
+                LwM2mResource resource = LwM2mMultipleResourceImpl.newResource(resourcePath.getResourceId(), values,
                         expectedType);
                 LwM2mResource previousRes = lwM2mResourceMap.put(resourcePath.getResourceId(), resource);
                 if (previousRes != null) {
@@ -422,7 +423,7 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
                 // We create it only if this respect the model
                 if (resourceModel == null || resourceModel.multiple) {
                     Type resourceType = getResourceType(path, model, null);
-                    lwM2mResourceMap.put(path.getResourceId(), LwM2mMultipleResource.newResource(path.getResourceId(),
+                    lwM2mResourceMap.put(path.getResourceId(), LwM2mMultipleResourceImpl.newResource(path.getResourceId(),
                             new HashMap<Integer, Object>(), resourceType));
                 }
             }

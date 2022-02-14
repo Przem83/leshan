@@ -33,7 +33,7 @@ import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mResource;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.request.ReadRequest;
@@ -90,8 +90,8 @@ public class WriteMultiValueTest {
     @Test
     public void can_write_object_instance() throws InterruptedException {
         // write device timezone and offset
-        LwM2mResource utcOffset = LwM2mSingleResource.newStringResource(14, "+02");
-        LwM2mResource timeZone = LwM2mSingleResource.newStringResource(15, "Europe/Paris");
+        LwM2mResource utcOffset = LwM2mSingleResourceImpl.newStringResource(14, "+02");
+        LwM2mResource timeZone = LwM2mSingleResourceImpl.newStringResource(15, "Europe/Paris");
         WriteResponse response = helper.server.send(helper.getCurrentRegistration(),
                 new WriteRequest(Mode.REPLACE, contentFormat, 3, 0, utcOffset, timeZone));
 
@@ -119,10 +119,10 @@ public class WriteMultiValueTest {
         assertThat(response.getCoapResponse(), is(instanceOf(Response.class)));
 
         // write server object
-        LwM2mResource lifetime = LwM2mSingleResource.newIntegerResource(1, 120);
-        LwM2mResource defaultMinPeriod = LwM2mSingleResource.newIntegerResource(2, 10);
-        LwM2mResource notificationStoring = LwM2mSingleResource.newBooleanResource(6, false);
-        LwM2mResource binding = LwM2mSingleResource.newStringResource(7, "U");
+        LwM2mResource lifetime = LwM2mSingleResourceImpl.newIntegerResource(1, 120);
+        LwM2mResource defaultMinPeriod = LwM2mSingleResourceImpl.newIntegerResource(2, 10);
+        LwM2mResource notificationStoring = LwM2mSingleResourceImpl.newBooleanResource(6, false);
+        LwM2mResource binding = LwM2mSingleResourceImpl.newStringResource(7, "U");
         response = helper.server.send(helper.getCurrentRegistration(), new WriteRequest(Mode.REPLACE, contentFormat, 1,
                 0, lifetime, defaultMinPeriod, notificationStoring, binding));
 
@@ -152,8 +152,8 @@ public class WriteMultiValueTest {
         assertNotNull(response.getCoapResponse());
         assertThat(response.getCoapResponse(), is(instanceOf(Response.class)));
         // write server object
-        LwM2mResource lifetime = LwM2mSingleResource.newIntegerResource(1, 120);
-        LwM2mResource defaultMinPeriod = LwM2mSingleResource.newIntegerResource(2, 10);
+        LwM2mResource lifetime = LwM2mSingleResourceImpl.newIntegerResource(1, 120);
+        LwM2mResource defaultMinPeriod = LwM2mSingleResourceImpl.newIntegerResource(2, 10);
         response = helper.server.send(helper.getCurrentRegistration(),
                 new WriteRequest(Mode.UPDATE, contentFormat, 1, 0, lifetime, defaultMinPeriod));
 

@@ -23,7 +23,7 @@ import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
-import org.eclipse.leshan.core.node.LwM2mSingleResource;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.NodeDecoder;
@@ -75,7 +75,7 @@ public class LwM2mNodeCborDecoder implements NodeDecoder {
 
         // Create Node
         if (path.isResource()) {
-            return (T) LwM2mSingleResource.newResource(path.getResourceId(), nodeValue, expectedType);
+            return (T) LwM2mSingleResourceImpl.newResource(path.getResourceId(), nodeValue, expectedType);
         } else {
             return (T) LwM2mResourceInstance.newInstance(path.getResourceInstanceId(), nodeValue, expectedType);
         }
