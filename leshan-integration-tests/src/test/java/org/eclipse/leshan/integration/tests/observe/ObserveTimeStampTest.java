@@ -35,6 +35,7 @@ import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeImpl;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mEncoder;
 import org.eclipse.leshan.core.node.codec.LwM2mEncoder;
 import org.eclipse.leshan.core.observation.Observation;
@@ -110,11 +111,11 @@ public class ObserveTimeStampTest {
 
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
         // create time-stamped nodes
-        TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNode(System.currentTimeMillis(),
+        TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNodeImpl(System.currentTimeMillis(),
                 LwM2mSingleResourceImpl.newStringResource(15, "Paris"));
         List<TimestampedLwM2mNode> timestampedNodes = new ArrayList<>();
         timestampedNodes.add(mostRecentNode);
-        timestampedNodes.add(new TimestampedLwM2mNode(mostRecentNode.getTimestamp() - 2,
+        timestampedNodes.add(new TimestampedLwM2mNodeImpl(mostRecentNode.getFirstTimestamp() - 2,
                 LwM2mSingleResourceImpl.newStringResource(15, "Londres")));
         byte[] payload = encoder.encodeTimestampedData(timestampedNodes, contentFormat, new LwM2mPath("/3/0/15"),
                 new StaticModel(helper.createObjectModels()));
@@ -126,7 +127,7 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), listener.getObserveResponse().getContent());
+        assertEquals(mostRecentNode.getFirstNode(), listener.getObserveResponse().getContent());
         assertEquals(timestampedNodes, listener.getObserveResponse().getTimestampedLwM2mNode());
         assertContentFormat(contentFormat, listener.getObserveResponse());
     }
@@ -153,11 +154,11 @@ public class ObserveTimeStampTest {
 
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
         // create time-stamped nodes
-        TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNode(System.currentTimeMillis(),
+        TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNodeImpl(System.currentTimeMillis(),
                 new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Paris")));
         List<TimestampedLwM2mNode> timestampedNodes = new ArrayList<>();
         timestampedNodes.add(mostRecentNode);
-        timestampedNodes.add(new TimestampedLwM2mNode(mostRecentNode.getTimestamp() - 2,
+        timestampedNodes.add(new TimestampedLwM2mNodeImpl(mostRecentNode.getFirstTimestamp() - 2,
                 new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Londres"))));
         byte[] payload = encoder.encodeTimestampedData(timestampedNodes, contentFormat, new LwM2mPath("/3/0"),
                 new StaticModel(helper.createObjectModels()));
@@ -169,7 +170,7 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), listener.getObserveResponse().getContent());
+        assertEquals(mostRecentNode.getFirstNode(), listener.getObserveResponse().getContent());
         assertEquals(timestampedNodes, listener.getObserveResponse().getTimestampedLwM2mNode());
         assertContentFormat(contentFormat, listener.getObserveResponse());
     }
@@ -196,11 +197,11 @@ public class ObserveTimeStampTest {
 
         // *** HACK send time-stamped notification as Leshan client does not support it *** //
         // create time-stamped nodes
-        TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNode(System.currentTimeMillis(),
+        TimestampedLwM2mNode mostRecentNode = new TimestampedLwM2mNodeImpl(System.currentTimeMillis(),
                 new LwM2mObjectImpl(3, new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Paris"))));
         List<TimestampedLwM2mNode> timestampedNodes = new ArrayList<>();
         timestampedNodes.add(mostRecentNode);
-        timestampedNodes.add(new TimestampedLwM2mNode(mostRecentNode.getTimestamp() - 2,
+        timestampedNodes.add(new TimestampedLwM2mNodeImpl(mostRecentNode.getFirstTimestamp() - 2,
                 new LwM2mObjectImpl(3, new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newStringResource(15, "Londres")))));
         byte[] payload = encoder.encodeTimestampedData(timestampedNodes, contentFormat, new LwM2mPath("/3"),
                 new StaticModel(helper.createObjectModels()));
@@ -213,7 +214,7 @@ public class ObserveTimeStampTest {
         // verify result
         listener.waitForNotification(2000);
         assertTrue(listener.receivedNotify().get());
-        assertEquals(mostRecentNode.getNode(), listener.getObserveResponse().getContent());
+        assertEquals(mostRecentNode.getFirstNode(), listener.getObserveResponse().getContent());
         assertEquals(timestampedNodes, listener.getObserveResponse().getTimestampedLwM2mNode());
         assertContentFormat(contentFormat, listener.getObserveResponse());
     }

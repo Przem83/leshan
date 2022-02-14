@@ -42,6 +42,7 @@ import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeImpl;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mDecoder;
 import org.eclipse.leshan.core.node.codec.MultiNodeDecoder;
@@ -169,7 +170,7 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
             for (Entry<Long, Collection<LwM2mResolvedSenMLRecord>> entryByTimestamp : recordsByTimestamp.entrySet()) {
                 LwM2mNode node = parseRecords(entryByTimestamp.getValue(), path, model, nodeClass);
                 // add time-stamped node
-                timestampedNodes.add(new TimestampedLwM2mNode(entryByTimestamp.getKey(), node));
+                timestampedNodes.add(new TimestampedLwM2mNodeImpl(entryByTimestamp.getKey(), node));
             }
             return timestampedNodes;
         } catch (SenMLException e) {

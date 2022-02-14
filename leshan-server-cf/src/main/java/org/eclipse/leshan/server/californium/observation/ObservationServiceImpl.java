@@ -367,7 +367,7 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
 
                 // create lwm2m response
                 if (timestampedNodes.size() == 1 && !timestampedNodes.get(0).isTimestamped()) {
-                    return new ObserveResponse(responseCode, timestampedNodes.get(0).getNode(), null, singleObservation,
+                    return new ObserveResponse(responseCode, timestampedNodes.get(0).getFirstNode(), null, singleObservation,
                             null, coapResponse);
                 } else {
                     return new ObserveResponse(responseCode, null, timestampedNodes, singleObservation, null,

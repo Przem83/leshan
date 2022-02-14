@@ -40,6 +40,7 @@ import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeImpl;
 import org.eclipse.leshan.core.node.codec.senml.LwM2mNodeSenMLEncoder;
 import org.eclipse.leshan.core.request.ContentFormat;
 import org.eclipse.leshan.core.util.Hex;
@@ -220,9 +221,9 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void json_encode_timestamped_resources() throws CodecException {
         List<TimestampedLwM2mNode> data = new ArrayList<>();
-        data.add(new TimestampedLwM2mNode(500L, LwM2mSingleResourceImpl.newFloatResource(1, 22.9)));
-        data.add(new TimestampedLwM2mNode(510L, LwM2mSingleResourceImpl.newFloatResource(1, 22.4)));
-        data.add(new TimestampedLwM2mNode(520L, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
+        data.add(new TimestampedLwM2mNodeImpl(500L, LwM2mSingleResourceImpl.newFloatResource(1, 22.9)));
+        data.add(new TimestampedLwM2mNodeImpl(510L, LwM2mSingleResourceImpl.newFloatResource(1, 22.4)));
+        data.add(new TimestampedLwM2mNodeImpl(520L, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
 
         byte[] encoded = encoder.encodeTimestampedData(data, ContentFormat.JSON, new LwM2mPath(1024, 0, 1), model);
 
@@ -239,9 +240,9 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void json_timestamped_resource_instances() throws CodecException {
         List<TimestampedLwM2mNode> data = new ArrayList<>();
-        data.add(new TimestampedLwM2mNode(500L, LwM2mResourceInstance.newFloatInstance(0, 22.9)));
-        data.add(new TimestampedLwM2mNode(510L, LwM2mResourceInstance.newFloatInstance(0, 22.4)));
-        data.add(new TimestampedLwM2mNode(520L, LwM2mResourceInstance.newFloatInstance(0, 24.1)));
+        data.add(new TimestampedLwM2mNodeImpl(500L, LwM2mResourceInstance.newFloatInstance(0, 22.9)));
+        data.add(new TimestampedLwM2mNodeImpl(510L, LwM2mResourceInstance.newFloatInstance(0, 22.4)));
+        data.add(new TimestampedLwM2mNodeImpl(520L, LwM2mResourceInstance.newFloatInstance(0, 24.1)));
 
         byte[] encoded = encoder.encodeTimestampedData(data, ContentFormat.JSON, new LwM2mPath(1024, 0, 1, 0), model);
 
@@ -264,9 +265,9 @@ public class LwM2mNodeEncoderTest {
                 LwM2mSingleResourceImpl.newStringResource(0, "a string"));
         LwM2mObjectInstance instanceAt130 = new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 24.1));
 
-        data.add(new TimestampedLwM2mNode(110L, instanceAt110));
-        data.add(new TimestampedLwM2mNode(120L, instanceAt120));
-        data.add(new TimestampedLwM2mNode(130L, instanceAt130));
+        data.add(new TimestampedLwM2mNodeImpl(110L, instanceAt110));
+        data.add(new TimestampedLwM2mNodeImpl(120L, instanceAt120));
+        data.add(new TimestampedLwM2mNodeImpl(130L, instanceAt130));
 
         byte[] encoded = encoder.encodeTimestampedData(data, ContentFormat.JSON, new LwM2mPath(1024, 0), model);
 
@@ -296,9 +297,9 @@ public class LwM2mNodeEncoderTest {
         LwM2mObject objetAt230 = new LwM2mObjectImpl(1204,
                 new LwM2mObjectInstanceImpl(0, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
 
-        data.add(new TimestampedLwM2mNode(210L, objectAt210));
-        data.add(new TimestampedLwM2mNode(220L, objectAt220));
-        data.add(new TimestampedLwM2mNode(230L, objetAt230));
+        data.add(new TimestampedLwM2mNodeImpl(210L, objectAt210));
+        data.add(new TimestampedLwM2mNodeImpl(220L, objectAt220));
+        data.add(new TimestampedLwM2mNodeImpl(230L, objetAt230));
 
         byte[] encoded = encoder.encodeTimestampedData(data, ContentFormat.JSON, new LwM2mPath(1024), model);
 
@@ -365,9 +366,9 @@ public class LwM2mNodeEncoderTest {
     @Test
     public void senml_encode_timestamped_resources() throws CodecException {
         List<TimestampedLwM2mNode> data = new ArrayList<>();
-        data.add(new TimestampedLwM2mNode(268_500_000L, LwM2mSingleResourceImpl.newFloatResource(1, 22.9)));
-        data.add(new TimestampedLwM2mNode(268_500_010L, LwM2mSingleResourceImpl.newFloatResource(1, 22.4)));
-        data.add(new TimestampedLwM2mNode(268_500_020L, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
+        data.add(new TimestampedLwM2mNodeImpl(268_500_000L, LwM2mSingleResourceImpl.newFloatResource(1, 22.9)));
+        data.add(new TimestampedLwM2mNodeImpl(268_500_010L, LwM2mSingleResourceImpl.newFloatResource(1, 22.4)));
+        data.add(new TimestampedLwM2mNodeImpl(268_500_020L, LwM2mSingleResourceImpl.newFloatResource(1, 24.1)));
 
         byte[] encoded = encoder.encodeTimestampedData(data, ContentFormat.SENML_JSON, new LwM2mPath(1024, 0, 1),
                 model);

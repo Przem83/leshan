@@ -98,8 +98,8 @@ public class LwM2mNodeJsonEncoder implements TimestampedNodeEncoder {
             internalEncoder.requestPath = path;
             internalEncoder.converter = converter;
             internalEncoder.resourceList = null;
-            internalEncoder.timestamp = timestampedLwM2mNode.getTimestamp();
-            timestampedLwM2mNode.getNode().accept(internalEncoder);
+            internalEncoder.timestamp = timestampedLwM2mNode.getFirstTimestamp();
+            timestampedLwM2mNode.getFirstNode().accept(internalEncoder);
             entries.addAll(internalEncoder.resourceList);
             if (baseName != null) {
                 if (!baseName.equals(internalEncoder.baseName)) {

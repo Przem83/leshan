@@ -121,12 +121,12 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
         SenMLPack pack = new SenMLPack();
         for (TimestampedLwM2mNode timestampedLwM2mNode : timestampedNodes) {
 
-            if (timestampedLwM2mNode.getTimestamp() < 268_435_456) {
+            if (timestampedLwM2mNode.getFirstTimestamp() < 268_435_456) {
                 // The smallest absolute Time value that can be expressed (2**28) is 1978-07-04 21:24:16 UTC.
                 // see https://tools.ietf.org/html/rfc8428#section-4.5.3
                 throw new CodecException(
                         "Unable to encode timestamped node[path:%s] : invalid timestamp %s, timestamp should be greater or equals to 268,435,456",
-                        path, timestampedLwM2mNode.getTimestamp());
+                        path, timestampedLwM2mNode.getFirstTimestamp());
             }
 
             InternalEncoder internalEncoder = new InternalEncoder();
@@ -135,8 +135,8 @@ public class LwM2mNodeSenMLEncoder implements TimestampedNodeEncoder, MultiNodeE
             internalEncoder.requestPath = path;
             internalEncoder.converter = converter;
             internalEncoder.records = new ArrayList<>();
-            timestampedLwM2mNode.getNode().accept(internalEncoder);
-            internalEncoder.records.get(0).setBaseTime(timestampedLwM2mNode.getTimestamp());
+            timestampedLwM2mNode.getFirstNode().accept(internalEncoder);
+            internalEncoder.records.get(0).setBaseTime(timestampedLwM2mNode.getFirstTimestamp());
             pack.addRecords(internalEncoder.records);
         }
 

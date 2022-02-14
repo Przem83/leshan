@@ -31,6 +31,7 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeImpl;
 import org.eclipse.leshan.core.node.codec.cbor.LwM2mNodeCborDecoder;
 import org.eclipse.leshan.core.node.codec.json.LwM2mNodeJsonDecoder;
 import org.eclipse.leshan.core.node.codec.opaque.LwM2mNodeOpaqueDecoder;
@@ -225,7 +226,7 @@ public class DefaultLwM2mDecoder implements LwM2mDecoder {
             return Collections.emptyList();
 
         ArrayList<TimestampedLwM2mNode> timestampedNodes = new ArrayList<>(1);
-        timestampedNodes.add(new TimestampedLwM2mNode(null, node));
+        timestampedNodes.add(new TimestampedLwM2mNodeImpl(null, node));
         return Collections.unmodifiableList(timestampedNodes);
     }
 

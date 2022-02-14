@@ -48,6 +48,7 @@ import org.eclipse.leshan.core.node.LwM2mResourceInstance;
 import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeImpl;
 import org.eclipse.leshan.core.node.codec.CodecException;
 import org.eclipse.leshan.core.node.codec.TimestampedNodeDecoder;
 import org.eclipse.leshan.core.util.Base64;
@@ -82,7 +83,7 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
                 return null;
             } else {
                 // return the most recent value
-                return (T) timestampedNodes.get(0).getNode();
+                return (T) timestampedNodes.get(0).getFirstNode();
             }
         } catch (LwM2mJsonException | LwM2mNodeException | InvalidLwM2mPathException e) {
             throw new CodecException(e, "Unable to deserialize json [path:%s]", path);
@@ -194,7 +195,7 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
             Long timestamp = computeTimestamp(jsonObject.getBaseTime(), entryByTimestamp.getKey());
 
             // add time-stamped node
-            timestampedNodes.add(new TimestampedLwM2mNode(timestamp, node));
+            timestampedNodes.add(new TimestampedLwM2mNodeImpl(timestamp, node));
         }
 
         return timestampedNodes;

@@ -27,6 +27,7 @@ import java.util.List;
 import org.eclipse.leshan.core.ResponseCode;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodeImpl;
 import org.eclipse.leshan.core.request.exception.InvalidResponseException;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -63,7 +64,7 @@ public class ObserveResponseTest {
         assertThrows(InvalidResponseException.class, new ThrowingRunnable() {
             @Override
             public void run() {
-                new ObserveResponse(responseCode, null, Collections.<TimestampedLwM2mNode> emptyList(), null, null);
+                new ObserveResponse(responseCode, null, Collections.emptyList(), null, null);
             }
         });
     }
@@ -85,8 +86,8 @@ public class ObserveResponseTest {
     public void should_get_content_from_first_of_timestamped_values() {
         // given
         List<TimestampedLwM2mNode> timestampedValues = Arrays.asList(
-                new TimestampedLwM2mNode(123L, newResource(15, "example 1")),
-                new TimestampedLwM2mNode(456L, newResource(15, "example 2")));
+                new TimestampedLwM2mNodeImpl(123L, newResource(15, "example 1")),
+                new TimestampedLwM2mNodeImpl(456L, newResource(15, "example 2")));
 
         LwM2mSingleResource content = responseCode == CHANGED ? newResource(15, "example 1") : null;
 
@@ -94,7 +95,7 @@ public class ObserveResponseTest {
         ObserveResponse response = new ObserveResponse(responseCode, content, timestampedValues, null, null);
 
         // then
-        assertEquals(timestampedValues.get(0).getNode(), response.getContent());
+        assertEquals(timestampedValues.get(0).getFirstNode(), response.getContent());
         assertEquals(timestampedValues, response.getTimestampedLwM2mNode());
     }
 }

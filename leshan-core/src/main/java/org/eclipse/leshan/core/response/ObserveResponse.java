@@ -40,7 +40,7 @@ public class ObserveResponse extends ReadResponse {
 
     public ObserveResponse(ResponseCode code, LwM2mNode content, List<TimestampedLwM2mNode> timestampedValues,
             SingleObservation observation, String errorMessage, Object coapResponse) {
-        super(code, timestampedValues != null && !timestampedValues.isEmpty() ? timestampedValues.get(0).getNode()
+        super(code, timestampedValues != null && !timestampedValues.isEmpty() ? timestampedValues.get(0).getFirstNode()
                 : content, errorMessage, coapResponse);
 
         // CHANGED is out of spec but is supported for backward compatibility. (previous draft version)
