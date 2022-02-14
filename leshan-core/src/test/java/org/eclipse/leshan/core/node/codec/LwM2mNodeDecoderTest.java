@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceTimestamped;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.request.ContentFormat;
@@ -1016,6 +1018,37 @@ public class LwM2mNodeDecoderTest {
         assertEquals(22.4d, ((LwM2mResource) timestampedResources.get(1).getFirstNode()).getValue());
         assertEquals(Long.valueOf(268500000 - 50), timestampedResources.get(2).getFirstTimestamp());
         assertEquals(24.1d, ((LwM2mResource) timestampedResources.get(2).getFirstNode()).getValue());
+    }
+
+    @Test
+    public void senml_timestamped_resources2() throws CodecException {
+        // json content for instance 0 of device object
+        StringBuilder b = new StringBuilder();
+        b.append("[{\"bn\":\"/1024/0/1\",\"v\":22.9,\"bt\":268500000},");
+        b.append("{\"v\":22.4,\"t\":-5},");
+        b.append("{\"v\":24.1,\"t\":-50}],");
+
+        LwM2mResource resources = decoder.decode(b.toString().getBytes(),
+                ContentFormat.SENML_JSON, new LwM2mPath(1024, 0, 1), model, LwM2mResource.class);
+
+        assertTrue(resources instanceof LwM2mSingleResourceTimestamped);
+        LwM2mSingleResourceTimestamped timestampedResources = (LwM2mSingleResourceTimestamped) resources;
+
+        Map<Long, LwM2mSingleResource> timestampedNodes = timestampedResources.getTimestampedNodes();
+        assertEquals(3, timestampedNodes.size());
+        Iterator<Map.Entry<Long, LwM2mSingleResource>> iterator = timestampedNodes.entrySet().iterator();
+
+        Map.Entry<Long, LwM2mSingleResource> next = iterator.next();
+//        assertEquals(Long.valueOf(268500000), next.getKey());
+        assertEquals(24.1d, next.getValue().getValue());
+
+        next = iterator.next();
+//        assertEquals(Long.valueOf(268500000 - 5), next.getKey());
+        assertEquals(22.4d, next.getValue().getValue());
+
+        next = iterator.next();
+//        assertEquals(Long.valueOf(268500000 - 50), next.getKey());
+        assertEquals(22.9d, next.getValue().getValue());
     }
 
     @Test

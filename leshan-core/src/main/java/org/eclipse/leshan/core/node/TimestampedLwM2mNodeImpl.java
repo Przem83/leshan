@@ -17,16 +17,18 @@ package org.eclipse.leshan.core.node;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.eclipse.leshan.core.util.Validate;
 
 public class TimestampedLwM2mNodeImpl<T extends LwM2mNode> implements TimestampedLwM2mNode<T> {
 
-    private final Map<Long, T> timestampedNodes;
+    private final SortedMap<Long, T> timestampedNodes;
 
     public TimestampedLwM2mNodeImpl(Long timestamp, T node) {
         Validate.notNull(node);
-        timestampedNodes = new LinkedHashMap<>();
+        timestampedNodes = new TreeMap<>();
         timestampedNodes.put(timestamp, node);
     }
 
@@ -50,7 +52,7 @@ public class TimestampedLwM2mNodeImpl<T extends LwM2mNode> implements Timestampe
     }
 
     @Override
-    public Map<Long, T> getTimestampedNodes() {
+    public SortedMap<Long, T> getTimestampedNodes() {
         return timestampedNodes;
     }
 

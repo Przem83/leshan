@@ -1,6 +1,6 @@
 package org.eclipse.leshan.core.node;
 
-import java.util.Map;
+import java.util.SortedMap;
 
 public interface TimestampedLwM2mNode<T extends LwM2mNode> {
     Long getFirstTimestamp();
@@ -9,5 +9,5 @@ public interface TimestampedLwM2mNode<T extends LwM2mNode> {
 
     boolean isTimestamped();
 
-    Map<Long, T> getTimestampedNodes();
+    SortedMap<Long, T> getTimestampedNodes();
 }

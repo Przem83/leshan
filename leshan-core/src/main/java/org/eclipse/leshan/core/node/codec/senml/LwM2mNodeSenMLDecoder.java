@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -39,7 +40,9 @@ import org.eclipse.leshan.core.node.LwM2mObjectInstanceImpl;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResource;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
+import org.eclipse.leshan.core.node.LwM2mSingleResource;
 import org.eclipse.leshan.core.node.LwM2mSingleResourceImpl;
+import org.eclipse.leshan.core.node.LwM2mSingleResourceTimestamped;
 import org.eclipse.leshan.core.node.ObjectLink;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNodeImpl;
@@ -93,9 +96,9 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
                     throw new CodecException("Invalid path [%s] for resource, it should start by %s",
                             resolvedRecord.getPath(), path);
                 }
-                if (resolvedRecord.getTimeStamp() != null) {
-                    throw new CodecException("Unable to decode node[path:%s] : value should not be timestamped", path);
-                }
+//                if (resolvedRecord.getTimeStamp() != null) {
+//                    throw new CodecException("Unable to decode node[path:%s] : value should not be timestamped", path);
+//                }
                 resolvedRecords.add(resolvedRecord);
             }
 
@@ -409,12 +412,13 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
             SenMLRecord record = resolvedRecord.getRecord();
 
             // handle LWM2M resources
+            Integer resourceId = nodePath.getResourceId();
             if (nodePath.isResourceInstance()) {
                 // Multi-instance resource
                 // Store multi-instance resource values in a map
                 // we will deal with it later
                 LwM2mPath resourcePath = new LwM2mPath(nodePath.getObjectId(), nodePath.getObjectInstanceId(),
-                        nodePath.getResourceId());
+                        resourceId);
                 Map<Integer, SenMLRecord> multiResource = multiResourceMap.get(resourcePath);
                 if (multiResource == null) {
                     multiResource = new HashMap<>();
@@ -430,13 +434,31 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
                 // Single resource
                 Type expectedType = getResourceType(nodePath, model, record);
                 Object resourceValue = parseResourceValue(record.getResourceValue(), expectedType, nodePath);
-                LwM2mResource res = LwM2mSingleResourceImpl.newResource(nodePath.getResourceId(), resourceValue,
-                        expectedType);
-                LwM2mResource previousRes = lwM2mResourceMap.put(nodePath.getResourceId(), res);
-                if (previousRes != null) {
-                    throw new CodecException("2 RESOURCE nodes (%s,%s) with the same identifier %d for path %s",
-                            previousRes, res, res.getId(), nodePath);
+
+                Long timestamp = Optional.ofNullable(record.getBaseTime()).orElse(0L) + Optional.ofNullable(record.getTime()).orElse(0L);
+                if (record.getBaseTime() == null && record.getTime() == null) {
+                    timestamp = null;
                 }
+
+                LwM2mSingleResource res = LwM2mSingleResourceImpl.newResource(resourceId, resourceValue, expectedType);
+
+                LwM2mSingleResource prevResource = (LwM2mSingleResource)lwM2mResourceMap.get(resourceId);
+                if (timestamp == null && prevResource != null) {
+                    throw new CodecException("multiple RESOURCE nodes (%s,%s) with the same identifier %d for path %s",
+                            prevResource, res, res.getId(), nodePath);
+                } else if (timestamp != null) {
+                    LwM2mSingleResourceTimestamped resTimestamped = new LwM2mSingleResourceTimestamped(timestamp, res);
+                    if (prevResource != null) {
+                        resTimestamped.add((LwM2mSingleResourceTimestamped) prevResource);
+                    }
+                    res = resTimestamped;
+                }
+
+                lwM2mResourceMap.put(resourceId, res);
+//                if (previousRes != null) {
+//                    throw new CodecException("2 RESOURCE nodes (%s,%s) with the same identifier %d for path %s",
+//                            previousRes, res, res.getId(), nodePath);
+//                }
             } else {
                 throw new CodecException(
                         "Invalid path [%s] for resource, it should be a resource or a resource instance path",
