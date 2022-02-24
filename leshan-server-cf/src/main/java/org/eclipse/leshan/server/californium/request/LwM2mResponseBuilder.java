@@ -463,7 +463,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
 
         // Decode payload
         try {
-            return decoder.decode(coapResponse.getPayload(), contentFormat, path, model);
+            return decoder.decode(coapResponse.getPayload(), contentFormat, path, model).getFirstNode();
         } catch (CodecException e) {
             if (LOG.isDebugEnabled()) {
                 byte[] payload = coapResponse.getPayload() == null ? new byte[0] : coapResponse.getPayload();
@@ -487,7 +487,7 @@ public class LwM2mResponseBuilder<T extends LwM2mResponse> implements DownlinkRe
 
         // Decode payload
         try {
-            return decoder.decodeNodes(coapResponse.getPayload(), contentFormat, paths, model);
+            return decoder.decodeNodes(coapResponse.getPayload(), contentFormat, paths, model).getPathNodesMap();
         } catch (CodecException e) {
             if (LOG.isDebugEnabled()) {
                 byte[] payload = coapResponse.getPayload() == null ? new byte[0] : coapResponse.getPayload();

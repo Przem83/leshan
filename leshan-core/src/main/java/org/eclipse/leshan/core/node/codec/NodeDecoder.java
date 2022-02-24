@@ -16,6 +16,7 @@
 package org.eclipse.leshan.core.node.codec;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.request.ContentFormat;
@@ -38,6 +39,6 @@ public interface NodeDecoder {
      * 
      * @throws CodecException if there payload is malformed.
      */
-    <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
+    <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
             throws CodecException;
 }

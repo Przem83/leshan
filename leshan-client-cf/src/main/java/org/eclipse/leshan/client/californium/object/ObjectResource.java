@@ -263,7 +263,7 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
             LwM2mNode lwM2mNode;
             try {
                 LwM2mModel model = new StaticModel(nodeEnabler.getObjectModel());
-                lwM2mNode = decoder.decode(coapExchange.getRequestPayload(), contentFormat, path, model);
+                lwM2mNode = decoder.decode(coapExchange.getRequestPayload(), contentFormat, path, model).getFirstNode();
                 if (identity.isLwm2mBootstrapServer()) {
                     BootstrapWriteResponse response = nodeEnabler.write(identity,
                             new BootstrapWriteRequest(path, lwM2mNode, contentFormat, coapRequest));
@@ -336,7 +336,7 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
         // manage partial update of multi-instance resource
         if (path.isResource()) {
             try {
-                LwM2mNode lwM2mNode = decoder.decode(exchange.getRequestPayload(), contentFormat, path, model);
+                LwM2mNode lwM2mNode = decoder.decode(exchange.getRequestPayload(), contentFormat, path, model).getFirstNode();
                 WriteResponse response = nodeEnabler.write(identity,
                         new WriteRequest(Mode.UPDATE, contentFormat, URI, lwM2mNode, coapRequest));
                 if (response.getCode().isError()) {
@@ -352,7 +352,7 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
         // Manage Update Instance
         if (path.isObjectInstance()) {
             try {
-                LwM2mNode lwM2mNode = decoder.decode(exchange.getRequestPayload(), contentFormat, path, model);
+                LwM2mNode lwM2mNode = decoder.decode(exchange.getRequestPayload(), contentFormat, path, model).getFirstNode();
                 WriteResponse response = nodeEnabler.write(identity,
                         new WriteRequest(Mode.UPDATE, contentFormat, URI, lwM2mNode, coapRequest));
                 if (response.getCode().isError()) {
@@ -369,8 +369,8 @@ public class ObjectResource extends LwM2mClientCoapResource implements ObjectLis
         // Manage Create Request
         try {
             // decode the payload as an instance
-            LwM2mObject object = decoder.decode(exchange.getRequestPayload(), contentFormat,
-                    new LwM2mPath(path.getObjectId()), model, LwM2mObject.class);
+            LwM2mObject object = (LwM2mObject) decoder.decode(exchange.getRequestPayload(), contentFormat,
+                    new LwM2mPath(path.getObjectId()), model, LwM2mObject.class).getFirstNode();
 
             CreateRequest createRequest;
             // check if this is the "special" case where instance ID is not defined ...

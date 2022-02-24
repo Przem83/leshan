@@ -378,7 +378,7 @@ public class ObservationServiceImpl implements ObservationService, NotificationL
                 CompositeObservation compositeObservation = (CompositeObservation) observation;
 
                 Map<LwM2mPath, LwM2mNode> nodes = decoder.decodeNodes(coapResponse.getPayload(), contentFormat,
-                        compositeObservation.getPaths(), model);
+                        compositeObservation.getPaths(), model).getPathNodesMap();
 
                 return new ObserveCompositeResponse(responseCode, nodes, null, coapResponse, compositeObservation);
             }

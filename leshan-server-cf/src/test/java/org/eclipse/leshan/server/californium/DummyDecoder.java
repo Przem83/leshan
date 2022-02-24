@@ -17,10 +17,10 @@ package org.eclipse.leshan.server.californium;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mSingleResource;
@@ -31,27 +31,28 @@ import org.eclipse.leshan.core.request.ContentFormat;
 
 public class DummyDecoder implements LwM2mDecoder {
     @Override
-    public LwM2mNode decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model)
+    public TimestampedLwM2mNodes decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model)
             throws CodecException {
-        return LwM2mSingleResource.newResource(15, "Example");
+        return new TimestampedLwM2mNodes(path, LwM2mSingleResource.newResource(15, "Example"));
     }
 
     @Override
-    public <T extends LwM2mNode> T decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model,
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model,
             Class<T> nodeClass) throws CodecException {
-        return null;
+        return new TimestampedLwM2mNodes();
     }
 
     @Override
-    public Map<LwM2mPath, LwM2mNode> decodeNodes(byte[] content, ContentFormat format, List<LwM2mPath> paths,
+    public TimestampedLwM2mNodes decodeNodes(byte[] content, ContentFormat format, List<LwM2mPath> paths,
             LwM2mModel model) throws CodecException {
-        return null;
+        return new TimestampedLwM2mNodes();
     }
 
     @Override
     public List<TimestampedLwM2mNode> decodeTimestampedData(byte[] content, ContentFormat format, LwM2mPath path,
             LwM2mModel model) throws CodecException {
-        return Collections.singletonList(new TimestampedLwM2mNode(null, decode(null, null, null, null)));
+        LwM2mNode value = decode(null, null, null, null).getFirstNode();
+        return Collections.singletonList(new TimestampedLwM2mNode(null, value));
     }
 
     @Override

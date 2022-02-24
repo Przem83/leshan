@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
@@ -151,11 +152,11 @@ public class DefaultLwM2mEncoder implements LwM2mEncoder {
     }
 
     @Override
-    public byte[] encodeNodes(Map<LwM2mPath, LwM2mNode> nodes, ContentFormat format, LwM2mModel model)
+    public byte[] encodeNodes(TimestampedLwM2mNodes data, ContentFormat format, LwM2mModel model)
             throws CodecException {
         // Validate arguments
-        Validate.notEmpty(nodes);
-        Set<LwM2mPath> paths = nodes.keySet();
+        Validate.notEmpty(data.getPathNodesMap());
+        Set<LwM2mPath> paths = data.getPaths();
 
         // Search encoder
         if (format == null) {
@@ -170,9 +171,9 @@ public class DefaultLwM2mEncoder implements LwM2mEncoder {
         }
 
         // Encode nodes
-        LOG.trace("Encoding nodes {} for path {} and format {}", nodes, paths, format);
-        byte[] encoded = ((MultiNodeEncoder) encoder).encodeNodes(nodes, model, converter);
-        LOG.trace("Encoded nodes {}: {}", nodes, encoded);
+        LOG.trace("Encoding nodes {} for path {} and format {}", data, paths, format);
+        byte[] encoded = ((MultiNodeEncoder) encoder).encodeNodes(data.getPathNodesMap(), model, converter);
+        LOG.trace("Encoded nodes {}: {}", data, encoded);
         return encoded;
     }
 

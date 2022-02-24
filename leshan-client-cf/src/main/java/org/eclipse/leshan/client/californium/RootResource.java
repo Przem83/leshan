@@ -37,6 +37,7 @@ import org.eclipse.leshan.client.resource.listener.ObjectsListenerAdapter;
 import org.eclipse.leshan.client.servers.ServerIdentity;
 import org.eclipse.leshan.core.californium.ObserveUtil;
 import org.eclipse.leshan.core.link.LinkSerializer;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
@@ -143,8 +144,8 @@ public class RootResource extends LwM2mClientCoapResource {
                 return;
             } else {
                 exchange.respond(toCoapResponseCode(response.getCode()),
-                        encoder.encodeNodes(response.getContent(), responseContentFormat, rootEnabler.getModel()),
-                        responseContentFormat.getCode());
+                        encoder.encodeNodes(new TimestampedLwM2mNodes(response.getContent()), responseContentFormat,
+                                rootEnabler.getModel()), responseContentFormat.getCode());
                 return;
             }
         } else {
@@ -157,8 +158,8 @@ public class RootResource extends LwM2mClientCoapResource {
                 // TODO we could maybe face some race condition if an objectEnabler is removed from LwM2mObjectTree
                 // between rootEnabler.read() and rootEnabler.getModel()
                 exchange.respond(toCoapResponseCode(response.getCode()),
-                        encoder.encodeNodes(response.getContent(), responseContentFormat, rootEnabler.getModel()),
-                        responseContentFormat.getCode());
+                        encoder.encodeNodes(new TimestampedLwM2mNodes(response.getContent()), responseContentFormat,
+                                rootEnabler.getModel()), responseContentFormat.getCode());
             }
             return;
         }
@@ -190,7 +191,7 @@ public class RootResource extends LwM2mClientCoapResource {
         }
 
         Map<LwM2mPath, LwM2mNode> nodes = decoder.decodeNodes(coapRequest.getPayload(), contentFormat, null,
-                rootEnabler.getModel());
+                rootEnabler.getModel()).getPathNodesMap();
 
         WriteCompositeResponse response = rootEnabler.write(identity,
                 new WriteCompositeRequest(contentFormat, nodes, coapRequest));

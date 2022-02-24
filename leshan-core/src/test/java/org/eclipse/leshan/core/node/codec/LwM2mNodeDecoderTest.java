@@ -208,7 +208,7 @@ public class LwM2mNodeDecoderTest {
     public void text_manufacturer_resource() throws CodecException {
         String value = "MyManufacturer";
         LwM2mSingleResource resource = (LwM2mSingleResource) decoder.decode(value.getBytes(StandardCharsets.UTF_8),
-                ContentFormat.TEXT, new LwM2mPath(3, 0, 0), model);
+                ContentFormat.TEXT, new LwM2mPath(3, 0, 0), model).getFirstNode();
 
         assertEquals(0, resource.getId());
         assertFalse(resource.isMultiInstances());
@@ -225,7 +225,7 @@ public class LwM2mNodeDecoderTest {
     @Test
     public void text_battery_resource() throws CodecException {
         LwM2mSingleResource resource = (LwM2mSingleResource) decoder.decode("100".getBytes(StandardCharsets.UTF_8),
-                ContentFormat.TEXT, new LwM2mPath(3, 0, 9), model);
+                ContentFormat.TEXT, new LwM2mPath(3, 0, 9), model).getFirstNode();
 
         assertEquals(9, resource.getId());
         assertFalse(resource.isMultiInstances());
@@ -237,7 +237,7 @@ public class LwM2mNodeDecoderTest {
     public void text_decode_opaque_from_base64_string() throws CodecException {
         // Using Firmware Update/Package
         LwM2mSingleResource resource = (LwM2mSingleResource) decoder.decode("AQIDBAU=".getBytes(StandardCharsets.UTF_8),
-                ContentFormat.TEXT, new LwM2mPath(5, 0, 0), model);
+                ContentFormat.TEXT, new LwM2mPath(5, 0, 0), model).getFirstNode();
 
         byte[] expectedValue = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5 };
 
@@ -260,7 +260,7 @@ public class LwM2mNodeDecoderTest {
         byte[] content = TlvEncoder.encode(new Tlv[] { new Tlv(TlvType.RESOURCE_VALUE, null, value.getBytes(), 0) })
                 .array();
         LwM2mSingleResource resource = (LwM2mSingleResource) decoder.decode(content, ContentFormat.TLV,
-                new LwM2mPath(3, 0, 0), model);
+                new LwM2mPath(3, 0, 0), model).getFirstNode();
 
         assertEquals(0, resource.getId());
         assertFalse(resource.isMultiInstances());
@@ -271,15 +271,15 @@ public class LwM2mNodeDecoderTest {
     public void tlv_device_object_instance0_from_resources_tlv() throws CodecException {
 
         LwM2mObjectInstance oInstance = (LwM2mObjectInstance) decoder.decode(ENCODED_DEVICE_WITHOUT_INSTANCE,
-                ContentFormat.TLV, new LwM2mPath(3, 0), model);
+                ContentFormat.TLV, new LwM2mPath(3, 0), model).getFirstNode();
         assertDeviceInstance(oInstance);
     }
 
     @Test
     public void tlv_device_object_instance0_from_resources_tlv__instance_expected() throws CodecException {
 
-        LwM2mObjectInstance oInstance = decoder.decode(ENCODED_DEVICE_WITHOUT_INSTANCE, ContentFormat.TLV,
-                new LwM2mPath(3), model, LwM2mObjectInstance.class);
+        LwM2mObjectInstance oInstance = (LwM2mObjectInstance) decoder.decode(ENCODED_DEVICE_WITHOUT_INSTANCE, ContentFormat.TLV, new LwM2mPath(3), model,
+                LwM2mObjectInstance.class).getFirstNode();
         assertDeviceInstance(oInstance);
     }
 
@@ -287,20 +287,20 @@ public class LwM2mNodeDecoderTest {
     public void tlv_device_object_instance0_from_instance_tlv() throws CodecException {
 
         LwM2mObjectInstance oInstance = (LwM2mObjectInstance) decoder.decode(ENCODED_DEVICE_WITH_INSTANCE,
-                ContentFormat.TLV, new LwM2mPath(3, 0), model);
+                ContentFormat.TLV, new LwM2mPath(3, 0), model).getFirstNode();
         assertDeviceInstance(oInstance);
     }
 
     @Test
     public void tlv_server_object_multi_instance_with_only_1_instance() throws Exception {
         LwM2mObject oObject = ((LwM2mObject) decoder.decode(ENCODED_SERVER, ContentFormat.TLV, new LwM2mPath(1),
-                model));
+                model).getFirstNode());
         assertServerInstance(oObject);
     }
 
     @Test
     public void tlv_acl_object_multi_instance() throws Exception {
-        LwM2mObject oObject = ((LwM2mObject) decoder.decode(ENCODED_ACL, ContentFormat.TLV, new LwM2mPath(2), model));
+        LwM2mObject oObject = ((LwM2mObject) decoder.decode(ENCODED_ACL, ContentFormat.TLV, new LwM2mPath(2), model).getFirstNode());
         assertAclInstances(oObject);
     }
 
@@ -325,14 +325,14 @@ public class LwM2mNodeDecoderTest {
     @Test
     public void tlv_single_instance_with_obj_link() throws Exception {
         LwM2mObjectInstance oInstance = ((LwM2mObjectInstance) decoder.decode(ENCODED_OBJ65, ContentFormat.TLV,
-                new LwM2mPath(65, 0), model));
+                new LwM2mPath(65, 0), model).getFirstNode());
         assertObj65Instance(oInstance);
     }
 
     @Test
     public void tlv_multi_instance_with_obj_link() throws Exception {
         LwM2mObject oObject = ((LwM2mObject) decoder.decode(ENCODED_OBJ66, ContentFormat.TLV, new LwM2mPath(66),
-                model));
+                model).getFirstNode());
         assertObj66Instance(oObject);
     }
 
@@ -341,7 +341,7 @@ public class LwM2mNodeDecoderTest {
         byte[] content = new byte[] { 65, 0, 1, 65, 1, 5 };
 
         LwM2mResource resource = (LwM2mResource) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(3, 0, 6),
-                model);
+                model).getFirstNode();
 
         assertEquals(6, resource.getId());
         assertEquals(2, resource.getInstances().size());
@@ -356,7 +356,7 @@ public class LwM2mNodeDecoderTest {
         byte[] content = new byte[] { -122, 6, 65, 0, 1, 65, 1, 5 };
 
         LwM2mResource resource = (LwM2mResource) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(3, 0, 6),
-                model);
+                model).getFirstNode();
 
         assertEquals(6, resource.getId());
         assertEquals(2, resource.getInstances().size());
@@ -372,7 +372,7 @@ public class LwM2mNodeDecoderTest {
                         new Tlv(TlvType.RESOURCE_VALUE, null, TlvEncoder.encodeInteger(10), 2) })
                 .array();
 
-        LwM2mObject object = (LwM2mObject) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(2), model);
+        LwM2mObject object = (LwM2mObject) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(2), model).getFirstNode();
         assertEquals(object.getInstances().size(), 1);
         assertEquals(object.getInstances().values().iterator().next().getId(), LwM2mObjectInstance.UNDEFINED);
     }
@@ -383,7 +383,7 @@ public class LwM2mNodeDecoderTest {
         byte[] content = TlvEncoder.encode(new Tlv[] { new Tlv(TlvType.RESOURCE_VALUE, null, "value1".getBytes(), 1),
                 new Tlv(TlvType.RESOURCE_VALUE, null, "value1".getBytes(), 2) }).array();
 
-        LwM2mObject obj = (LwM2mObject) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(10234), model);
+        LwM2mObject obj = (LwM2mObject) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(10234), model).getFirstNode();
 
         assertEquals(1, obj.getInstances().size());
         assertEquals(2, obj.getInstance(0).getResources().size());
@@ -397,7 +397,7 @@ public class LwM2mNodeDecoderTest {
         byte[] content = TlvEncoder.encode(new Tlv[] { objInstance }).array();
 
         LwM2mSingleResource res = (LwM2mSingleResource) decoder.decode(content, ContentFormat.TLV,
-                new LwM2mPath(3, 0, 1), model);
+                new LwM2mPath(3, 0, 1), model).getFirstNode();
 
         assertEquals("client", res.getValue());
     }
@@ -416,7 +416,7 @@ public class LwM2mNodeDecoderTest {
     public void tlv_empty_object() {
         byte[] content = TlvEncoder.encode(new Tlv[] {}).array();
 
-        LwM2mObject obj = (LwM2mObject) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(2), model);
+        LwM2mObject obj = (LwM2mObject) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(2), model).getFirstNode();
 
         assertNotNull(obj);
         assertEquals(2, obj.getId());
@@ -428,7 +428,7 @@ public class LwM2mNodeDecoderTest {
         byte[] content = TlvEncoder.encode(new Tlv[] {}).array();
 
         LwM2mObjectInstance instance = (LwM2mObjectInstance) decoder.decode(content, ContentFormat.TLV,
-                new LwM2mPath(2, 0), model);
+                new LwM2mPath(2, 0), model).getFirstNode();
 
         assertNotNull(instance);
         assertEquals(0, instance.getId());
@@ -447,7 +447,7 @@ public class LwM2mNodeDecoderTest {
         byte[] content = TlvEncoder.encode(new Tlv[] {}).array();
 
         LwM2mResource resource = (LwM2mResource) decoder.decode(content, ContentFormat.TLV, new LwM2mPath(3, 0, 6),
-                model);
+                model).getFirstNode();
 
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
@@ -489,7 +489,7 @@ public class LwM2mNodeDecoderTest {
         b.append("{\"n\":\"16\",\"sv\":\"U\"}]}");
 
         LwM2mObjectInstance oInstance = (LwM2mObjectInstance) decoder.decode(b.toString().getBytes(),
-                ContentFormat.JSON, new LwM2mPath(3, 0), model);
+                ContentFormat.JSON, new LwM2mPath(3, 0), model).getFirstNode();
 
         assertDeviceInstance(oInstance);
     }
@@ -518,7 +518,7 @@ public class LwM2mNodeDecoderTest {
         b.append("{\"n\":\"3/0/16\",\"sv\":\"U\"}]}");
 
         LwM2mObjectInstance oInstance = (LwM2mObjectInstance) decoder.decode(b.toString().getBytes(),
-                ContentFormat.JSON, new LwM2mPath(3, 0), model);
+                ContentFormat.JSON, new LwM2mPath(3, 0), model).getFirstNode();
 
         assertDeviceInstance(oInstance);
     }
@@ -546,7 +546,7 @@ public class LwM2mNodeDecoderTest {
         b.append("{\"n\":\"/3/0/16\",\"sv\":\"U\"}]}");
 
         LwM2mObjectInstance oInstance = (LwM2mObjectInstance) decoder.decode(b.toString().getBytes(),
-                ContentFormat.JSON, new LwM2mPath(3, 0), model);
+                ContentFormat.JSON, new LwM2mPath(3, 0), model).getFirstNode();
 
         assertDeviceInstance(oInstance);
     }
@@ -560,7 +560,7 @@ public class LwM2mNodeDecoderTest {
         b.append("{\"n\":\"1\",\"v\":10.5},");
         b.append("{\"n\":\"2\",\"bv\":true}]}");
         LwM2mObjectInstance oInstance = (LwM2mObjectInstance) decoder.decode(b.toString().getBytes(),
-                ContentFormat.JSON, new LwM2mPath(1024, 0), model);
+                ContentFormat.JSON, new LwM2mPath(1024, 0), model).getFirstNode();
 
         assertEquals(0, oInstance.getId());
 
@@ -657,7 +657,7 @@ public class LwM2mNodeDecoderTest {
         b.append("{}");
         boolean failedWithCodecException = false;
         try {
-            obj = (LwM2mObject) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(2), model);
+            obj = (LwM2mObject) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(2), model).getFirstNode();
         } catch (CodecException e) {
             assertTrue(e.getCause() instanceof LwM2mJsonException);
             failedWithCodecException = true;
@@ -667,7 +667,7 @@ public class LwM2mNodeDecoderTest {
         // with empty resource list
         b = new StringBuilder();
         b.append("{\"e\":[]}");
-        obj = (LwM2mObject) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(2), model);
+        obj = (LwM2mObject) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(2), model).getFirstNode();
         assertNotNull(obj);
         assertEquals(2, obj.getId());
         assertTrue(obj.getInstances().isEmpty());
@@ -675,7 +675,7 @@ public class LwM2mNodeDecoderTest {
         // with empty resources list and base name
         b = new StringBuilder();
         b.append("{\"bn\":\"2\", \"e\":[]}");
-        obj = (LwM2mObject) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(2), model);
+        obj = (LwM2mObject) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(2), model).getFirstNode();
         assertNotNull(obj);
         assertEquals(2, obj.getId());
         assertTrue(obj.getInstances().isEmpty());
@@ -690,7 +690,7 @@ public class LwM2mNodeDecoderTest {
         boolean failedWithCodecException = false;
         try {
             instance = (LwM2mObjectInstance) decoder.decode(b.toString().getBytes(), ContentFormat.JSON,
-                    new LwM2mPath(2, 0), model);
+                    new LwM2mPath(2, 0), model).getFirstNode();
         } catch (CodecException e) {
             assertTrue(e.getCause() instanceof LwM2mJsonException);
             failedWithCodecException = true;
@@ -701,7 +701,7 @@ public class LwM2mNodeDecoderTest {
         b = new StringBuilder();
         b.append("{\"e\":[]}");
         instance = (LwM2mObjectInstance) decoder.decode(b.toString().getBytes(), ContentFormat.JSON,
-                new LwM2mPath(2, 0), model);
+                new LwM2mPath(2, 0), model).getFirstNode();
         assertNotNull(instance);
         assertEquals(0, instance.getId());
         assertTrue(instance.getResources().isEmpty());
@@ -710,7 +710,7 @@ public class LwM2mNodeDecoderTest {
         b = new StringBuilder();
         b.append("{\"bn\":\"2/0\", \"e\":[]}");
         instance = (LwM2mObjectInstance) decoder.decode(b.toString().getBytes(), ContentFormat.JSON,
-                new LwM2mPath(2, 0), model);
+                new LwM2mPath(2, 0), model).getFirstNode();
         assertNotNull(instance);
         assertEquals(0, instance.getId());
         assertTrue(instance.getResources().isEmpty());
@@ -744,7 +744,7 @@ public class LwM2mNodeDecoderTest {
         b = new StringBuilder();
         b.append("{\"e\":[]}");
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(3, 0, 6),
-                model);
+                model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(6, resource.getId());
@@ -754,7 +754,7 @@ public class LwM2mNodeDecoderTest {
         b = new StringBuilder();
         b.append("{\"bn\":\"3/0/6\", \"e\":[]}");
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.JSON, new LwM2mPath(3, 0, 6),
-                model);
+                model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(6, resource.getId());
@@ -807,7 +807,7 @@ public class LwM2mNodeDecoderTest {
         b.append("]}");
 
         LwM2mResource resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.JSON,
-                new LwM2mPath(3, 0, 11), model);
+                new LwM2mPath(3, 0, 11), model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(11, resource.getId());
@@ -824,8 +824,8 @@ public class LwM2mNodeDecoderTest {
         payload.append("{\"n\":\"1\",\"v\":2},");
         payload.append("{\"n\":\"3\",\"v\":124}]");
 
-        LwM2mObject object = decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
-                new LwM2mPath("/2"), model, LwM2mObject.class);
+        LwM2mObject object = (LwM2mObject)decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
+                new LwM2mPath("/2"), model, LwM2mObject.class).getFirstNode();
 
         assertNotNull(object);
         assertEquals(2, object.getId());
@@ -859,8 +859,8 @@ public class LwM2mNodeDecoderTest {
         payload.append("{\"n\":\"14\",\"vs\":\"+02:00\"},");
         payload.append("{\"n\":\"16\",\"vs\":\"U\"}]");
 
-        LwM2mObjectInstance instance = decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
-                new LwM2mPath("/3/0"), model, LwM2mObjectInstance.class);
+        LwM2mObjectInstance instance = (LwM2mObjectInstance) decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
+                new LwM2mPath("/3/0"), model, LwM2mObjectInstance.class).getFirstNode();
 
         assertNotNull(instance);
         assertEquals(0, instance.getId());
@@ -891,8 +891,8 @@ public class LwM2mNodeDecoderTest {
     @Test
     public void senml_json_decode_single_resource() {
         String payload = "[{\"bn\":\"/3/0/0\",\"vs\":\"Open Mobile Alliance\"}]";
-        LwM2mResource resource = decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/3/0/0"),
-                model, LwM2mResource.class);
+        LwM2mResource resource = (LwM2mResource) decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/3/0/0"),
+                model, LwM2mResource.class).getFirstNode();
 
         assertNotNull(resource);
         assertTrue(!resource.isMultiInstances());
@@ -900,8 +900,8 @@ public class LwM2mNodeDecoderTest {
         assertEquals("Open Mobile Alliance", resource.getValue());
 
         payload = "[{\"n\":\"/6/0/3\",\"v\":20.0}]";
-        resource = decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/6/0/3"), model,
-                LwM2mResource.class);
+        resource = (LwM2mResource) decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/6/0/3"), model,
+                LwM2mResource.class).getFirstNode();
 
         assertNotNull(resource);
         assertTrue(!resource.isMultiInstances());
@@ -912,8 +912,8 @@ public class LwM2mNodeDecoderTest {
     @Test
     public void senml_json_decode_single_resource_using_exponantial_notation() {
         String payload = "[{\"bn\":\"/3/0/13\",\"v\":1.638435E9}]";
-        LwM2mResource resource = decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/3/0/13"),
-                model, LwM2mResource.class);
+        LwM2mResource resource = (LwM2mResource) decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/3/0/13"),
+                model, LwM2mResource.class).getFirstNode();
 
         assertNotNull(resource);
         assertTrue(!resource.isMultiInstances());
@@ -926,8 +926,8 @@ public class LwM2mNodeDecoderTest {
         StringBuilder payload = new StringBuilder();
         payload.append("[{\"bn\":\"/3/0/7/\",\"n\":\"0\",\"v\":3800},");
         payload.append("{\"n\":\"1\",\"v\":5000}]");
-        LwM2mResource multipleResources = decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
-                new LwM2mPath("/3/0/7"), model, LwM2mResource.class);
+        LwM2mResource multipleResources = (LwM2mResource) decoder.decode(payload.toString().getBytes(), ContentFormat.SENML_JSON,
+                new LwM2mPath("/3/0/7"), model, LwM2mResource.class).getFirstNode();
 
         assertNotNull(multipleResources);
         assertTrue(multipleResources.isMultiInstances());
@@ -939,8 +939,8 @@ public class LwM2mNodeDecoderTest {
     public void senml_json_decode_ulong() {
         // 18446744073709551615 can not hold in Long
         String payload = "[{\"n\":\"/0/0/16\",\"v\":18446744073709551615}]";
-        LwM2mResource resource = decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/0/0/16"),
-                model, LwM2mResource.class);
+        LwM2mResource resource = (LwM2mResource) decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/0/0/16"),
+                model, LwM2mResource.class).getFirstNode();
 
         assertNotNull(resource);
         assertTrue(!resource.isMultiInstances());
@@ -952,8 +952,8 @@ public class LwM2mNodeDecoderTest {
     public void senml_json_decode_long() {
         // 9223372036854775800 long value can not hold in double (will be approximate to 9223372036854775808)
         String payload = "[{\"n\":\"/1/0/2\",\"v\":9223372036854775800}]";
-        LwM2mResource resource = decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/1/0/2"),
-                model, LwM2mResource.class);
+        LwM2mResource resource = (LwM2mResource) decoder.decode(payload.getBytes(), ContentFormat.SENML_JSON, new LwM2mPath("/1/0/2"),
+                model, LwM2mResource.class).getFirstNode();
 
         assertNotNull(resource);
         assertTrue(!resource.isMultiInstances());
@@ -967,7 +967,7 @@ public class LwM2mNodeDecoderTest {
 
         // empty byte array
         LwM2mResource resource = null;
-        resource = (LwM2mResource) decoder.decode(new byte[0], ContentFormat.SENML_JSON, new LwM2mPath(3, 0, 6), model);
+        resource = (LwM2mResource) decoder.decode(new byte[0], ContentFormat.SENML_JSON, new LwM2mPath(3, 0, 6), model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(6, resource.getId());
@@ -978,7 +978,7 @@ public class LwM2mNodeDecoderTest {
         StringBuilder b = new StringBuilder();
         b.append("");
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.SENML_JSON,
-                new LwM2mPath(3, 0, 6), model);
+                new LwM2mPath(3, 0, 6), model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(6, resource.getId());
@@ -988,7 +988,7 @@ public class LwM2mNodeDecoderTest {
         b = new StringBuilder();
         b.append("[]");
         resource = (LwM2mResource) decoder.decode(b.toString().getBytes(), ContentFormat.SENML_JSON,
-                new LwM2mPath(3, 0, 6), model);
+                new LwM2mPath(3, 0, 6), model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(6, resource.getId());
@@ -1080,7 +1080,7 @@ public class LwM2mNodeDecoderTest {
 
         // Decode
         Map<LwM2mPath, LwM2mNode> res = decoder.decodeNodes(b.toString().getBytes(), ContentFormat.SENML_JSON, paths,
-                model);
+                model).getPathNodesMap();
 
         // Expected result
         Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
@@ -1107,7 +1107,7 @@ public class LwM2mNodeDecoderTest {
 
         // Decode
         Map<LwM2mPath, LwM2mNode> res = decoder.decodeNodes(b.toString().getBytes(), ContentFormat.SENML_JSON, paths,
-                model);
+                model).getPathNodesMap();
 
         // Expected result
         Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
@@ -1135,7 +1135,7 @@ public class LwM2mNodeDecoderTest {
 
         // Decode
         Map<LwM2mPath, LwM2mNode> res = decoder.decodeNodes(b.toString().getBytes(), ContentFormat.SENML_JSON, null,
-                model);
+                model).getPathNodesMap();
 
         // Expected result
         Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
@@ -1217,7 +1217,7 @@ public class LwM2mNodeDecoderTest {
     public void senml_json_decode_opaque_resource() {
         byte[] json = "[{\"bn\":\"/0/0/3\",\"vd\":\"q83v\"}]".getBytes(); // q83v is base64 of ABCDE
         LwM2mResource oResource = (LwM2mResource) decoder.decode(json, ContentFormat.SENML_JSON,
-                new LwM2mPath("/0/0/3"), model);
+                new LwM2mPath("/0/0/3"), model).getFirstNode();
 
         byte[] bytes = Hex.decodeHex("ABCDEF".toCharArray());
         LwM2mResource expected = LwM2mSingleResource.newBinaryResource(3, bytes);
@@ -1230,7 +1230,7 @@ public class LwM2mNodeDecoderTest {
         // value : [{-2: "/0/0/3", 8: h'ABCDEF'}]
         byte[] cbor = Hex.decodeHex("81a221662f302f302f330843abcdef".toCharArray());
         LwM2mResource oResource = (LwM2mResource) decoder.decode(cbor, ContentFormat.SENML_CBOR,
-                new LwM2mPath("/0/0/3"), model);
+                new LwM2mPath("/0/0/3"), model).getFirstNode();
 
         byte[] bytes = Hex.decodeHex("ABCDEF".toCharArray());
         LwM2mResource expected = LwM2mSingleResource.newBinaryResource(3, bytes);
@@ -1244,7 +1244,7 @@ public class LwM2mNodeDecoderTest {
 
         // empty byte array
         LwM2mResource resource = null;
-        resource = (LwM2mResource) decoder.decode(new byte[0], ContentFormat.SENML_CBOR, new LwM2mPath(3, 0, 6), model);
+        resource = (LwM2mResource) decoder.decode(new byte[0], ContentFormat.SENML_CBOR, new LwM2mPath(3, 0, 6), model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(6, resource.getId());
@@ -1253,7 +1253,7 @@ public class LwM2mNodeDecoderTest {
         // empty Array
         // value : []
         byte[] cbor = Hex.decodeHex("80".toCharArray());
-        resource = (LwM2mResource) decoder.decode(cbor, ContentFormat.SENML_CBOR, new LwM2mPath(3, 0, 6), model);
+        resource = (LwM2mResource) decoder.decode(cbor, ContentFormat.SENML_CBOR, new LwM2mPath(3, 0, 6), model).getFirstNode();
         assertNotNull(resource);
         assertTrue(resource instanceof LwM2mMultipleResource);
         assertEquals(6, resource.getId());

@@ -31,6 +31,7 @@ import java.util.TreeMap;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
@@ -69,7 +70,7 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
             throws CodecException {
         try {
             // Decode SenML pack
@@ -98,7 +99,7 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
             }
 
             // Parse records and create node
-            return (T) parseRecords(resolvedRecords, path, model, nodeClass);
+            return new TimestampedLwM2mNodes(path, parseRecords(resolvedRecords, path, model, nodeClass));
         } catch (SenMLException e) {
             String hexValue = content != null ? Hex.encodeHexString(content) : "";
             throw new CodecException(e, "Unable to decode node[path:%s] : %s", path, hexValue, e);
@@ -106,13 +107,13 @@ public class LwM2mNodeSenMLDecoder implements TimestampedNodeDecoder, MultiNodeD
     }
 
     @Override
-    public Map<LwM2mPath, LwM2mNode> decodeNodes(byte[] content, List<LwM2mPath> paths, LwM2mModel model)
+    public TimestampedLwM2mNodes decodeNodes(byte[] content, List<LwM2mPath> paths, LwM2mModel model)
             throws CodecException {
         try {
             // Decode SenML pack
             SenMLPack pack = decoder.fromSenML(content);
 
-            Map<LwM2mPath, LwM2mNode> nodes = new HashMap<>();
+            TimestampedLwM2mNodes nodes = new TimestampedLwM2mNodes();
             if (paths != null) {
                 // Resolve records & Group it by time-stamp
                 Map<LwM2mPath, Collection<LwM2mResolvedSenMLRecord>> recordsByPath = groupByPath(pack.getRecords(),

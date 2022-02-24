@@ -16,9 +16,9 @@
 package org.eclipse.leshan.core.node.codec;
 
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -46,6 +46,6 @@ public interface MultiNodeDecoder {
      *         available for a given path
      * @throws CodecException if there payload is malformed.
      */
-    Map<LwM2mPath, LwM2mNode> decodeNodes(byte[] content, List<LwM2mPath> paths, LwM2mModel model)
+    TimestampedLwM2mNodes decodeNodes(byte[] content, List<LwM2mPath> paths, LwM2mModel model)
             throws CodecException;
 }

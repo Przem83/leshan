@@ -29,6 +29,7 @@ import java.util.Map;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectLoader;
 import org.eclipse.leshan.core.model.StaticModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
@@ -388,7 +389,7 @@ public class LwM2mNodeEncoderTest {
         nodes.put(new LwM2mPath("1/0/1"), LwM2mSingleResource.newIntegerResource(1, 86400));
 
         // Encode
-        byte[] encoded = encoder.encodeNodes(nodes, ContentFormat.SENML_JSON, model);
+        byte[] encoded = encoder.encodeNodes(new TimestampedLwM2mNodes(nodes), ContentFormat.SENML_JSON, model);
 
         // Expected value
         StringBuilder b = new StringBuilder();
@@ -411,7 +412,7 @@ public class LwM2mNodeEncoderTest {
                 LwM2mSingleResource.newFloatResource(1, 2.351149)));
 
         // Encode
-        byte[] encoded = encoder.encodeNodes(nodes, ContentFormat.SENML_JSON, model);
+        byte[] encoded = encoder.encodeNodes(new TimestampedLwM2mNodes(nodes), ContentFormat.SENML_JSON, model);
 
         // Expected value
         StringBuilder b = new StringBuilder();

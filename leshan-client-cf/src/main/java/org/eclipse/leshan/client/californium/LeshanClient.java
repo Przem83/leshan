@@ -57,6 +57,7 @@ import org.eclipse.leshan.core.californium.EndpointFactory;
 import org.eclipse.leshan.core.link.LinkSerializer;
 import org.eclipse.leshan.core.link.lwm2m.attributes.LwM2mAttributeParser;
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.LwM2mDecoder;
@@ -309,7 +310,7 @@ public class LeshanClient implements LwM2mClient {
         Validate.notEmpty(paths);
 
         Map<LwM2mPath, LwM2mNode> collectedData = collectData(server, paths);
-        return requestSender.send(server, new SendRequest(format, collectedData, null), timeoutInMs);
+        return requestSender.send(server, new SendRequest(format, new TimestampedLwM2mNodes(collectedData), null), timeoutInMs);
     }
 
     @Override

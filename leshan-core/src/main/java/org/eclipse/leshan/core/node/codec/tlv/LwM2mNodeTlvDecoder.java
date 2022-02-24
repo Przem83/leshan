@@ -23,6 +23,7 @@ import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mIncompletePath;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
 import org.eclipse.leshan.core.node.LwM2mNode;
@@ -50,11 +51,11 @@ public class LwM2mNodeTlvDecoder implements NodeDecoder {
     private static final Logger LOG = LoggerFactory.getLogger(LwM2mNodeTlvDecoder.class);
 
     @Override
-    public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
             throws CodecException {
         try {
             Tlv[] tlvs = TlvDecoder.decode(ByteBuffer.wrap(content != null ? content : new byte[0]));
-            return parseTlv(tlvs, path, model, nodeClass);
+            return new TimestampedLwM2mNodes(path, parseTlv(tlvs, path, model, nodeClass));
         } catch (TlvException | LwM2mNodeException | InvalidLwM2mPathException e) {
             throw new CodecException(String.format("Unable to decode tlv for path [%s]", path), e);
         }

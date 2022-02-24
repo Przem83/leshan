@@ -26,6 +26,7 @@ import org.eclipse.californium.elements.EndpointContext;
 import org.eclipse.leshan.core.californium.EndpointContextUtil;
 import org.eclipse.leshan.core.californium.ObserveUtil;
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
@@ -238,7 +239,8 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     public void visit(WriteCompositeRequest request) {
         coapRequest = Request.newIPatch();
         coapRequest.getOptions().setContentFormat(request.getContentFormat().getCode());
-        coapRequest.setPayload(encoder.encodeNodes(request.getNodes(), request.getContentFormat(), model));
+        coapRequest.setPayload(
+                encoder.encodeNodes(new TimestampedLwM2mNodes(request.getNodes()), request.getContentFormat(), model));
         setTarget(coapRequest, LwM2mPath.ROOTPATH);
         applyLowerLayerConfig(coapRequest);
     }

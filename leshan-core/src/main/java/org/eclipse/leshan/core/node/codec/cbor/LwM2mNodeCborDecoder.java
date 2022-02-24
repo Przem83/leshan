@@ -20,6 +20,7 @@ import java.util.Date;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -41,7 +42,7 @@ public class LwM2mNodeCborDecoder implements NodeDecoder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
             throws CodecException {
 
         // Support only single value
@@ -75,9 +76,9 @@ public class LwM2mNodeCborDecoder implements NodeDecoder {
 
         // Create Node
         if (path.isResource()) {
-            return (T) LwM2mSingleResource.newResource(path.getResourceId(), nodeValue, expectedType);
+            return new TimestampedLwM2mNodes(path, LwM2mSingleResource.newResource(path.getResourceId(), nodeValue, expectedType));
         } else {
-            return (T) LwM2mResourceInstance.newInstance(path.getResourceInstanceId(), nodeValue, expectedType);
+            return new TimestampedLwM2mNodes(path, LwM2mResourceInstance.newInstance(path.getResourceInstanceId(), nodeValue, expectedType));
         }
     }
 

@@ -36,6 +36,7 @@ import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.InvalidLwM2mPathException;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mMultipleResource;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mNodeException;
@@ -71,7 +72,7 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
             throws CodecException {
         try {
             String jsonStrValue = content != null ? new String(content) : "";
@@ -81,7 +82,8 @@ public class LwM2mNodeJsonDecoder implements TimestampedNodeDecoder {
                 return null;
             } else {
                 // return the most recent value
-                return (T) timestampedNodes.get(0).getNode();
+                T node = (T) timestampedNodes.get(0).getNode();
+                return new TimestampedLwM2mNodes(path, node);
             }
         } catch (LwM2mJsonException | LwM2mNodeException | InvalidLwM2mPathException e) {
             throw new CodecException(e, "Unable to deserialize json [path:%s]", path);

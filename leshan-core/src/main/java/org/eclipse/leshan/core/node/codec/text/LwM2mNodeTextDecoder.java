@@ -21,6 +21,7 @@ import java.util.Date;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -38,7 +39,7 @@ public class LwM2mNodeTextDecoder implements NodeDecoder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
             throws CodecException {
         if (!path.isResource() && !path.isResourceInstance())
             throw new CodecException("Invalid path %s : TextDecoder decodes resource OR resource instance only", path);
@@ -49,20 +50,20 @@ public class LwM2mNodeTextDecoder implements NodeDecoder {
 
         if (path.isResource()) {
             if (rDesc != null) {
-                return (T) LwM2mSingleResource.newResource(path.getResourceId(),
-                        parseTextValue(strValue, rDesc.type, path), rDesc.type);
+                return new TimestampedLwM2mNodes(path, LwM2mSingleResource.newResource(path.getResourceId(),
+                        parseTextValue(strValue, rDesc.type, path), rDesc.type));
             }
 
             // unknown resource, returning a default string value
-            return (T) LwM2mSingleResource.newStringResource(path.getResourceId(), strValue);
+            return new TimestampedLwM2mNodes(path, LwM2mSingleResource.newStringResource(path.getResourceId(), strValue));
         }
 
         if (rDesc != null) {
-            return (T) LwM2mResourceInstance.newInstance(path.getResourceInstanceId(),
-                    parseTextValue(strValue, rDesc.type, path), rDesc.type);
+            return new TimestampedLwM2mNodes(path, LwM2mResourceInstance.newInstance(path.getResourceInstanceId(),
+                    parseTextValue(strValue, rDesc.type, path), rDesc.type));
         }
         // unknown resource, returning a default string value
-        return (T) LwM2mResourceInstance.newStringInstance(path.getResourceInstanceId(), strValue);
+        return new TimestampedLwM2mNodes(path, LwM2mResourceInstance.newStringInstance(path.getResourceInstanceId(), strValue));
     }
 
     private Object parseTextValue(String value, Type type, LwM2mPath path) throws CodecException {

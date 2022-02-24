@@ -16,10 +16,10 @@
 package org.eclipse.leshan.core.node.codec;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -50,7 +50,7 @@ public interface LwM2mDecoder {
      * @return the resulting node
      * @throws CodecException if content is malformed.
      */
-    LwM2mNode decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model) throws CodecException;
+    TimestampedLwM2mNodes decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model) throws CodecException;
 
     /**
      * Deserializes a binary content into a {@link LwM2mNode} of the expected type.
@@ -63,7 +63,7 @@ public interface LwM2mDecoder {
      * @return the resulting node
      * @throws CodecException if content is malformed.
      */
-    <T extends LwM2mNode> T decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model,
+    <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model,
             Class<T> nodeClass) throws CodecException;
 
     /**
@@ -81,7 +81,7 @@ public interface LwM2mDecoder {
      *         available for a given path
      * @throws CodecException if content is malformed.
      */
-    Map<LwM2mPath, LwM2mNode> decodeNodes(byte[] content, ContentFormat format, List<LwM2mPath> paths, LwM2mModel model)
+    TimestampedLwM2mNodes decodeNodes(byte[] content, ContentFormat format, List<LwM2mPath> paths, LwM2mModel model)
             throws CodecException;
 
     /**

@@ -18,6 +18,7 @@ package org.eclipse.leshan.core.node.codec.opaque;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ResourceModel;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.LwM2mResourceInstance;
@@ -29,7 +30,7 @@ public class LwM2mNodeOpaqueDecoder implements NodeDecoder {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends LwM2mNode> T decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, LwM2mPath path, LwM2mModel model, Class<T> nodeClass)
             throws CodecException {
         if (!path.isResource() && !path.isResourceInstance())
             throw new CodecException("Invalid path %s : OpaqueDecoder decodes resource OR resource instance only",
@@ -43,11 +44,11 @@ public class LwM2mNodeOpaqueDecoder implements NodeDecoder {
         }
 
         if (path.isResource()) {
-            return (T) LwM2mSingleResource.newBinaryResource(path.getResourceId(),
-                    content != null ? content : new byte[0]);
+            return new TimestampedLwM2mNodes(path, LwM2mSingleResource.newBinaryResource(path.getResourceId(),
+                    content != null ? content : new byte[0]));
         } else {
-            return (T) LwM2mResourceInstance.newBinaryInstance(path.getResourceInstanceId(),
-                    content != null ? content : new byte[0]);
+            return new TimestampedLwM2mNodes(path, LwM2mResourceInstance.newBinaryInstance(path.getResourceInstanceId(),
+                    content != null ? content : new byte[0]));
         }
     }
 }

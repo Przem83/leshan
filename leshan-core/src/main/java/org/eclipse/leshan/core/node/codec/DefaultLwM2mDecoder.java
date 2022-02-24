@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mObject;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
@@ -134,13 +135,13 @@ public class DefaultLwM2mDecoder implements LwM2mDecoder {
     }
 
     @Override
-    public LwM2mNode decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model)
+    public TimestampedLwM2mNodes decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model)
             throws CodecException {
         return decode(content, format, path, model, nodeClassFromPath(path));
     }
 
     @Override
-    public <T extends LwM2mNode> T decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model,
+    public <T extends LwM2mNode> TimestampedLwM2mNodes decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model,
             Class<T> nodeClass) throws CodecException {
 
         LOG.trace("Decoding value for path {} and format {}: {}", path, format, content);
@@ -158,7 +159,7 @@ public class DefaultLwM2mDecoder implements LwM2mDecoder {
     }
 
     @Override
-    public Map<LwM2mPath, LwM2mNode> decodeNodes(byte[] content, ContentFormat format, List<LwM2mPath> paths,
+    public TimestampedLwM2mNodes decodeNodes(byte[] content, ContentFormat format, List<LwM2mPath> paths,
             LwM2mModel model) throws CodecException {
         LOG.trace("Decoding value for path {} and format {}: {}", paths, format, content);
         if (paths != null)
@@ -200,7 +201,7 @@ public class DefaultLwM2mDecoder implements LwM2mDecoder {
             return ((TimestampedNodeDecoder) decoder).decodeTimestampedData(content, path, model,
                     nodeClassFromPath(path));
         } else {
-            return toTimestampedNodes(decoder.decode(content, path, model, nodeClassFromPath(path)));
+            return toTimestampedNodes(decoder.decode(content, path, model, nodeClassFromPath(path)).getFirstNode());
         }
     }
 

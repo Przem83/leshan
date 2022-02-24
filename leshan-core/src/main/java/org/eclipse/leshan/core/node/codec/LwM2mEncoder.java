@@ -16,10 +16,10 @@
 package org.eclipse.leshan.core.node.codec;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.leshan.core.model.LwM2mModel;
+import org.eclipse.leshan.core.node.TimestampedLwM2mNodes;
 import org.eclipse.leshan.core.node.LwM2mNode;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.TimestampedLwM2mNode;
@@ -58,7 +58,7 @@ public interface LwM2mEncoder {
      * @return the encoded nodes as a byte array
      * @throws CodecException if encoding failed.
      */
-    byte[] encodeNodes(Map<LwM2mPath, LwM2mNode> nodes, ContentFormat format, LwM2mModel model) throws CodecException;
+    byte[] encodeNodes(TimestampedLwM2mNodes data, ContentFormat format, LwM2mModel model) throws CodecException;
 
     /**
      * Serializes a list of time-stamped {@link LwM2mNode} with the given content format.
