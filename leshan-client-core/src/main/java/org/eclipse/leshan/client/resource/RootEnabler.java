@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.leshan.client.resource.listener.ObjectsListener;
 import org.eclipse.leshan.client.servers.ServerIdentity;
+import org.eclipse.leshan.client.util.DuplicateNodeHelper;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.model.ObjectModel;
 import org.eclipse.leshan.core.model.ResourceModel;
@@ -244,7 +245,7 @@ public class RootEnabler implements LwM2mRootEnabler {
         if (isEmpty) {
             return ObserveCompositeResponse.notFound();
         } else {
-            return ObserveCompositeResponse.success(content);
+            return ObserveCompositeResponse.success(DuplicateNodeHelper.removeDuplicateNodes(content));
         }
     }
 
